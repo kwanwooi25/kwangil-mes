@@ -9,7 +9,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
  IMPORTS COMPONENTS
 =============================================*/
 import LoginPage from '../views/LoginPage';
-// import RegisterPage from '../views/RegisterPage';
+import RegisterPage from '../views/RegisterPage';
 // import Header from '../views/components/Header';
 // import Navigation from '../views/components/Navigation';
 // import DashboardPage from '../views/DashboardPage';
@@ -20,7 +20,6 @@ import NotFoundPage from '../views/NotFoundPage';
 const unauthenticatedPages = ['/', '/register'];
 const authenticatedPages = ['/dashboard', '/accounts', '/products', '/orders'];
 
-const RegisterPage = () => <h3>RegisterPage</h3>;
 const Header = () => <h3>Header</h3>;
 const Navigation = () => <h3>Navigation</h3>;
 const DashboardPage = () => <h3>DashboardPage</h3>;

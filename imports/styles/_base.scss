@@ -1,0 +1,15 @@
+* {
+  transition: 0.2s;
+}
+
+html {
+  font-size: 90%;
+  @media (min-width: $break--sm) {
+    font-size: 100%;
+  }
+}
+
+body {
+  background: $grey--100;
+  font-family: $font-family;
+}

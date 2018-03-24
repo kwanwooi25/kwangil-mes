@@ -1,0 +1,93 @@
+.boxed-view__bg {
+  align-items: center;
+  display: flex;
+  height: 100vh;
+}
+
+.boxed-view__box {
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow--2;
+  margin: 0 auto;
+  width: 80%;
+  max-width: 24rem;
+}
+
+.boxed-view__header {
+  background: $color-primary--500;
+  border-top-left-radius: $border-radius;
+  border-top-right-radius: $border-radius;
+  text-align: center;
+
+  h1 {
+    color: white;
+    margin: 0;
+    padding: $space-md;
+  }
+}
+
+.boxed-view__content {
+  border-bottom-left-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;
+  display: flex;
+  flex-direction: column;
+  padding: $space-sm;
+
+  & label {
+    color: $color-primary--500;
+    margin-bottom: $space-xs;
+  }
+
+  &__input,
+  &__select,
+  &__button {
+    border-radius: $border-radius;
+    margin-bottom: $space-sm;
+    outline: none;
+    padding: $space-xs;
+  }
+
+  &__input,
+  &__select {
+    border: 1.5px solid $color-primary--100;
+    color: $color-primary--500;
+
+    &:focus {
+      border-color: $color-primary--500;
+      box-shadow: $box-shadow--1;
+    }
+
+    &.error {
+      background: $color-error--50;
+      border: 1.5px solid $color-error--500;
+      color: $color-error--500;
+      margin-bottom: 0.1rem;
+    }
+  }
+
+  &__select {
+    background: white;
+    height: 2.4rem;
+  }
+
+  &__button {
+    background: $color-primary--500;
+    border: 1.5px solid $color-primary--500;
+    color: white;
+    margin: 0;
+    &:hover,
+    &:focus {
+      background: $color-primary--50;
+      box-shadow: $box-shadow--1;
+      color: $color-primary--500;
+      cursor: pointer;
+    }
+  }
+
+  &__error {
+    color: $color-error--500;
+    font-size: $font-size--xs;
+    margin: 0;
+    text-align: right;
+  }
+}
