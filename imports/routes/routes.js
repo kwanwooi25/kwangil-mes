@@ -10,8 +10,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 =============================================*/
 import LoginPage from '../views/LoginPage';
 import RegisterPage from '../views/RegisterPage';
-// import Header from '../views/components/Header';
-// import Navigation from '../views/components/Navigation';
+import Header from '../views/components/Header';
 // import DashboardPage from '../views/DashboardPage';
 // import AccountsPage from '../views/AccountsPage';
 // import ProductsPage from '../views/ProductsPage';
@@ -20,8 +19,6 @@ import NotFoundPage from '../views/NotFoundPage';
 const unauthenticatedPages = ['/', '/register'];
 const authenticatedPages = ['/dashboard', '/accounts', '/products', '/orders'];
 
-const Header = () => <h3>Header</h3>;
-const Navigation = () => <h3>Navigation</h3>;
 const DashboardPage = () => <h3>DashboardPage</h3>;
 const AccountsPage = () => <h3>AccountsPage</h3>;
 const ProductsPage = () => <h3>ProductsPage</h3>;
@@ -31,10 +28,7 @@ export const routes = (
   <BrowserRouter>
     <div>
       {!!Meteor.userId() ? (
-        <header>
-          <Header />
-          <Navigation />
-        </header>
+        <Header />
       ) : (
         undefined
       )}
