@@ -52,11 +52,13 @@ export default class AccountModal extends React.Component {
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
-        className="account-modal"
+        className="boxed-view__box account-modal"
         overlayClassName="react-modal__bg"
       >
-        <h2 className="react-modal__title">업체등록</h2>
-        <form className="account-form">
+        <div className="boxed-view__header">
+          <h1>업체등록</h1>
+        </div>
+        <form className="boxed-view__content">
           <div className="react-modal__input-container">
             <label htmlFor="accountName">업체명</label>
             <input

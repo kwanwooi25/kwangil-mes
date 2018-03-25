@@ -33,9 +33,9 @@
     border: 1px solid $color-primary--100;
     border-radius: $border-radius;
     color: $color-primary--500;
+    flex-grow: 4;
     outline: none;
     padding: $space-xs;
-    width: 75%;
 
     &:focus {
       border-color: $color-primary--500;
@@ -44,8 +44,7 @@
   }
 
   & textarea {
+    flex-grow: 4;
     height: 5rem;
-    min-width: 75%;
-    max-width: 75%;
   }
 }
