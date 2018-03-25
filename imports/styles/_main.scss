@@ -1,5 +1,9 @@
 @import './normalize';
 @import './variables';
 @import './base';
+@import './global';
 @import './boxed-view';
 @import './components/header';
+@import './components/react-modal';
+@import './components/account-modal';
+@import './components/buttons';

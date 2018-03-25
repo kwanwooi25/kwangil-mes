@@ -1,3 +1,9 @@
+.header {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+}
+
 .header--container {
   background: $color-primary--500;
   box-shadow: $box-shadow--2;
@@ -32,8 +38,7 @@
   text-decoration: none;
 
   &:hover {
-    background: $color-primary--100;
-    color: $color-primary--500;
+    background: $color-primary--400;
     cursor: pointer;
   }
 }
@@ -53,7 +58,7 @@
     cursor: pointer;
   }
 
-  @media (min-width: $break--lg) {
+  @media (min-width: $break--md) {
     display: none;
   }
 }
@@ -63,14 +68,13 @@
   background: $color-primary--100;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  opacity: 0.9;
+  opacity: 0.98;
   overflow: hidden;
   position: absolute;
   width: 0;
   left: -100%;
 
-  @media (min-width: $break--lg) {
+  @media (min-width: $break--md) {
     box-shadow: $box-shadow--2;
     flex-direction: row;
     height: auto;
@@ -92,8 +96,9 @@
   padding: $space-sm;
   text-decoration: none;
 
-  &:hover {
-    background: $color-primary--400;
+  &:hover,
+  &--active {
+    background: $color-primary--300;
     color: white;
   }
 }

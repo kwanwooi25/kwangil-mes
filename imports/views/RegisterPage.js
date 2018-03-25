@@ -1,8 +1,5 @@
 import React from 'react';
-
-import Typography from 'material-ui/Typography';
-import TextField from 'material-ui/TextField';
-import Button from 'material-ui/Button';
+import { Accounts } from 'meteor/accounts-base';
 
 export default class RegisterPage extends React.Component {
   constructor(props) {

@@ -1,0 +1,51 @@
+.react-modal__bg {
+  align-items: center;
+  background: $color-primary--50;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.react-modal__title {
+  color: $color-primary--900;
+  margin: 0;
+  padding: $space-xs;
+  text-align: center;
+}
+
+.react-modal__input-container {
+  align-items: center;
+  display: flex;
+  padding: $space-xs;
+  & label {
+    color: $color-primary--500;
+    width: 20%;
+  }
+
+  & input,
+  & textarea {
+    border: 1px solid $color-primary--100;
+    border-radius: $border-radius;
+    color: $color-primary--500;
+    outline: none;
+    padding: $space-xs;
+    width: 75%;
+
+    &:focus {
+      border-color: $color-primary--500;
+      box-shadow: $box-shadow--1;
+    }
+  }
+
+  & textarea {
+    height: 5rem;
+    min-width: 75%;
+    max-width: 75%;
+  }
+}
