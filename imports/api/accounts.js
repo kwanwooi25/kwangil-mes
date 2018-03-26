@@ -30,17 +30,17 @@ Meteor.methods({
         throw new Meteor.Error('이미 존재하는 업체입니다.');
       }
     }
-  }
+  },
 
-  // 'accounts.insertmany'(json) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //   json.map(account => {
-  //     // console.log(account);
-  //     AccountsData.insert(account);
-  //   });
-  // },
+  'accounts.insertmany'(json) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+    json.map(account => {
+      // console.log(account);
+      AccountsData.insert(account);
+    });
+  }
   //
   // 'accounts.update'(accountID, data) {
   //   if (!this.userId) {

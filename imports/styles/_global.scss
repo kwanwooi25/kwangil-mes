@@ -6,5 +6,51 @@
 }
 
 .page-header {
-  margin: 0 0 $space-md 0;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $space-sm;
+}
+
+.page-header__title {
+  margin: 0;
+}
+
+.page-header__buttons {
+  display: flex;
+}
+
+.page-header__button {
+  align-items: center;
+  background: $color-primary--500;
+  border: 1px solid $color-primary--500;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  justify-content: center;
+  height: 3rem;
+  width: 3rem;
+  margin-left: $space-sm;
+  outline: none;
+
+  span {
+    display: none;
+  }
+
+  &:hover {
+    background: $color-primary--400;
+    cursor: pointer;
+
+    i {
+      display: none;
+    }
+
+    span {
+      display: inline-block;
+    }
+  }
+}
+
+.page-content {
+  overflow: scroll;
 }

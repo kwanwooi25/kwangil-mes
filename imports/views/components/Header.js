@@ -35,7 +35,7 @@ export default class Header extends React.Component {
                 onChange={this.onNavToggle}
               />
               <label className="toggle" htmlFor="nav-toggle">
-                &#9776;
+                <i className="fa fa-bars"></i>
               </label>
               <NavLink
                 className="header--title"
@@ -51,7 +51,7 @@ export default class Header extends React.Component {
                 Accounts.logout();
               }}
             >
-              Logout
+              <i className="fa fa-sign-out fa-lg"></i>
             </a>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default class Header extends React.Component {
             to="/dashboard"
             onClick={this.closeNav}
           >
-            Dashboard
+            HOME
           </NavLink>
           <NavLink
             className="nav--item"
@@ -70,7 +70,7 @@ export default class Header extends React.Component {
             to="/accounts"
             onClick={this.closeNav}
           >
-            업체관리
+            거래처목록
           </NavLink>
           <NavLink
             className="nav--item"

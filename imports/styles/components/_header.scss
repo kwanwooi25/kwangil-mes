@@ -40,6 +40,14 @@
   &:hover {
     background: $color-primary--400;
     cursor: pointer;
+
+    i {
+      display: none;
+    }
+
+    &::after {
+      content: ' 로그아웃';
+    }
   }
 }
 
