@@ -2,6 +2,7 @@ import React from 'react';
 
 import AccountModal from './AccountModal';
 import AccountList from './AccountList';
+import AccountNewMultiModal from './AccountNewMultiModal';
 
 export default class AccountsPage extends React.Component {
   constructor(props) {
@@ -11,6 +12,7 @@ export default class AccountsPage extends React.Component {
       isAdmin: false,
       isManager: false,
       isModalNewOpen: false,
+      isModalNewMultiOpen: false,
       query: ''
     };
 
@@ -65,7 +67,7 @@ export default class AccountsPage extends React.Component {
     }
 
     const query = e.target.value.trim().toLowerCase();
-    this.setState({ query })
+    this.setState({ query });
   }
 
   onClickNew() {
@@ -73,11 +75,12 @@ export default class AccountsPage extends React.Component {
   }
 
   onClickNewMulti() {
+    this.setState({ isModalNewMultiOpen: true });
     console.log('onClickNewMulti');
   }
 
   onModalClose() {
-    this.setState({ isModalNewOpen: false });
+    this.setState({ isModalNewOpen: false, isModalNewMultiOpen: false });
   }
 
   render() {
@@ -90,7 +93,9 @@ export default class AccountsPage extends React.Component {
             type="text"
             placeholder="&#xf002;"
             onChange={this.onInputSearchChange}
-            onFocus={(e) => {e.target.select()}}
+            onFocus={e => {
+              e.target.select();
+            }}
           />
 
           {this.state.isAdmin || this.state.isManager ? (
@@ -126,8 +131,17 @@ export default class AccountsPage extends React.Component {
           undefined
         )}
 
+        {this.state.isModalNewMultiOpen ? (
+          <AccountNewMultiModal
+            isOpen={this.state.isModalNewMultiOpen}
+            onModalClose={this.onModalClose}
+          />
+        ) : (
+          undefined
+        )}
+
         <div className="page-content">
-          <AccountList query={this.state.query}/>
+          <AccountList query={this.state.query} />
         </div>
       </div>
     );

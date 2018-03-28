@@ -40,21 +40,21 @@ Meteor.methods({
       // console.log(account);
       AccountsData.insert(account);
     });
+  },
+
+  'accounts.update'(accountID, data) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+
+    AccountsData.update({ _id: accountID }, { $set: data });
+  },
+
+  'accounts.remove'(accountID) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+
+    AccountsData.remove({ _id: accountID });
   }
-  //
-  // 'accounts.update'(accountID, data) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //
-  //   AccountsData.update({ _id: accountID }, { $set: data });
-  // },
-  //
-  // 'accounts.remove'(accountID) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //
-  //   AccountsData.remove({ _id: accountID });
-  // }
 });

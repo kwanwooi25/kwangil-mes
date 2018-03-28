@@ -7,3 +7,10 @@
   display: flex;
   justify-content: center;
 }
+
+.account-modal__error {
+  color: $color-error--500;
+  font-weight: $font-weight--bold;
+  margin: 0;
+  text-align: center;
+}

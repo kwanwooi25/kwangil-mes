@@ -3,6 +3,8 @@ import React from 'react';
 import { AccountsData } from '../../api/accounts';
 
 import AccountDetailView from './AccountDetailView';
+import AccountModal from './AccountModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class AccountList extends React.Component {
   constructor(props) {
@@ -15,7 +17,9 @@ export default class AccountList extends React.Component {
       isManager: false,
       isAccountModalOpen: false,
       isDetailViewOpen: false,
-      seletedID: ''
+      isDeleteConfirmModalOpen: false,
+      selectedID: '',
+      selectedName: ''
     };
 
     this.onNameClick = this.onNameClick.bind(this);
@@ -23,6 +27,7 @@ export default class AccountList extends React.Component {
     this.onEditClick = this.onEditClick.bind(this);
     this.onAccountModalClose = this.onAccountModalClose.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.onDeleteConfirmModalClose = this.onDeleteConfirmModalClose.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -88,11 +93,31 @@ export default class AccountList extends React.Component {
     let selectedID = '';
     if (e.target.tagName === 'SPAN') {
       selectedID = e.target.parentNode.parentNode.parentNode.id;
+      selectedName = e.target.parentNode.parentNode.parentNode.querySelector('.account-name').textContent;
     } else if (e.target.tagName === 'A') {
       selectedID = e.target.parentNode.parentNode.id;
+      selectedName = e.target.parentNode.parentNode.querySelector('.account-name').textContent;
     }
 
-    console.log('delete: ', selectedID);
+    this.setState({
+      isDeleteConfirmModalOpen: true,
+      selectedID,
+      selectedName
+    });
+  }
+
+  onDeleteConfirmModalClose(answer) {
+    this.setState({ isDeleteConfirmModalOpen: false });
+
+    if (answer) {
+      Meteor.call('accounts.remove', this.state.selectedID, (err, res) => {
+        if (!err) {
+          this.props.onModalClose();
+        } else {
+          this.setState({ error: err.error });
+        }
+      });
+    }
   }
 
   getAccountList(query) {
@@ -168,7 +193,17 @@ export default class AccountList extends React.Component {
           <AccountModal
             isOpen={this.state.isAccountModalOpen}
             selectedID={this.state.selectedID}
-            onAccountModalClose={this.onAccountModalClose}
+            onModalClose={this.onAccountModalClose}
+          />
+        ) : (
+          undefined
+        )}
+        {this.state.isDeleteConfirmModalOpen ? (
+          <ConfirmationModal
+            isOpen={this.state.isDeleteConfirmModalOpen}
+            title="거래처 삭제"
+            description={`[${this.state.selectedName}] 업체를 삭제하시겠습니까?`}
+            onModalClose={this.onDeleteConfirmModalClose}
           />
         ) : (
           undefined

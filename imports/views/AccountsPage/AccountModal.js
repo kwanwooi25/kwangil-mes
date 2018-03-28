@@ -4,12 +4,14 @@ import Modal from 'react-modal';
 
 import { AccountsData } from '../../api/accounts';
 
+import ConfirmationModal from '../components/ConfirmationModal';
+
 export default class AccountModal extends React.Component {
   /*=========================================================================
   >> props <<
-  isOpen              : if modal is open
-  selectedID          : account ID to display
-  onAccountModalClose : function to execute on modal close
+  isOpen       : if modal is open
+  selectedID   : account ID to display
+  onModalClose : function to execute on modal close
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -28,12 +30,19 @@ export default class AccountModal extends React.Component {
         email_2: account.email_2,
         address: account.address,
         memo: account.memo,
-        nameError: false,
+        error: '',
+        nameEmpty: false,
+        phone_1Empty: false,
         phone_1Error: false,
+        phone_2Error: false,
+        faxError: false,
         email_1Error: false,
         email_2Error: false,
-        regExp: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
-      }
+        regExp: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i,
+        isConfirmationModalOpen: false,
+        confirmationTitle: '',
+        confirmationDescription: ''
+      };
     } else {
       // ADDNEW mode
       initialState = {
@@ -47,52 +56,103 @@ export default class AccountModal extends React.Component {
         email_2: '',
         address: '',
         memo: '',
-        nameError: false,
+        error: '',
+        nameEmpty: false,
+        phone_1Empty: false,
         phone_1Error: false,
+        phone_2Error: false,
+        faxError: false,
         email_1Error: false,
         email_2Error: false,
-        regExp: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
-      }
+        regExp: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i,
+        isConfirmationModalOpen: false,
+        confirmationTitle: '',
+        confirmationDescription: ''
+      };
     }
 
     this.state = initialState;
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onClickOK = this.onClickOK.bind(this);
+    this.onConfirmationModalClose = this.onConfirmationModalClose.bind(this);
     this.onClickCancel = this.onClickCancel.bind(this);
   }
 
   onInputChange(e) {
-    console.log(e.target);
-
     // add and remove class 'changed' on EDIT mode
-    if (this.state.mode === 'EDIT' && initialState[e.target.name] !== e.target.value) {
+    if (
+      this.state.mode === 'EDIT' &&
+      initialState[e.target.name] !== e.target.value
+    ) {
       e.target.parentNode.classList.add('changed');
     } else {
       e.target.parentNode.classList.remove('changed');
     }
 
     // setState as input value changes
-    this.setState({
-      [e.target.name]: e.target.value
-    });
+    if (
+      e.target.name === 'phone_1' ||
+      e.target.name === 'phone_2' ||
+      e.target.name === 'fax'
+    ) {
+      this.setState({
+        [e.target.name]: this.formatPhoneNumber(
+          e.target.value.replace(/-/g, '')
+        )
+      });
+    } else {
+      this.setState({
+        [e.target.name]: e.target.value
+      });
+    }
 
     // check validation
     this.validate(e.target.name, e.target.value);
   }
 
   validate(name, value) {
-    const errorState = name + 'Error';
+    // const errorState = name + 'Error';
     const inputContainer = document.getElementById(name).parentNode;
 
-    // validate name and phone_1
-    if (name === 'name' || name === 'phone_1') {
+    // validate name
+    if (name === 'name') {
       if (value === '') {
-        this.setState({ [errorState]: true });
+        this.setState({ nameEmpty: true });
         inputContainer.classList.add('error');
         return false;
       } else {
-        this.setState({ [errorState]: false });
+        this.setState({ nameEmpty: false });
+        inputContainer.classList.remove('error');
+        return true;
+      }
+    }
+
+    // validate phone_1
+    if (name === 'phone_1') {
+      if (value === '') {
+        this.setState({ phone_1Empty: true, phone_1Error: false });
+        inputContainer.classList.add('error');
+        return false;
+      } else if (isNaN(value.replace(/-/g, ''))) {
+        this.setState({ phone_1Empty: false, phone_1Error: true });
+        inputContainer.classList.add('error');
+        return false;
+      } else {
+        this.setState({ phone_1Empty: false, phone_1Error: false });
+        inputContainer.classList.remove('error');
+        return true;
+      }
+    }
+
+    // validate phone_2 & fax
+    if (name === 'phone_2' || name === 'fax') {
+      if (isNaN(value.replace(/-/g, ''))) {
+        this.setState({ [`${name}Error`]: true });
+        inputContainer.classList.add('error');
+        return false;
+      } else {
+        this.setState({ [`${name}Error`]: false });
         inputContainer.classList.remove('error');
         return true;
       }
@@ -101,15 +161,23 @@ export default class AccountModal extends React.Component {
     // validate email
     if (name === 'email_1' || name === 'email_2') {
       if (!value.match(this.state.regExp) && value !== '') {
-        this.setState({ [errorState]: true });
+        this.setState({ [`${name}Error`]: true });
         inputContainer.classList.add('error');
         return false;
       } else {
-        this.setState({ [errorState]: false });
+        this.setState({ [`${name}Error`]: false });
         inputContainer.classList.remove('error');
         return true;
       }
     }
+  }
+
+  formatPhoneNumber(number) {
+    const result = number.replace(
+      /(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,
+      '$1-$2-$3'
+    );
+    return result;
   }
 
   onClickOK(e) {
@@ -125,27 +193,55 @@ export default class AccountModal extends React.Component {
     } else if (!this.validate('email_2', this.state.email_2)) {
       this.refs.email_2.focus();
     } else {
-
-      const data = {
-        name: this.state.name,
-        phone_1: this.state.phone_1,
-        phone_2: this.state.phone_2,
-        fax: this.state.fax,
-        email_1: this.state.email_1,
-        email_2: this.state.email_2,
-        address: this.state.address,
-        memo: this.state.memo
-      }
-
       if (this.state.mode === 'ADDNEW') {
-        Meteor.call('accounts.insert', data, (err, res) => {
-          if (!err) {
-            this.props.onModalClose();
-          } else {
-            this.setState({ error: err.error });
-          }
+        this.setState({
+          isConfirmationModalOpen: true,
+          confirmationTitle: '거래처 신규 등록',
+          confirmationDescription: '신규 등록 하시겠습니까?'
+        });
+      } else if (this.state.mode === 'EDIT') {
+        this.setState({
+          isConfirmationModalOpen: true,
+          confirmationTitle: '거래처 정보 수정',
+          confirmationDescription: '수정하신 내용을 저장하시겠습니까?'
         });
       }
+    }
+  }
+
+  onConfirmationModalClose(answer) {
+    this.setState({ isConfirmationModalOpen: false });
+
+    const data = {
+      name: this.state.name,
+      phone_1: this.state.phone_1,
+      phone_2: this.state.phone_2,
+      fax: this.state.fax,
+      email_1: this.state.email_1,
+      email_2: this.state.email_2,
+      address: this.state.address,
+      memo: this.state.memo
+    };
+
+    // ADDNEW mode
+    if (this.state.mode === 'ADDNEW' && answer) {
+      Meteor.call('accounts.insert', data, (err, res) => {
+        if (!err) {
+          this.props.onModalClose();
+        } else {
+          this.setState({ error: err.error });
+        }
+      });
+
+      // EDIT mode
+    } else if (this.state.mode === 'EDIT' && answer) {
+      Meteor.call('accounts.update', this.state.accountID, data, (err, res) => {
+        if (!err) {
+          this.props.onModalClose();
+        } else {
+          this.setState({ error: err.error });
+        }
+      });
     }
   }
 
@@ -167,7 +263,10 @@ export default class AccountModal extends React.Component {
         overlayClassName="react-modal__bg"
       >
         <div className="boxed-view__header">
-          <h1>업체등록</h1>
+          <h1>
+            {this.state.mode === 'ADDNEW' ? '거래처 등록' : undefined}
+            {this.state.mode === 'EDIT' ? '거래처 정보수정' : undefined}
+          </h1>
         </div>
         <form className="boxed-view__content">
           <div className="react-modal__input-container">
@@ -178,13 +277,12 @@ export default class AccountModal extends React.Component {
                 id="name"
                 ref="name"
                 name="name"
+                value={this.state.name}
                 onChange={this.onInputChange}
                 onBlur={this.onInputChange}
               />
               <span>
-                {this.state.nameError
-                  ? '업체명을 입력하세요.'
-                  : undefined}
+                {this.state.nameEmpty ? '업체명을 입력하세요.' : undefined}
               </span>
             </div>
           </div>
@@ -196,12 +294,14 @@ export default class AccountModal extends React.Component {
                 id="phone_1"
                 ref="phone_1"
                 name="phone_1"
+                value={this.state.phone_1}
                 onChange={this.onInputChange}
                 onBlur={this.onInputChange}
               />
               <span>
+                {this.state.phone_1Empty ? '전화번호를 입력하세요.' : undefined}
                 {this.state.phone_1Error
-                  ? '전화번호를 입력하세요.'
+                  ? "'-'를 제외한 숫자를 입력하세요."
                   : undefined}
               </span>
             </div>
@@ -214,18 +314,34 @@ export default class AccountModal extends React.Component {
                 id="phone_2"
                 ref="phone_2"
                 name="phone_2"
+                value={this.state.phone_2}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
               />
+              <span>
+                {this.state.phone_2Error
+                  ? "'-'를 제외한 숫자를 입력하세요."
+                  : undefined}
+              </span>
             </div>
           </div>
           <div className="react-modal__input-container">
-            <label htmlFor="accountFax">팩스번호</label>
+            <label htmlFor="fax">팩스번호</label>
             <div className="input-with-message">
               <input
                 type="tel"
-                id="accountFax"
-                ref="accountFax"
-                name="accountFax"
+                id="fax"
+                ref="fax"
+                name="fax"
+                value={this.state.fax}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
               />
+              <span>
+                {this.state.faxError
+                  ? "'-'를 제외한 숫자를 입력하세요."
+                  : undefined}
+              </span>
             </div>
           </div>
           <div className="react-modal__input-container">
@@ -236,6 +352,7 @@ export default class AccountModal extends React.Component {
                 id="email_1"
                 ref="email_1"
                 name="email_1"
+                value={this.state.email_1}
                 onChange={this.onInputChange}
                 onBlur={this.onInputChange}
               />
@@ -254,6 +371,7 @@ export default class AccountModal extends React.Component {
                 id="email_2"
                 ref="email_2"
                 name="email_2"
+                value={this.state.email_2}
                 onChange={this.onInputChange}
                 onBlur={this.onInputChange}
               />
@@ -272,18 +390,33 @@ export default class AccountModal extends React.Component {
                 id="address"
                 ref="address"
                 name="address"
+                value={this.state.address}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
               />
             </div>
           </div>
           <div className="react-modal__input-container">
             <label htmlFor="memo">메모</label>
             <div className="input-with-message">
-              <textarea id="memo" ref="memo" />
+              <textarea
+                id="memo"
+                ref="memo"
+                name="memo"
+                value={this.state.memo}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
+              />
             </div>
           </div>
+          {this.state.error ? (
+            <p className="account-modal__error">{this.state.error}</p>
+          ) : (
+            undefined
+          )}
           <div className="account-modal__button-group">
             <button className="button" onClick={this.onClickOK}>
-              업체등록
+              저장
             </button>
             <button
               className="button button-cancel"
@@ -293,6 +426,16 @@ export default class AccountModal extends React.Component {
             </button>
           </div>
         </form>
+        {this.state.isConfirmationModalOpen ? (
+          <ConfirmationModal
+            isOpen={this.state.isConfirmationModalOpen}
+            title={this.state.confirmationTitle}
+            description={this.state.confirmationDescription}
+            onModalClose={this.onConfirmationModalClose}
+          />
+        ) : (
+          undefined
+        )}
       </Modal>
     );
   }

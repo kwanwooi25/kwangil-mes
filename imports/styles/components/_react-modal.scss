@@ -1,6 +1,6 @@
 .react-modal__bg {
   align-items: center;
-  background: $color-primary--50;
+  background: rgba($color-primary--50, 0.8);
   display: flex;
   justify-content: center;
   height: 100vh;
@@ -49,6 +49,13 @@
     border-color: $color-primary--500;
     box-shadow: $box-shadow--1;
   }
+}
+
+.input-with-message.changed input,
+.input-with-message.changed textarea {
+  background: $color-secondary--50;
+  border: 1px solid $color-secondary--900;
+  color: $color-secondary--900;
 }
 
 .input-with-message.error input,
