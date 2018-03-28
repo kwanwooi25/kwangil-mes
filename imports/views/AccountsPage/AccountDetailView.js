@@ -6,7 +6,7 @@ import { AccountsData } from '../../api/accounts';
 
 export default class AccountDetailView extends React.Component {
   /*=========================================================================
-  << props >>
+  >> props <<
   isOpen            : if modal is open
   selectedID        : account ID to display
   onDetailViewClose : function to execute on modal close

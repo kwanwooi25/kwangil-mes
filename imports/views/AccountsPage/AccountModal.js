@@ -5,16 +5,58 @@ import Modal from 'react-modal';
 import { AccountsData } from '../../api/accounts';
 
 export default class AccountModal extends React.Component {
+  /*=========================================================================
+  >> props <<
+  isOpen              : if modal is open
+  selectedID          : account ID to display
+  onAccountModalClose : function to execute on modal close
+  ==========================================================================*/
   constructor(props) {
     super(props);
 
-    this.state = {
-      errorAccountName: '',
-      errorAccountPhone: '',
-      errorAccountEmail_1: '',
-      errorAccountEmail_2: '',
-      isModalOpen: props.isOpen
-    };
+    let initialData = {};
+    if (props.selectedID) {
+      // EDIT mode
+      const account = AccountsData.findOne({ _id: props.selectedID });
+      initialState = {
+        mode: 'EDIT',
+        accountID: props.selectedID,
+        name: account.name,
+        phone_1: account.phone_1,
+        phone_2: account.phone_2,
+        fax: account.fax,
+        email_1: account.email_1,
+        email_2: account.email_2,
+        address: account.address,
+        memo: account.memo,
+        nameError: false,
+        phone_1Error: false,
+        email_1Error: false,
+        email_2Error: false,
+        regExp: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
+      }
+    } else {
+      // ADDNEW mode
+      initialState = {
+        mode: 'ADDNEW',
+        accountID: '',
+        name: '',
+        phone_1: '',
+        phone_2: '',
+        fax: '',
+        email_1: '',
+        email_2: '',
+        address: '',
+        memo: '',
+        nameError: false,
+        phone_1Error: false,
+        email_1Error: false,
+        email_2Error: false,
+        regExp: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
+      }
+    }
+
+    this.state = initialState;
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onClickOK = this.onClickOK.bind(this);
@@ -23,92 +65,92 @@ export default class AccountModal extends React.Component {
 
   onInputChange(e) {
     console.log(e.target);
-    if (e.target.name === 'accountName') {
-      if (e.target.value === '') {
-        this.setState({ errorAccountName: '업체명을 입력하세요' });
-        e.target.parentNode.classList.add('error');
+
+    // add and remove class 'changed' on EDIT mode
+    if (this.state.mode === 'EDIT' && initialState[e.target.name] !== e.target.value) {
+      e.target.parentNode.classList.add('changed');
+    } else {
+      e.target.parentNode.classList.remove('changed');
+    }
+
+    // setState as input value changes
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+
+    // check validation
+    this.validate(e.target.name, e.target.value);
+  }
+
+  validate(name, value) {
+    const errorState = name + 'Error';
+    const inputContainer = document.getElementById(name).parentNode;
+
+    // validate name and phone_1
+    if (name === 'name' || name === 'phone_1') {
+      if (value === '') {
+        this.setState({ [errorState]: true });
+        inputContainer.classList.add('error');
       } else {
-        this.setState({ errorAccountName: '' });
-        e.target.parentNode.classList.remove('error');
+        this.setState({ [errorState]: false });
+        inputContainer.classList.remove('error');
       }
     }
 
-    if (e.target.name === 'accountPhone_1') {
-      if (e.target.value === '') {
-        this.setState({ errorAccountPhone: '전화번호를 입력하세요.' });
-        e.target.parentNode.classList.add('error');
+    // validate email
+    if (name === 'email_1' || name === 'email_2') {
+      if (!value.match(this.state.regExp) && value !== '') {
+        this.setState({ [errorState]: true });
+        inputContainer.classList.add('error');
       } else {
-        this.setState({ errorAccountPhone: '' });
-        e.target.parentNode.classList.remove('error');
-      }
-    }
-
-    if (
-      e.target.name === 'accountEmail_1' ||
-      e.target.name === 'accountEmail_2'
-    ) {
-      const regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
-      if (!e.target.value.match(regExp)) {
-        if (e.target.name === 'accountEmail_1') {
-          this.setState({
-            errorAccountEmail_1: '올바른 이메일 형식이 아닙니다.'
-          });
-        } else if (e.target.name === 'accountEmail_2') {
-          this.setState({
-            errorAccountEmail_2: '올바른 이메일 형식이 아닙니다.'
-          });
-        }
-        e.target.parentNode.classList.add('error');
-      } else {
-        if (e.target.name === 'accountEmail_1') {
-          this.setState({ errorAccountEmail_1: '' });
-        } else if (e.target.name === 'accountEmail_2') {
-          this.setState({ errorAccountEmail_2: '' });
-        }
-        e.target.parentNode.classList.remove('error');
+        this.setState({ [errorState]: false });
+        inputContainer.classList.remove('error');
       }
     }
   }
 
   onClickOK(e) {
     e.preventDefault();
-    const inputData = {
-      name: this.refs.accountName.value.trim(),
-      phone_1: this.refs.accountPhone_1.value.trim(),
-      phone_2: this.refs.accountPhone_2.value.trim(),
-      fax: this.refs.accountFax.value.trim(),
-      email_1: this.refs.accountEmail_1.value.trim(),
-      email_2: this.refs.accountEmail_2.value.trim(),
-      address: this.refs.accountAddress.value.trim(),
-      memo: this.refs.accountMemo.value.trim()
-    };
 
-    const regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
-
-    if (inputData.name === '') {
+    // validation
+    if (this.state.name === '') {
       this.setState({ errorAccountName: '업체명을 입력하세요.' });
-      this.refs.accountName.classList.add('error');
-      this.refs.accountName.focus();
-    } else if (inputData.phone_1 === '') {
+      this.refs.name.classList.add('error');
+      this.refs.name.focus();
+    } else if (this.state.phone_1 === '') {
       this.setState({ errorAccountPhone: '전화번호를 입력하세요.' });
-      this.refs.accountPhone_1.classList.add('error');
-      this.refs.accountPhone_1.focus();
-    } else if (!inputData.email_1.match(regExp) && inputData.email_1 !== '') {
+      this.refs.phone_1.classList.add('error');
+      this.refs.phone_1.focus();
+    } else if (!this.state.email_1.match(this.state.regExp) && this.state.email_1 !== '') {
       this.setState({ errorAccountEmail_1: '올바른 이메일 형식이 아닙니다.'});
-      this.refs.accountEmail_1.classList.add('error');
-      this.refs.accountEmail_1.focus();
-    } else if (!inputData.email_2.match(regExp) && inputData.email_2 !== '') {
+      this.refs.email_1.classList.add('error');
+      this.refs.email_1.focus();
+    } else if (!this.state.email_2.match(this.state.regExp) && this.state.email_2 !== '') {
       this.setState({ errorAccountEmail_2: '올바른 이메일 형식이 아닙니다.'});
-      this.refs.accountEmail_2.classList.add('error');
-      this.refs.accountEmail_2.focus();
+      this.refs.email_2.classList.add('error');
+      this.refs.email_2.focus();
     } else {
-      Meteor.call('accounts.insert', inputData, (err, res) => {
-        if (!err) {
-          this.props.onModalClose();
-        } else {
-          this.setState({ error: err.error });
-        }
-      });
+
+      const data = {
+        name: this.state.name,
+        phone_1: this.state.phone_1,
+        phone_2: this.state.phone_2,
+        fax: this.state.fax,
+        email_1: this.state.email_1,
+        email_2: this.state.email_2,
+        address: this.state.address,
+        memo: this.state.memo
+      }
+
+      if (this.state.mode === 'ADDNEW') {
+        Meteor.call('accounts.insert', data, (err, res) => {
+          if (!err) {
+            this.props.onModalClose();
+          } else {
+            this.setState({ error: err.error });
+          }
+        });
+      }
     }
   }
 
@@ -120,9 +162,9 @@ export default class AccountModal extends React.Component {
   render() {
     return (
       <Modal
-        isOpen={this.state.isModalOpen}
+        isOpen={this.props.isOpen}
         onAfterOpen={() => {
-          document.getElementById('accountName').focus();
+          document.getElementById('name').focus();
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
@@ -134,49 +176,49 @@ export default class AccountModal extends React.Component {
         </div>
         <form className="boxed-view__content">
           <div className="react-modal__input-container">
-            <label htmlFor="accountName">업체명</label>
+            <label htmlFor="name">업체명</label>
             <div className="input-with-message">
               <input
                 type="text"
-                id="accountName"
-                ref="accountName"
-                name="accountName"
+                id="name"
+                ref="name"
+                name="name"
                 onChange={this.onInputChange}
                 onBlur={this.onInputChange}
               />
               <span>
-                {this.state.errorAccountName
-                  ? this.state.errorAccountName
+                {this.state.nameError
+                  ? '업체명을 입력하세요.'
                   : undefined}
               </span>
             </div>
           </div>
           <div className="react-modal__input-container">
-            <label htmlFor="accountPhone_1">전화번호1</label>
+            <label htmlFor="phone_1">전화번호1</label>
             <div className="input-with-message">
               <input
                 type="tel"
-                id="accountPhone_1"
-                ref="accountPhone_1"
-                name="accountPhone_1"
+                id="phone_1"
+                ref="phone_1"
+                name="phone_1"
                 onChange={this.onInputChange}
                 onBlur={this.onInputChange}
               />
               <span>
-                {this.state.errorAccountPhone
-                  ? this.state.errorAccountPhone
+                {this.state.phone_1Error
+                  ? '전화번호를 입력하세요.'
                   : undefined}
               </span>
             </div>
           </div>
           <div className="react-modal__input-container">
-            <label htmlFor="accountPhone_2">전화번호2</label>
+            <label htmlFor="phone_2">전화번호2</label>
             <div className="input-with-message">
               <input
                 type="tel"
-                id="accountPhone_2"
-                ref="accountPhone_2"
-                name="accountPhone_2"
+                id="phone_2"
+                ref="phone_2"
+                name="phone_2"
               />
             </div>
           </div>
@@ -192,56 +234,56 @@ export default class AccountModal extends React.Component {
             </div>
           </div>
           <div className="react-modal__input-container">
-            <label htmlFor="accountEmail_1">이메일1</label>
+            <label htmlFor="email_1">이메일1</label>
             <div className="input-with-message">
               <input
                 type="email"
-                id="accountEmail_1"
-                ref="accountEmail_1"
-                name="accountEmail_1"
+                id="email_1"
+                ref="email_1"
+                name="email_1"
                 onChange={this.onInputChange}
                 onBlur={this.onInputChange}
               />
               <span>
-                {this.state.errorAccountEmail_1
-                  ? this.state.errorAccountEmail_1
+                {this.state.email_1Error
+                  ? '올바른 이메일 형식이 아닙니다.'
                   : undefined}
               </span>
             </div>
           </div>
           <div className="react-modal__input-container">
-            <label htmlFor="accountEmail_2">이메일2</label>
+            <label htmlFor="email_2">이메일2</label>
             <div className="input-with-message">
               <input
                 type="email"
-                id="accountEmail_2"
-                ref="accountEmail_2"
-                name="accountEmail_2"
+                id="email_2"
+                ref="email_2"
+                name="email_2"
                 onChange={this.onInputChange}
                 onBlur={this.onInputChange}
               />
               <span>
-                {this.state.errorAccountEmail_2
-                  ? this.state.errorAccountEmail_2
+                {this.state.email_2Error
+                  ? '올바른 이메일 형식이 아닙니다.'
                   : undefined}
               </span>
             </div>
           </div>
           <div className="react-modal__input-container">
-            <label htmlFor="accountAddress">주소</label>
+            <label htmlFor="address">주소</label>
             <div className="input-with-message">
               <input
                 type="text"
-                id="accountAddress"
-                ref="accountAddress"
-                name="accountAddress"
+                id="address"
+                ref="address"
+                name="address"
               />
             </div>
           </div>
           <div className="react-modal__input-container">
-            <label htmlFor="accountMemo">메모</label>
+            <label htmlFor="memo">메모</label>
             <div className="input-with-message">
-              <textarea id="accountMemo" ref="accountMemo" />
+              <textarea id="memo" ref="memo" />
             </div>
           </div>
           <div className="account-modal__button-group">

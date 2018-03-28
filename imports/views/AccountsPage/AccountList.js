@@ -13,14 +13,16 @@ export default class AccountList extends React.Component {
       query: props.query,
       isAdmin: false,
       isManager: false,
+      isAccountModalOpen: false,
       isDetailViewOpen: false,
       seletedID: ''
     };
 
     this.onNameClick = this.onNameClick.bind(this);
-    this.onEditClick = this.onEditClick.bind(this);
-    this.onDeleteClick = this.onDeleteClick.bind(this);
     this.onDetailViewClose = this.onDetailViewClose.bind(this);
+    this.onEditClick = this.onEditClick.bind(this);
+    this.onAccountModalClose = this.onAccountModalClose.bind(this);
+    this.onDeleteClick = this.onDeleteClick.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -72,7 +74,14 @@ export default class AccountList extends React.Component {
       selectedID = e.target.parentNode.parentNode.id;
     }
 
-    console.log('edit: ', selectedID);
+    this.setState({
+      isAccountModalOpen: true,
+      selectedID
+    });
+  }
+
+  onAccountModalClose() {
+    this.setState({ isAccountModalOpen: false });
   }
 
   onDeleteClick(e) {
@@ -151,6 +160,15 @@ export default class AccountList extends React.Component {
             isOpen={this.state.isDetailViewOpen}
             selectedID={this.state.selectedID}
             onDetailViewClose={this.onDetailViewClose}
+          />
+        ) : (
+          undefined
+        )}
+        {this.state.isAccountModalOpen ? (
+          <AccountModal
+            isOpen={this.state.isAccountModalOpen}
+            selectedID={this.state.selectedID}
+            onAccountModalClose={this.onAccountModalClose}
           />
         ) : (
           undefined
