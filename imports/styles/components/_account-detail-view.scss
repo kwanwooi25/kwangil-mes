@@ -1,0 +1,47 @@
+.account-detail__container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.account-detail__item {
+  border-bottom: 1px solid $color-primary--50;
+  display: flex;
+  margin-bottom: $space-xs;
+  width: 100%;
+
+  &:last-child {
+    border: none;
+  }
+
+  i,
+  a,
+  p {
+    margin: 0;
+    padding: $space-xs;
+    word-break: break-all;
+  }
+
+  i, a {
+    color: $grey--700;
+  }
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      color: $color-primary--500;
+      text-decoration: underline;
+    }
+  }
+}
+
+.account-detail__item#name {
+  font-size: $font-size--lg;
+  font-weight: $font-weight--bold;
+}
+
+.account-detail__item#phone_1,
+.account-detail__item#phone_2 {
+  width: 42.5%;
+}

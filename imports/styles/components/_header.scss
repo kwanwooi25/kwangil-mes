@@ -28,6 +28,10 @@
   font-weight: $font-weight--bold;
   padding: $space-xs;
   text-decoration: none;
+
+  &:hover {
+    color: $color-secondary--600;
+  }
 }
 
 .header--logout {

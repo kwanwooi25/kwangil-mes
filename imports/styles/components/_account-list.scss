@@ -40,6 +40,12 @@
   font-weight: $font-weight--bold;
   margin: 0;
   padding: $space-xs;
+
+  &:hover {
+    color: $color-primary--500;
+    cursor: pointer;
+    text-decoration: underline;
+  }
 }
 
 .account-phone,

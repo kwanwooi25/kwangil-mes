@@ -10,9 +10,11 @@ export default class AccountsPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      isModalNewOpen: false
+      isModalNewOpen: false,
+      query: ''
     };
 
+    this.onInputSearchChange = this.onInputSearchChange.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
@@ -25,6 +27,7 @@ export default class AccountsPage extends React.Component {
       this.setLayout();
     });
 
+    // tracks if the user logged in is admin or manager
     this.authTracker = Tracker.autorun(() => {
       if (Meteor.user()) {
         this.setState({
@@ -39,6 +42,7 @@ export default class AccountsPage extends React.Component {
     this.authTracker.stop();
   }
 
+  // dynamically adjust height
   setLayout() {
     const headerHeight = document
       .querySelector('.header')
@@ -51,6 +55,17 @@ export default class AccountsPage extends React.Component {
     main.style.height = mainHeight;
     main.style.marginTop = `${headerHeight + 10}px`;
     pageContent.style.height = contentHeight;
+  }
+
+  onInputSearchChange(e) {
+    if (e.target.value !== '') {
+      e.target.classList.add('hasValue');
+    } else {
+      e.target.classList.remove('hasValue');
+    }
+
+    const query = e.target.value.trim().toLowerCase();
+    this.setState({ query })
   }
 
   onClickNew() {
@@ -70,6 +85,14 @@ export default class AccountsPage extends React.Component {
       <div className="main">
         <div className="page-header">
           <h1 className="page-header__title">거래처목록</h1>
+          <input
+            className="page-header__search"
+            type="text"
+            placeholder="&#xf002;"
+            onChange={this.onInputSearchChange}
+            onFocus={(e) => {e.target.select()}}
+          />
+
           {this.state.isAdmin || this.state.isManager ? (
             <div className="page-header__buttons">
               {this.state.isAdmin ? (
@@ -104,7 +127,7 @@ export default class AccountsPage extends React.Component {
         )}
 
         <div className="page-content">
-          <AccountList />
+          <AccountList query={this.state.query}/>
         </div>
       </div>
     );

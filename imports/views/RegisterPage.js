@@ -159,6 +159,7 @@ export default class RegisterPage extends React.Component {
               id="username"
               name="username"
               onChange={this.onInputChange}
+              onBlur={this.onInputChange}
             />
             <span className="boxed-view__content__error">
               {this.state.errorUsername ? this.state.errorUsername : undefined}
@@ -170,6 +171,7 @@ export default class RegisterPage extends React.Component {
               id="password"
               name="password"
               onChange={this.onInputChange}
+              onBlur={this.onInputChange}
             />
             <span className="boxed-view__content__error">
               {this.state.errorPassword ? this.state.errorPassword : undefined}
@@ -181,6 +183,7 @@ export default class RegisterPage extends React.Component {
               id="passwordConf"
               name="passwordConf"
               onChange={this.onInputChange}
+              onBlur={this.onInputChange}
             />
             <span className="boxed-view__content__error">
               {this.state.errorPasswordConf
@@ -194,6 +197,7 @@ export default class RegisterPage extends React.Component {
               id="displayName"
               name="displayName"
               onChange={this.onInputChange}
+              onBlur={this.onInputChange}
             />
             <span className="boxed-view__content__error">
               {this.state.errorDisplayName
@@ -207,6 +211,7 @@ export default class RegisterPage extends React.Component {
               id="department"
               name="department"
               onChange={this.onInputChange}
+              onBlur={this.onInputChange}
             />
             <span className="boxed-view__content__error">
               {this.state.errorDepartment
@@ -220,6 +225,7 @@ export default class RegisterPage extends React.Component {
               id="position"
               name="position"
               onChange={this.onInputChange}
+              onBlur={this.onInputChange}
             />
             <span className="boxed-view__content__error">
               {this.state.errorPosition ? this.state.errorPosition : undefined}
@@ -230,6 +236,7 @@ export default class RegisterPage extends React.Component {
               id="userRole"
               name="userRole"
               onChange={this.onInputChange}
+              onBlur={this.onInputChange}
             >
               <option value="user">User</option>
               <option value="manager">Manager</option>
