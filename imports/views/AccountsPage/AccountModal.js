@@ -14,7 +14,6 @@ export default class AccountModal extends React.Component {
   constructor(props) {
     super(props);
 
-    let initialData = {};
     if (props.selectedID) {
       // EDIT mode
       const account = AccountsData.findOne({ _id: props.selectedID });
@@ -91,9 +90,11 @@ export default class AccountModal extends React.Component {
       if (value === '') {
         this.setState({ [errorState]: true });
         inputContainer.classList.add('error');
+        return false;
       } else {
         this.setState({ [errorState]: false });
         inputContainer.classList.remove('error');
+        return true;
       }
     }
 
@@ -102,9 +103,11 @@ export default class AccountModal extends React.Component {
       if (!value.match(this.state.regExp) && value !== '') {
         this.setState({ [errorState]: true });
         inputContainer.classList.add('error');
+        return false;
       } else {
         this.setState({ [errorState]: false });
         inputContainer.classList.remove('error');
+        return true;
       }
     }
   }
@@ -113,21 +116,13 @@ export default class AccountModal extends React.Component {
     e.preventDefault();
 
     // validation
-    if (this.state.name === '') {
-      this.setState({ errorAccountName: '업체명을 입력하세요.' });
-      this.refs.name.classList.add('error');
+    if (!this.validate('name', this.state.name)) {
       this.refs.name.focus();
-    } else if (this.state.phone_1 === '') {
-      this.setState({ errorAccountPhone: '전화번호를 입력하세요.' });
-      this.refs.phone_1.classList.add('error');
+    } else if (!this.validate('phone_1', this.state.phone_1)) {
       this.refs.phone_1.focus();
-    } else if (!this.state.email_1.match(this.state.regExp) && this.state.email_1 !== '') {
-      this.setState({ errorAccountEmail_1: '올바른 이메일 형식이 아닙니다.'});
-      this.refs.email_1.classList.add('error');
+    } else if (!this.validate('email_1', this.state.email_1)) {
       this.refs.email_1.focus();
-    } else if (!this.state.email_2.match(this.state.regExp) && this.state.email_2 !== '') {
-      this.setState({ errorAccountEmail_2: '올바른 이메일 형식이 아닙니다.'});
-      this.refs.email_2.classList.add('error');
+    } else if (!this.validate('email_2', this.state.email_2)) {
       this.refs.email_2.focus();
     } else {
 
