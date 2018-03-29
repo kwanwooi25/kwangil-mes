@@ -13,14 +13,13 @@ import RegisterPage from '../views/RegisterPage';
 import Header from '../views/components/Header';
 // import DashboardPage from '../views/DashboardPage';
 import AccountsPage from '../views/AccountsPage';
-// import ProductsPage from '../views/ProductsPage';
+import ProductsPage from '../views/ProductsPage';
 import NotFoundPage from '../views/NotFoundPage';
 
 const unauthenticatedPages = ['/', '/register'];
 const authenticatedPages = ['/dashboard', '/accounts', '/products', '/orders'];
 
 const DashboardPage = () => <h3>DashboardPage</h3>;
-const ProductsPage = () => <h3>ProductsPage</h3>;
 const OrdersPage = () => <h3>OrdersPage</h3>;
 
 export const routes = (

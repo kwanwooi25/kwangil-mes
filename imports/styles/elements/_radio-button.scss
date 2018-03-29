@@ -1,0 +1,65 @@
+.radio-container {
+  cursor: pointer;
+  margin: 0 $space-xs;
+  padding-left: 1.75rem;
+  position: relative;
+
+  // on hover & focus
+  &:hover input ~ .radiomark,
+  & input:focus ~ .radiomark {
+    background: $color-primary--100;
+  }
+
+  // on checked
+  & input:checked ~ .radiomark {
+    background: $color-primary--500;
+  }
+
+  // on hover & focus when disabled
+  &:hover input:not([disabled]):checked ~ .radiomark,
+  & input:checked:focus ~ .radiomark {
+    background: $color-primary--700;
+  }
+
+  // on disabled
+  & input:disabled ~ .radiomark {
+    background: $grey--600;
+    pointer-events: none;
+    opacity: .5;
+  }
+  & input:disabled ~ .radiomark:after {
+    background: $grey--800;
+  }
+
+  // show radiomark
+  & input:checked ~ .radiomark:after {
+    display: block;
+  }
+}
+
+.radio-container input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+.radiomark {
+  background: $grey--300;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+
+  &:after {
+    content: '';
+    display: none;
+    position: absolute;
+    top: 0.425rem;
+    left: 0.425rem;
+    height: 0.4rem;
+    width: 0.4rem;
+    border-radius: 50%;
+    background: white;
+  }
+}

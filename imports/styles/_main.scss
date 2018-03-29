@@ -3,6 +3,9 @@
 @import './base';
 @import './global';
 @import './boxed-view';
+@import './elements/input';
+@import './elements/checkbox';
+@import './elements/radio-button';
 @import './components/buttons';
 @import './components/header';
 @import './components/react-modal';
@@ -10,4 +13,5 @@
 @import './components/account-modal';
 @import './components/account-detail-view';
 @import './components/account-new-multi-modal';
+@import './components/product-modal';
 @import './components/confirmation-modal';

@@ -26,7 +26,7 @@
   color: white;
   font-size: $font-size--xl;
   font-weight: $font-weight--bold;
-  padding: $space-xs;
+  padding: $space-sm;
   text-decoration: none;
 
   &:hover {
@@ -41,6 +41,10 @@
   padding: $space-md;
   text-decoration: none;
 
+  i {
+    vertical-align: middle;
+  }
+
   &:hover {
     background: $color-primary--400;
     cursor: pointer;
@@ -50,7 +54,8 @@
     }
 
     &::after {
-      content: ' 로그아웃';
+      content: '로그아웃';
+      vertical-align: middle;
     }
   }
 }
@@ -69,10 +74,6 @@
     color: $color-secondary--600;
     cursor: pointer;
   }
-
-  @media (min-width: $break--md) {
-    display: none;
-  }
 }
 
 .nav {
@@ -85,15 +86,6 @@
   position: absolute;
   width: 0;
   left: -100%;
-
-  @media (min-width: $break--md) {
-    box-shadow: $box-shadow--2;
-    flex-direction: row;
-    height: auto;
-    position: relative;
-    width: 100vw;
-    left: 0;
-  }
 }
 
 .open {
@@ -112,5 +104,20 @@
   &--active {
     background: $color-primary--300;
     color: white;
+  }
+}
+
+@media (min-width: $break--md) {
+  .toggle {
+    display: none;
+  }
+
+  .nav {
+    box-shadow: $box-shadow--2;
+    flex-direction: row;
+    height: auto;
+    position: relative;
+    width: 100vw;
+    left: 0;
   }
 }
