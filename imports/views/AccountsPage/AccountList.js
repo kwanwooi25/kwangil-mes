@@ -7,6 +7,10 @@ import AccountModal from './AccountModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class AccountList extends React.Component {
+  /*=========================================================================
+  >> props <<
+  query : query string to filter account list
+  ==========================================================================*/
   constructor(props) {
     super(props);
 
@@ -30,8 +34,9 @@ export default class AccountList extends React.Component {
     this.onDeleteConfirmModalClose = this.onDeleteConfirmModalClose.bind(this);
   }
 
+  // set state on props change
   componentWillReceiveProps(props) {
-    this.setState({ query: props.query }, () => {});
+    this.setState({ query: props.query });
   }
 
   componentDidMount() {
@@ -59,6 +64,7 @@ export default class AccountList extends React.Component {
     this.authTracker.stop();
   }
 
+  // show detail view modal
   onNameClick(e) {
     const selectedID = e.target.parentNode.parentNode.parentNode.id;
     this.setState({
@@ -71,6 +77,7 @@ export default class AccountList extends React.Component {
     this.setState({ isDetailViewOpen: false });
   }
 
+  // show account modal (EDIT mode)
   onEditClick(e) {
     let selectedID = '';
     if (e.target.tagName === 'SPAN') {
@@ -89,6 +96,7 @@ export default class AccountList extends React.Component {
     this.setState({ isAccountModalOpen: false });
   }
 
+  // show confirmation modal before delete
   onDeleteClick(e) {
     let selectedID = '';
     if (e.target.tagName === 'SPAN') {
@@ -110,13 +118,7 @@ export default class AccountList extends React.Component {
     this.setState({ isDeleteConfirmModalOpen: false });
 
     if (answer) {
-      Meteor.call('accounts.remove', this.state.selectedID, (err, res) => {
-        if (!err) {
-          this.props.onModalClose();
-        } else {
-          this.setState({ error: err.error });
-        }
-      });
+      Meteor.call('accounts.remove', this.state.selectedID);
     }
   }
 
@@ -143,6 +145,13 @@ export default class AccountList extends React.Component {
                 <a className="account-phone" href={`tel:${account.phone_1}`}>
                   <i className="fa fa-phone" /> {account.phone_1}
                 </a>
+                {account.fax ? (
+                  <a className="account-fax">
+                    <i className="fa fa-fax" /> {account.fax}
+                  </a>
+                ) : (
+                  undefined
+                )}
                 {account.email_1 ? (
                   <a
                     className="account-email"

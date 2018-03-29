@@ -56,6 +56,14 @@ export default class AccountNewMultiModal extends React.Component {
   onConfirmationModalClose(answer) {
     this.setState({ isConfirmationModalOpen: false });
     console.log(answer);
+    if (answer) {
+      const json = JSON.parse(this.refs.accountsJSON.value)
+      Meteor.call('accounts.insertmany', json, (err, res) => {
+        if (!err) {
+          this.props.onModalClose();
+        }
+      })
+    }
   }
 
   onClickCancel(e) {

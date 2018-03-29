@@ -33,11 +33,12 @@ Meteor.methods({
   },
 
   'accounts.insertmany'(json) {
+    console.log(json);
     if (!this.userId) {
       throw new Meteor.Error('User not logged in!');
     }
     json.map(account => {
-      // console.log(account);
+      console.log(account);
       AccountsData.insert(account);
     });
   },

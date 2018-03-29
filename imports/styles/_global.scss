@@ -31,13 +31,14 @@
   color: white;
   display: flex;
   justify-content: center;
-  height: 3rem;
-  width: 3rem;
-  margin-left: $space-sm;
+  height: 2.5rem;
+  width: 2.5rem;
+  margin-left: $space-md;
   outline: none;
 
   span {
     display: none;
+    font-size: $font-size--xs;
   }
 
   &:hover {
@@ -55,7 +56,7 @@
 }
 
 .page-header__search {
-  font-family: 'FontAwesome';
+  font-family: "FontAwesome";
   border: none;
   outline: none;
   margin: 0 $space-xs;
@@ -123,5 +124,6 @@
 
 .page-content {
   border-top: 1.8px solid $color-primary--100;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }

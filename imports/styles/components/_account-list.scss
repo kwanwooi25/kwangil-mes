@@ -49,18 +49,20 @@
 }
 
 .account-phone,
+.account-fax,
 .account-email {
   color: $grey--600;
   margin: 0;
   padding: $space-xs;
   text-decoration: none;
   word-break: break-all;
+}
 
-  &:hover {
-    color: $color-primary--300;
-    cursor: pointer;
-    text-decoration: underline;
-  }
+.account-phone:hover,
+.account-email:hover {
+  color: $color-primary--300;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .account-buttons-container {
@@ -82,7 +84,7 @@
   height: 2.5rem;
   width: 2.5rem;
   text-align: center;
-  margin: $space-xs/2;
+  margin: $space-xs;
 
   span {
     display: none;
@@ -126,18 +128,27 @@
   }
 }
 
-@media (min-width: $break--md) {
-  .account-contact-container {
-    align-items: center;
-    flex-direction: row;
-  }
-
-  .account-phone {
+@media (min-width: $break--lg) {
+  .account-name-container {
     width: 30%;
   }
 
-  .account-email {
+  .account-contact-container {
+    align-items: center;
+    flex-direction: row;
     width: 70%;
+  }
+
+  .account-phone {
+    width: 25%;
+  }
+
+  .account-fax {
+    width: 25%
+  }
+
+  .account-email {
+    width: 50%;
   }
 
   .account-buttons-container {

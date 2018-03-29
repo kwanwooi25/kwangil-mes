@@ -112,7 +112,6 @@ export default class AccountModal extends React.Component {
   }
 
   validate(name, value) {
-    // const errorState = name + 'Error';
     const inputContainer = document.getElementById(name).parentNode;
 
     // validate name
@@ -301,7 +300,7 @@ export default class AccountModal extends React.Component {
               <span>
                 {this.state.phone_1Empty ? '전화번호를 입력하세요.' : undefined}
                 {this.state.phone_1Error
-                  ? "'-'를 제외한 숫자를 입력하세요."
+                  ? "숫자만 입력 가능합니다."
                   : undefined}
               </span>
             </div>
@@ -320,7 +319,7 @@ export default class AccountModal extends React.Component {
               />
               <span>
                 {this.state.phone_2Error
-                  ? "'-'를 제외한 숫자를 입력하세요."
+                  ? "숫자만 입력 가능합니다."
                   : undefined}
               </span>
             </div>
@@ -339,7 +338,7 @@ export default class AccountModal extends React.Component {
               />
               <span>
                 {this.state.faxError
-                  ? "'-'를 제외한 숫자를 입력하세요."
+                  ? "숫자만 입력 가능합니다."
                   : undefined}
               </span>
             </div>
