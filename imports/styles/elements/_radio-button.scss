@@ -33,7 +33,10 @@
 
   // show radiomark
   & input:checked ~ .radiomark:after {
-    display: block;
+    opacity: 1;
+    transform: scaleX(1.1) scaleY(1.1) translateX(-0.03rem) translateY(-0.035rem);
+    transition: opacity .3s;
+    transition-timing-function: cubic-bezier(.17,.67,.83,.67);
   }
 }
 
@@ -53,7 +56,7 @@
 
   &:after {
     content: '';
-    display: none;
+    opacity: 0;
     position: absolute;
     top: 0.425rem;
     left: 0.425rem;

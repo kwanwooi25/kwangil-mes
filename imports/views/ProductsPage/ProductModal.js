@@ -1,11 +1,11 @@
-import { Meteor } from 'meteor/meteor';
-import React from 'react';
-import Modal from 'react-modal';
+import { Meteor } from "meteor/meteor";
+import React from "react";
+import Modal from "react-modal";
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
+import { AccountsData } from "../../api/accounts";
+import { ProductsData } from "../../api/products";
 
-import ConfirmationModal from '../components/ConfirmationModal';
+import ConfirmationModal from "../components/ConfirmationModal";
 
 export default class ProductModal extends React.Component {
   /*=========================================================================
@@ -24,15 +24,20 @@ export default class ProductModal extends React.Component {
     } else {
       // ADDNEW mode
       initialState = {
-        mode: 'ADDNEW',
-        productID: '',
+        mode: "ADDNEW",
+        productID: "",
         accountList: [],
-        accountID: '',
-        accountName: '',
-        name: '',
-        thick: '',
-        length: '',
-        width: '',
+        accountID: "",
+        accountName: "",
+        name: "",
+        thick: "",
+        length: "",
+        width: "",
+        isPrint: false,
+        extColor: "",
+        extAntistatic: false,
+        extPretreat: "",
+        extMemo: '',
         accountNameEmpty: false,
         accountNameError: false,
         nameEmpty: false,
@@ -42,9 +47,10 @@ export default class ProductModal extends React.Component {
         thickError: false,
         lengthError: false,
         widthError: false,
+        extColorEmpty: false,
         isConfirmationModalOpen: false,
-        confirmationTitle: '',
-        confirmationDescription: ''
+        confirmationTitle: "",
+        confirmationDescription: ""
       };
     }
 
@@ -59,7 +65,7 @@ export default class ProductModal extends React.Component {
   componentDidMount() {
     // get account list
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
+      Meteor.subscribe("accounts");
       const accountList = AccountsData.find({}, { fields: { _id: 1, name: 1 } })
         .fetch()
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
@@ -81,38 +87,57 @@ export default class ProductModal extends React.Component {
   onInputChange(e) {
     // add and remove class 'changed' on EDIT mode
     if (
-      this.state.mode === 'EDIT' &&
+      this.state.mode === "EDIT" &&
       initialState[e.target.name] !== e.target.value
     ) {
-      e.target.parentNode.classList.add('changed');
+      e.target.parentNode.classList.add("changed");
     } else {
-      e.target.parentNode.classList.remove('changed');
+      e.target.parentNode.classList.remove("changed");
     }
 
     // setState as input value changes
-    this.setState({ [e.target.name]: e.target.value });
+    if (e.target.name === "isPrint") {
+      const value = e.target.value === "isPrintTrue" ? true : false;
+      this.setState({ [e.target.name]: value });
+      if (!value) {
+        this.setState({ extPretreat: '' });
+      }
+      console.log(e.target.name, '=', value, "(", e.target.value, ")");
+    } else if (e.target.name === 'extAntistatic') {
+      this.setState({ [e.target.name]: e.target.checked });
+      console.log(e.target.name, '=', e.target.checked);
+    } else {
+      this.setState({ [e.target.name]: e.target.value });
+      console.log(e.target.name, '=', e.target.value);
+    }
 
     // check validation
-    this.validate(e.target.name, e.target.value);
+    if (
+      e.target.name !== "isPrint" &&
+      e.target.name !== "extAntistatic" &&
+      e.target.name !== "extPretreat"
+    ) {
+      this.validate(e.target.name, e.target.value);
+    }
   }
 
   validate(name, value) {
     const inputContainer = document.getElementById(name).parentNode;
 
     // validate accountName
-    if (name === 'accountName') {
+    if (name === "accountName") {
       const selectedAccount = this.state.accountList.find(
         account => account.name === value
       );
 
       // check if accountName is empty
-      if (value === '') {
+      if (value === "") {
         this.setState({
           accountNameEmpty: true,
           accountNameError: false,
-          accountID: ''
+          accountID: ""
         });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
 
         // check if accountName exist
@@ -120,9 +145,9 @@ export default class ProductModal extends React.Component {
         this.setState({
           accountNameEmpty: false,
           accountNameError: true,
-          accountID: ''
+          accountID: ""
         });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
       } else {
         this.setState({
@@ -130,37 +155,38 @@ export default class ProductModal extends React.Component {
           accountNameError: false,
           accountID: selectedAccount._id
         });
-        inputContainer.classList.remove('error');
+        inputContainer.classList.remove("error");
         return true;
       }
     }
 
     // validate name
-    if (name === 'name') {
-      if (value === '') {
-        this.setState({ nameEmpty: true });
-        inputContainer.classList.add('error');
+    // validate extColor
+    if (name === "name" || name === "extColor") {
+      if (value === "") {
+        this.setState({ [`${name}Empty`]: true });
+        inputContainer.classList.add("error");
         return false;
       } else {
-        this.setState({ nameEmpty: false });
-        inputContainer.classList.remove('error');
+        this.setState({ [`${name}Empty`]: false });
+        inputContainer.classList.remove("error");
         return true;
       }
     }
 
     // validate size
-    if (name === 'thick' || name === 'length' || name === 'width') {
-      if (value === '') {
+    if (name === "thick" || name === "length" || name === "width") {
+      if (value === "") {
         this.setState({ [`${name}Empty`]: true, [`${name}Error`]: false });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
       } else if (isNaN(value)) {
         this.setState({ [`${name}Empty`]: false, [`${name}Error`]: true });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
       } else {
         this.setState({ [`${name}Empty`]: false, [`${name}Error`]: false });
-        inputContainer.classList.remove('error');
+        inputContainer.classList.remove("error");
         return true;
       }
     }
@@ -170,28 +196,30 @@ export default class ProductModal extends React.Component {
     e.preventDefault();
 
     // validation
-    if (!this.validate('accountName', this.state.accountName)) {
+    if (!this.validate("accountName", this.state.accountName)) {
       this.refs.accountName.focus();
-    } else if (!this.validate('name', this.state.name)) {
+    } else if (!this.validate("name", this.state.name)) {
       this.refs.name.focus();
-    } else if (!this.validate('thick', this.state.thick)) {
+    } else if (!this.validate("thick", this.state.thick)) {
       this.refs.thick.focus();
-    } else if (!this.validate('length', this.state.length)) {
+    } else if (!this.validate("length", this.state.length)) {
       this.refs.length.focus();
-    } else if (!this.validate('width', this.state.width)) {
+    } else if (!this.validate("width", this.state.width)) {
       this.refs.width.focus();
+    } else if (!this.validate("extColor", this.state.extColor)) {
+      this.refs.extColor.focus();
     } else {
-      if (this.state.mode === 'ADDNEW') {
+      if (this.state.mode === "ADDNEW") {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: '제품 신규 등록',
-          confirmationDescription: '신규 등록 하시겠습니까?'
+          confirmationTitle: "제품 신규 등록",
+          confirmationDescription: "신규 등록 하시겠습니까?"
         });
-      } else if (this.state.mode === 'EDIT') {
+      } else if (this.state.mode === "EDIT") {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: '제품 정보 수정',
-          confirmationDescription: '수정하신 내용을 저장하시겠습니까?'
+          confirmationTitle: "제품 정보 수정",
+          confirmationDescription: "수정하신 내용을 저장하시겠습니까?"
         });
       }
     }
@@ -205,12 +233,16 @@ export default class ProductModal extends React.Component {
       name: this.state.name,
       thick: this.state.thick,
       length: this.state.length,
-      width: this.state.width
+      width: this.state.width,
+      isPrint: this.state.isPrint,
+      extColor: this.state.extColor,
+      extAntistatic: this.state.extAntistatic,
+      extPretreat: this.state.extPretreat
     };
 
     // ADDNEW mode
-    if (this.state.mode === 'ADDNEW' && answer) {
-      console.log('ADDNEW: ', data);
+    if (this.state.mode === "ADDNEW" && answer) {
+      console.log("ADDNEW: ", data);
       this.props.onModalClose();
       // Meteor.call('products.insert', data, (err, res) => {
       //   if (!err) {
@@ -242,7 +274,7 @@ export default class ProductModal extends React.Component {
       <Modal
         isOpen={this.props.isOpen}
         onAfterOpen={() => {
-          document.getElementById('accountName').focus();
+          document.getElementById("accountName").focus();
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
@@ -251,8 +283,8 @@ export default class ProductModal extends React.Component {
       >
         <div className="boxed-view__header">
           <h1>
-            {this.state.mode === 'ADDNEW' ? '제품 등록' : undefined}
-            {this.state.mode === 'EDIT' ? '제품 정보수정' : undefined}
+            {this.state.mode === "ADDNEW" ? "제품 등록" : undefined}
+            {this.state.mode === "EDIT" ? "제품 정보수정" : undefined}
           </h1>
         </div>
         <form className="boxed-view__content">
@@ -276,10 +308,10 @@ export default class ProductModal extends React.Component {
               </datalist>
               <span>
                 {this.state.accountNameEmpty
-                  ? '업체명을 입력하세요.'
+                  ? "업체명을 입력하세요."
                   : undefined}
                 {this.state.accountNameError
-                  ? '존재하지 않는 업체입니다.'
+                  ? "존재하지 않는 업체입니다."
                   : undefined}
               </span>
             </div>
@@ -299,7 +331,7 @@ export default class ProductModal extends React.Component {
                 onBlur={this.onInputChange}
               />
               <span>
-                {this.state.nameEmpty ? '제품명을 입력하세요.' : undefined}
+                {this.state.nameEmpty ? "제품명을 입력하세요." : undefined}
               </span>
             </div>
           </div>
@@ -319,11 +351,13 @@ export default class ProductModal extends React.Component {
                   onBlur={this.onInputChange}
                 />
                 <span>
-                  {this.state.thickEmpty ? '두께를 입력하세요.' : undefined}
-                  {this.state.thickError ? '숫자만 입력 가능합니다.' : undefined}
+                  {this.state.thickEmpty ? "두께를 입력하세요." : undefined}
+                  {this.state.thickError
+                    ? "숫자만 입력 가능합니다."
+                    : undefined}
                 </span>
               </div>
-              <i className="fa fa-times" style={{padding: '0.25rem'}}></i>
+              <i className="fa fa-times" style={{ padding: "0.25rem" }} />
               <div className="input-with-message">
                 <input
                   type="text"
@@ -335,11 +369,15 @@ export default class ProductModal extends React.Component {
                   onBlur={this.onInputChange}
                 />
                 <span>
-                  {this.state.lengthEmpty ? '길이(원단)를 입력하세요.' : undefined}
-                  {this.state.lengthError ? '숫자만 입력 가능합니다.' : undefined}
+                  {this.state.lengthEmpty
+                    ? "길이(원단)를 입력하세요."
+                    : undefined}
+                  {this.state.lengthError
+                    ? "숫자만 입력 가능합니다."
+                    : undefined}
                 </span>
               </div>
-              <i className="fa fa-times" style={{padding: '0.25rem'}}></i>
+              <i className="fa fa-times" style={{ padding: "0.25rem" }} />
               <div className="input-with-message">
                 <input
                   type="text"
@@ -351,8 +389,12 @@ export default class ProductModal extends React.Component {
                   onBlur={this.onInputChange}
                 />
                 <span>
-                  {this.state.widthEmpty ? '너비(가공)를 입력하세요.' : undefined}
-                  {this.state.widthError ? '숫자만 입력 가능합니다.' : undefined}
+                  {this.state.widthEmpty
+                    ? "너비(가공)를 입력하세요."
+                    : undefined}
+                  {this.state.widthError
+                    ? "숫자만 입력 가능합니다."
+                    : undefined}
                 </span>
               </div>
             </div>
@@ -361,17 +403,113 @@ export default class ProductModal extends React.Component {
             <div className="label-container">
               <label>무지/인쇄</label>
             </div>
-            <label className="radio-container">무지
-              <input type="radio" name="isPrint"/>
-              <span className="radiomark"></span>
+            <label className="radio-container">
+              무지
+              <input
+                type="radio"
+                name="isPrint"
+                value="isPrintFalse"
+                checked={!this.state.isPrint}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
+              />
+              <span className="radiomark" />
             </label>
-            <label className="radio-container">인쇄
-              <input type="radio" name="isPrint"/>
-              <span className="radiomark"></span>
+            <label className="radio-container">
+              인쇄
+              <input
+                type="radio"
+                name="isPrint"
+                value="isPrintTrue"
+                checked={this.state.isPrint}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
+              />
+              <span className="radiomark" />
             </label>
           </div>
           <div className="react-modal__input-container">
-            <label htmlFor="memo">메모</label>
+            <div className="label-container">
+              <label htmlFor="extColor">원단색상</label>
+            </div>
+            <div className="input-with-message">
+              <input
+                type="text"
+                id="extColor"
+                ref="extColor"
+                name="extColor"
+                value={this.state.extColor}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
+              />
+              <span>
+                {this.state.extColorEmpty
+                  ? "원단색상을 입력하세요."
+                  : undefined}
+              </span>
+            </div>
+          </div>
+          <div className="react-modal__input-container">
+            <div className="label-container">
+              <label>처리</label>
+            </div>
+            <label className="checkbox-container">
+              대전방지
+              <input
+                type="checkbox"
+                name="extAntistatic"
+                checked={this.state.extAntistatic}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
+              />
+              <span className="checkmark" />
+            </label>
+            <label className="radio-container">
+              인쇄단면
+              <input
+                type="radio"
+                name="extPretreat"
+                value="single"
+                disabled={!this.state.isPrint}
+                checked={this.state.extPretreat === "single" ? true : false}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
+              />
+              <span className="radiomark" />
+            </label>
+            <label className="radio-container">
+              인쇄양면
+              <input
+                type="radio"
+                name="extPretreat"
+                value="both"
+                disabled={!this.state.isPrint}
+                checked={this.state.extPretreat === "both" ? true : false}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
+              />
+              <span className="radiomark" />
+            </label>
+          </div>
+          <div className="react-modal__input-container">
+            <div className="label-container">
+              <label htmlFor="extMemo">압출참고</label>
+            </div>
+            <div className="input-with-message">
+              <textarea
+                id="extMemo"
+                ref="extMemo"
+                name="extMemo"
+                value={this.state.extMemo}
+                onChange={this.onInputChange}
+                onBlur={this.onInputChange}
+              />
+            </div>
+          </div>
+          <div className="react-modal__input-container">
+            <div className="label-container">
+              <label htmlFor="memo">메모</label>
+            </div>
             <div className="input-with-message">
               <textarea
                 id="memo"
