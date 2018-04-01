@@ -101,10 +101,14 @@ export default class AccountList extends React.Component {
     let selectedID = '';
     if (e.target.tagName === 'SPAN') {
       selectedID = e.target.parentNode.parentNode.parentNode.id;
-      selectedName = e.target.parentNode.parentNode.parentNode.querySelector('.account-name').textContent;
+      selectedName = e.target.parentNode.parentNode.parentNode.querySelector(
+        '.account-name'
+      ).textContent;
     } else if (e.target.tagName === 'A') {
       selectedID = e.target.parentNode.parentNode.id;
-      selectedName = e.target.parentNode.parentNode.querySelector('.account-name').textContent;
+      selectedName = e.target.parentNode.parentNode.querySelector(
+        '.account-name'
+      ).textContent;
     }
 
     this.setState({
@@ -167,14 +171,20 @@ export default class AccountList extends React.Component {
 
             {this.state.isAdmin || this.state.isManager ? (
               <div className="account-buttons-container">
-                <a className="account-button" onClick={this.onEditClick}>
+                <button
+                  className="button-circle account-button"
+                  onClick={this.onEditClick}
+                >
                   <i className="fa fa-edit fa-lg" />
                   <span>수정</span>
-                </a>
-                <a className="account-button" onClick={this.onDeleteClick}>
+                </button>
+                <button
+                  className="button-circle account-button"
+                  onClick={this.onDeleteClick}
+                >
                   <i className="fa fa-trash fa-lg" />
                   <span>삭제</span>
-                </a>
+                </button>
               </div>
             ) : (
               undefined
@@ -211,7 +221,9 @@ export default class AccountList extends React.Component {
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmModalOpen}
             title="거래처 삭제"
-            description={`[${this.state.selectedName}] 업체를 삭제하시겠습니까?`}
+            description={`[${
+              this.state.selectedName
+            }] 업체를 삭제하시겠습니까?`}
             onModalClose={this.onDeleteConfirmModalClose}
           />
         ) : (

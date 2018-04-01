@@ -1,0 +1,43 @@
+.accordion {
+  background: $color-primary--400;
+  color: white;
+  cursor: pointer;
+  font-size: $font-size--md;
+  padding: $space-md;
+  text-align: left;
+  border: none;
+  outline: none;
+  width: 100%;
+  margin-bottom: $space-xs;
+
+  &:hover {
+    background: $color-primary--500;
+  }
+}
+
+.accordion.open {
+  width: 100%;
+  margin: 0;
+}
+
+.accordion:after {
+  content: '\f13a';
+  color: white;
+  font-family: 'FontAwesome';
+  font-size: $font-size--md;
+  float: right;
+}
+
+.accordion.open:after {
+  content: '\f139';
+}
+
+.accordion-panel {
+  display: none;
+  width: 100%;
+}
+
+.accordion-panel.open {
+  display: block;
+  width: 100%;
+}

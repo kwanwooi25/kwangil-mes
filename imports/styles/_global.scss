@@ -24,35 +24,9 @@
 }
 
 .page-header__button {
-  align-items: center;
-  background: $color-primary--500;
-  border: 1px solid $color-primary--500;
-  border-radius: 50%;
-  color: white;
-  display: flex;
-  justify-content: center;
   height: 2.5rem;
   width: 2.5rem;
-  margin-left: $space-md;
-  outline: none;
-
-  span {
-    display: none;
-    font-size: $font-size--xs;
-  }
-
-  &:hover {
-    background: $color-primary--400;
-    cursor: pointer;
-
-    i {
-      display: none;
-    }
-
-    span {
-      display: inline-block;
-    }
-  }
+  margin-left: $space-sm;
 }
 
 .page-header__search {

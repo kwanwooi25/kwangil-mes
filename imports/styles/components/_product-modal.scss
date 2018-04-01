@@ -3,6 +3,12 @@
   max-width: $break--md;
 }
 
+.product-modal__content {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 .product-modal__button-group {
   display: flex;
   justify-content: center;

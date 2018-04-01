@@ -132,7 +132,6 @@ export default class ProductsPage extends React.Component {
     // } else {
     //   downloadAnchor(URL.createObjectURL(blob))
     // }
-
   }
 
   render() {
@@ -152,7 +151,7 @@ export default class ProductsPage extends React.Component {
 
           <div className="page-header__buttons">
             <button
-              className="page-header__button"
+              className="button-circle page-header__button"
               onClick={this.onClickExportExcel}
             >
               <i className="fa fa-table fa-lg" />
@@ -160,7 +159,7 @@ export default class ProductsPage extends React.Component {
             </button>
             {this.state.isAdmin ? (
               <button
-                className="page-header__button"
+                className="button-circle page-header__button"
                 onClick={this.onClickNewMulti}
               >
                 <i className="fa fa-plus-square fa-lg" />
@@ -170,7 +169,10 @@ export default class ProductsPage extends React.Component {
               undefined
             )}
             {this.state.isAdmin || this.state.isManager ? (
-              <button className="page-header__button" onClick={this.onClickNew}>
+              <button
+                className="button-circle page-header__button"
+                onClick={this.onClickNew}
+              >
                 <i className="fa fa-plus fa-lg" />
                 <span>신규</span>
               </button>
@@ -188,6 +190,8 @@ export default class ProductsPage extends React.Component {
           <ProductModal
             isOpen={this.state.isModalNewOpen}
             onModalClose={this.onModalClose}
+            isAdmin={this.state.isAdmin}
+            isManager={this.state.isManager}
           />
         ) : (
           undefined

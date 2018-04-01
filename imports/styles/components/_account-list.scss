@@ -74,34 +74,9 @@
 }
 
 .account-button {
-  align-items: center;
-  background: $color-primary--400;
-  border: 0.5px solid $color-primary--400;
-  border-radius: 50%;
-  color: white;
-  display: flex;
-  justify-content: center;
   height: 2.5rem;
   width: 2.5rem;
-  text-align: center;
   margin: $space-xs;
-
-  span {
-    display: none;
-  }
-
-  &:hover {
-    background: $color-primary--300;
-    cursor: pointer;
-
-    i {
-      display: none;
-    }
-
-    span {
-      display: inline-block;
-    }
-  }
 }
 
 @media (min-width: $break--sm) {

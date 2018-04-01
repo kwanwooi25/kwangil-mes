@@ -1,23 +1,39 @@
-.react-modal__input-container {
+.form-element-container {
   align-items: center;
   display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
   flex-wrap: wrap;
   padding: $space-xs;
 }
 
-.label-container {
+.form-element-container.product-size {
+
+}
+
+.product-size {
+  & > .form-element__label {
+    // width: 35%;
+  }
+
+  & > .form-element {
+    // width: 65%;
+  }
+}
+
+.form-element__label {
   color: $color-primary--500;
   width: 20%;
 }
 
-.input-with-message {
+.form-element {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
-.input-with-message input,
-.input-with-message textarea {
+.form-element input,
+.form-element textarea {
   border: 1px solid $color-primary--100;
   border-radius: $border-radius;
   color: $color-primary--500;
@@ -30,37 +46,36 @@
   }
 }
 
-.input-with-message textarea {
+.form-element textarea {
   resize: none;
   overflow: hidden;
 }
 
-.input-with-message.changed input,
-.input-with-message.changed textarea {
+.form-element.changed input,
+.form-element.changed textarea {
   background: $color-secondary--50;
   border: 1px solid $color-secondary--900;
   color: $color-secondary--900;
 }
 
-.input-with-message.error input,
-.input-with-message.error textarea {
+.form-element.error input,
+.form-element.error textarea {
   background: $color-error--50;
   border: 1px solid $color-error--500;
   color: $color-error--500;
   margin-bottom: 0.1rem;
 }
 
-.input-with-message input:disabled {
+.form-element input:disabled {
   background: $grey--100;
   border: 1px solid $grey--300;
   color: $grey--300;
 }
 
-.input-with-message span {
+.form-element span {
   color: $color-error--500;
   font-size: $font-size--xs;
   margin: 0;
-  text-align: right;
 }
 
 .input-product-size {
@@ -70,7 +85,7 @@
   justify-content: space-between;
   width: 70%;
 
-  .input-with-message {
+  .form-element {
     width: 20%;
   }
 }

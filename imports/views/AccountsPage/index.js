@@ -93,24 +93,39 @@ export default class AccountsPage extends React.Component {
     // get account list
     const lis = list.querySelectorAll('li');
     const accounts = [];
-    const keys = ['_id', 'name', 'phone_1', 'phone_2', 'fax', 'email_1', 'email_2', 'address', 'memo']
+    const keys = [
+      '_id',
+      'name',
+      'phone_1',
+      'phone_2',
+      'fax',
+      'email_1',
+      'email_2',
+      'address',
+      'memo'
+    ];
 
     for (let i = 0; i < lis.length; i++) {
-      accounts.push(AccountsData.findOne({ _id: lis[i].id }))
+      accounts.push(AccountsData.findOne({ _id: lis[i].id }));
     }
 
     // generate header csv
-    const headerCSV = '거래처ID,거래처명,전화번호,전화번호,팩스,이메일,이메일,주소,메모';
+    const headerCSV =
+      '거래처ID,거래처명,전화번호,전화번호,팩스,이메일,이메일,주소,메모';
     // generate body csv from account list
-    const bodyCSV = accounts.map(account => {
-      return keys.map(key => {
-        if (account[key] === undefined) {
-          return '""';
-        } else {
-          return '"t"'.replace('t', account[key]);
-        }
-      }).join(',');
-    }).join('\r\n');
+    const bodyCSV = accounts
+      .map(account => {
+        return keys
+          .map(key => {
+            if (account[key] === undefined) {
+              return '""';
+            } else {
+              return '"t"'.replace('t', account[key]);
+            }
+          })
+          .join(',');
+      })
+      .join('\r\n');
 
     // function to generate download anchor
     const downloadAnchor = content => {
@@ -134,9 +149,8 @@ export default class AccountsPage extends React.Component {
     if (navigator.msSaveOrOpenBlob) {
       navigator.msSaveOrOpenBlob(blob, filename);
     } else {
-      downloadAnchor(URL.createObjectURL(blob))
+      downloadAnchor(URL.createObjectURL(blob));
     }
-
   }
 
   render() {
@@ -156,7 +170,7 @@ export default class AccountsPage extends React.Component {
 
           <div className="page-header__buttons">
             <button
-              className="page-header__button"
+              className="button-circle page-header__button"
               onClick={this.onClickExportExcel}
             >
               <i className="fa fa-table fa-lg" />
@@ -164,7 +178,7 @@ export default class AccountsPage extends React.Component {
             </button>
             {this.state.isAdmin ? (
               <button
-                className="page-header__button"
+                className="button-circle page-header__button"
                 onClick={this.onClickNewMulti}
               >
                 <i className="fa fa-plus-square fa-lg" />
@@ -174,7 +188,10 @@ export default class AccountsPage extends React.Component {
               undefined
             )}
             {this.state.isAdmin || this.state.isManager ? (
-              <button className="page-header__button" onClick={this.onClickNew}>
+              <button
+                className="button-circle page-header__button"
+                onClick={this.onClickNew}
+              >
                 <i className="fa fa-plus fa-lg" />
                 <span>신규</span>
               </button>

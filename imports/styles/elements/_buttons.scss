@@ -19,3 +19,29 @@
   background: $color-primary--200;
   border-color: $color-primary--200;
 }
+
+.button-circle {
+  background: $color-primary--500;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  outline: none;
+
+  span {
+    display: none;
+    font-size: $font-size--xs;
+  }
+
+  &:hover {
+    background: $color-primary--400;
+    cursor: pointer;
+
+    i {
+      display: none;
+    }
+
+    span {
+      display: inline-block;
+    }
+  }
+}

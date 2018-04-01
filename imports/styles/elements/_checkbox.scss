@@ -1,24 +1,22 @@
 .checkbox-container {
+  align-items: center;
   cursor: pointer;
-  margin: 0;
-  padding-left: 1.75rem;
+  display: flex;
+  justify-content: center;
+  margin: $space-xs;
   position: relative;
 
   // on hover & focus
   &:hover input ~ .checkmark,
   & input:focus ~ .checkmark {
-    background: $color-primary--100;
-  }
-
-  // on checked
-  & input:checked ~ .checkmark {
-    background: $color-primary--500;
+    background: $color-primary--50;
+    border: 1px solid $color-primary--500;
   }
 
   // on hover & focus when disabled
   &:hover input:not([disabled]):checked ~ .checkmark,
   & input:checked:focus ~ .checkmark {
-    background: $color-primary--700;
+    background: $color-primary--100;
   }
 
   // on disabled
@@ -34,7 +32,7 @@
   // show checkmark
   & input:checked ~ .checkmark:after {
     opacity: 1;
-    transform: rotate(45deg);
+    transform: rotate(40deg);
     transition: transform .3s;
   }
 }
@@ -46,10 +44,9 @@
 }
 
 .checkmark {
-  background: $grey--300;
+  border: 1px solid $color-primary--100;
   border-radius: $border-radius;
-  position: absolute;
-  left: 0;
+  margin-right: $space-xs;
   width: 1.25rem;
   height: 1.25rem;
 
@@ -61,8 +58,7 @@
     left: 0.325rem;
     width: 0.4rem;
     height: 0.7rem;
-    border: solid white;
+    border: solid $color-primary--700;
     border-width: 0 3px 3px 0;
-    transform: rotate(0);
   }
 }
