@@ -26,10 +26,11 @@
   font-family: 'FontAwesome';
   font-size: $font-size--md;
   float: right;
+  transition: transform .15s ease-in-out;
 }
 
 .accordion.open:after {
-  content: '\f139';
+  transform: rotateZ(180deg);
 }
 
 .accordion-panel {

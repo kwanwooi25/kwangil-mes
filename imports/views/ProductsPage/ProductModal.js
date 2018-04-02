@@ -1,16 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import React from 'react';
-import Modal from 'react-modal';
+import { Meteor } from "meteor/meteor";
+import React from "react";
+import Modal from "react-modal";
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
+import { AccountsData } from "../../api/accounts";
+import { ProductsData } from "../../api/products";
 
-import FormElement from '../../custom/FormElement';
-import RadioButton from '../../custom/RadioButton';
-import Checkbox from '../../custom/Checkbox';
-import Textarea from '../../custom/Textarea';
-import Accordion from '../../custom/Accordion';
-import ConfirmationModal from '../components/ConfirmationModal';
+import FormElement from "../../custom/FormElement";
+import RadioButton from "../../custom/RadioButton";
+import Checkbox from "../../custom/Checkbox";
+import Textarea from "../../custom/Textarea";
+import Accordion from "../../custom/Accordion";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 export default class ProductModal extends React.Component {
   /*=========================================================================
@@ -31,43 +31,43 @@ export default class ProductModal extends React.Component {
     } else {
       // ADDNEW mode
       initialState = {
-        mode: 'ADDNEW',
-        productID: '',
+        mode: "ADDNEW",
+        productID: "",
         accountList: [],
-        accountID: '',
-        accountName: '',
-        name: '',
-        thick: '',
-        length: '',
-        width: '',
+        accountID: "",
+        accountName: "",
+        name: "",
+        thick: "",
+        length: "",
+        width: "",
         isPrint: false,
-        extColor: '',
+        extColor: "",
         extAntistatic: false,
-        extPretreat: '',
-        extMemo: '',
-        printImageFile: '',
-        printFrontColorCount: '',
-        printFrontColor: '',
-        printFrontPosition: '',
-        printBackColorCount: '',
-        printBackColor: '',
-        printBackPosition: '',
-        printMemo: '',
-        cutPosition: '',
+        extPretreat: "",
+        extMemo: "",
+        printImageFile: "",
+        printFrontColorCount: "",
+        printFrontColor: "",
+        printFrontPosition: "",
+        printBackColorCount: "",
+        printBackColor: "",
+        printBackPosition: "",
+        printMemo: "",
+        cutPosition: "",
         cutUltrasonic: false,
         cutPowderPack: false,
         cutPunches: false,
-        cutPunchCount: '',
-        cutPunchSize: '',
-        cutPunchPosition: '',
-        packMaterial: '',
-        packQuantity: '',
+        cutPunchCount: "",
+        cutPunchSize: "",
+        cutPunchPosition: "",
+        packMaterial: "",
+        packQuantity: "",
         packDeliverAll: false,
-        packMemo: '',
-        stockQuantity: '',
-        price: '',
-        history: '',
-        memo: '',
+        packMemo: "",
+        stockQuantity: "",
+        price: "",
+        history: "",
+        memo: "",
         accountNameEmpty: false,
         accountNameError: false,
         nameEmpty: false,
@@ -81,10 +81,11 @@ export default class ProductModal extends React.Component {
         printFrontColorCountError: false,
         printBackColorCountError: false,
         cutPunchCountError: false,
+        packQuantityError: false,
         stockQuantityError: false,
         isConfirmationModalOpen: false,
-        confirmationTitle: '',
-        confirmationDescription: ''
+        confirmationTitle: "",
+        confirmationDescription: ""
       };
     }
 
@@ -99,7 +100,7 @@ export default class ProductModal extends React.Component {
   componentDidMount() {
     // get account list
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
+      Meteor.subscribe("accounts");
       const accountList = AccountsData.find({}, { fields: { _id: 1, name: 1 } })
         .fetch()
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
@@ -121,53 +122,74 @@ export default class ProductModal extends React.Component {
   onInputChange(e) {
     // add and remove class 'changed' on EDIT mode
     if (
-      this.state.mode === 'EDIT' &&
+      this.state.mode === "EDIT" &&
       initialState[e.target.name] !== e.target.value
     ) {
-      e.target.parentNode.classList.add('changed');
+      e.target.parentNode.classList.add("changed");
     } else {
-      e.target.parentNode.classList.remove('changed');
+      e.target.parentNode.classList.remove("changed");
     }
 
     // setState as input value changes
-    if (e.target.name === 'isPrint') {
-      const value = e.target.value === 'isPrintTrue' ? true : false;
-      this.setState({ [e.target.name]: value });
-      if (!value) {
-        this.setState({
-          extPretreat: '',
-          printImageFile: '',
-          printFrontColorCount: '',
-          printFrontColor: '',
-          printFrontPosition: '',
-          printBackColorCount: '',
-          printBackColor: '',
-          printBackPosition: '',
-          printMemo: ''
-        });
+    if (e.target.type === "radio") {
+      switch (e.target.name) {
+        case "isPrint":
+          const value = e.target.value === "isPrintTrue" ? true : false;
+          this.setState({ [e.target.name]: value });
+          if (value) {
+            if (this.state.extPretreat === "")
+              this.setState({ extPretreat: "single" });
+          } else {
+            this.setState({
+              extPretreat: "",
+              printImageFile: "",
+              printFrontColorCount: "",
+              printFrontColor: "",
+              printFrontPosition: "",
+              printBackColorCount: "",
+              printBackColor: "",
+              printBackPosition: "",
+              printMemo: ""
+            });
+          }
+          console.log(e.target.name, "=", value, "(", e.target.value, ")");
+          break;
+
+        case "extPretreat":
+          if (e.target.value === "single") {
+            this.setState({
+              extPretreat: e.target.value,
+              printBackColorCount: "",
+              printBackColor: "",
+              printBackPosition: ""
+            });
+          } else if (e.target.value === "both") {
+            this.setState({ extPretreat: e.target.value });
+          }
+          console.log(e.target.name, "=", e.target.value);
+          break;
       }
-      console.log(e.target.name, '=', value, '(', e.target.value, ')');
-    } else if (e.target.type === 'checkbox') {
+    } else if (e.target.type === "checkbox") {
       this.setState({ [e.target.name]: e.target.checked });
-      console.log(e.target.name, '=', e.target.checked);
+      console.log(e.target.name, "=", e.target.checked);
 
       // reset punch details if cutPunches unchecked
-      if (e.target.name === 'cutPunches') {
+      if (e.target.name === "cutPunches") {
         if (!e.target.checked) {
           this.setState({
-            cutPunchCount: '',
-            cutPunchSize: '',
-            cutPunchPosition: ''
+            cutPunchCount: "",
+            cutPunchSize: "",
+            cutPunchPosition: ""
           });
         }
       }
     } else {
       this.setState({ [e.target.name]: e.target.value });
-      console.log(e.target.name, '=', e.target.value);
+      console.log(e.target.name, "=", e.target.value);
     }
 
     // check validation
-    if (e.target.type !== 'checkbox' && e.target.type !== 'radio') {
+    if (e.target.type !== "checkbox" && e.target.type !== "radio") {
       this.validate(e.target.name, e.target.value);
     }
   }
@@ -176,19 +198,19 @@ export default class ProductModal extends React.Component {
     const inputContainer = document.getElementById(name).parentNode;
 
     // validate accountName
-    if (name === 'accountName') {
+    if (name === "accountName") {
       const selectedAccount = this.state.accountList.find(
         account => account.name === value
       );
 
       // check if accountName is empty
-      if (value === '') {
+      if (value === "") {
         this.setState({
           accountNameEmpty: true,
           accountNameError: false,
-          accountID: ''
+          accountID: ""
         });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
 
         // check if accountName exist
@@ -196,9 +218,9 @@ export default class ProductModal extends React.Component {
         this.setState({
           accountNameEmpty: false,
           accountNameError: true,
-          accountID: ''
+          accountID: ""
         });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
       } else {
         this.setState({
@@ -206,55 +228,56 @@ export default class ProductModal extends React.Component {
           accountNameError: false,
           accountID: selectedAccount._id
         });
-        inputContainer.classList.remove('error');
+        inputContainer.classList.remove("error");
         return true;
       }
     }
 
     // validate name
     // validate extColor
-    if (name === 'name' || name === 'extColor') {
-      if (value === '') {
+    if (name === "name" || name === "extColor") {
+      if (value === "") {
         this.setState({ [`${name}Empty`]: true });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
       } else {
         this.setState({ [`${name}Empty`]: false });
-        inputContainer.classList.remove('error');
+        inputContainer.classList.remove("error");
         return true;
       }
     }
 
     // validate size
-    if (name === 'thick' || name === 'length' || name === 'width') {
-      if (value === '') {
+    if (name === "thick" || name === "length" || name === "width") {
+      if (value === "") {
         this.setState({ [`${name}Empty`]: true, [`${name}Error`]: false });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
       } else if (isNaN(value)) {
         this.setState({ [`${name}Empty`]: false, [`${name}Error`]: true });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
         return false;
       } else {
         this.setState({ [`${name}Empty`]: false, [`${name}Error`]: false });
-        inputContainer.classList.remove('error');
+        inputContainer.classList.remove("error");
         return true;
       }
     }
 
     // validate number inputs
     if (
-      name === 'printFrontColorCount' ||
-      name === 'printBackColorCount' ||
-      name === 'cutPunchCount' ||
-      name === 'stockQuantity'
+      name === "printFrontColorCount" ||
+      name === "printBackColorCount" ||
+      name === "cutPunchCount" ||
+      name === "packQuantity" ||
+      name === "stockQuantity"
     ) {
       if (isNaN(value)) {
         this.setState({ [`${name}Error`]: true });
-        inputContainer.classList.add('error');
+        inputContainer.classList.add("error");
       } else {
         this.setState({ [`${name}Error`]: false });
-        inputContainer.classList.remove('error');
+        inputContainer.classList.remove("error");
       }
     }
   }
@@ -263,30 +286,30 @@ export default class ProductModal extends React.Component {
     e.preventDefault();
 
     // validation
-    if (!this.validate('accountName', this.state.accountName)) {
+    if (!this.validate("accountName", this.state.accountName)) {
       this.refs.accountName.focus();
-    } else if (!this.validate('name', this.state.name)) {
+    } else if (!this.validate("name", this.state.name)) {
       this.refs.name.focus();
-    } else if (!this.validate('thick', this.state.thick)) {
+    } else if (!this.validate("thick", this.state.thick)) {
       this.refs.thick.focus();
-    } else if (!this.validate('length', this.state.length)) {
+    } else if (!this.validate("length", this.state.length)) {
       this.refs.length.focus();
-    } else if (!this.validate('width', this.state.width)) {
+    } else if (!this.validate("width", this.state.width)) {
       this.refs.width.focus();
-    } else if (!this.validate('extColor', this.state.extColor)) {
+    } else if (!this.validate("extColor", this.state.extColor)) {
       this.refs.extColor.focus();
     } else {
-      if (this.state.mode === 'ADDNEW') {
+      if (this.state.mode === "ADDNEW") {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: '제품 신규 등록',
-          confirmationDescription: '신규 등록 하시겠습니까?'
+          confirmationTitle: "제품 신규 등록",
+          confirmationDescription: "신규 등록 하시겠습니까?"
         });
-      } else if (this.state.mode === 'EDIT') {
+      } else if (this.state.mode === "EDIT") {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: '제품 정보 수정',
-          confirmationDescription: '수정하신 내용을 저장하시겠습니까?'
+          confirmationTitle: "제품 정보 수정",
+          confirmationDescription: "수정하신 내용을 저장하시겠습니까?"
         });
       }
     }
@@ -329,12 +352,12 @@ export default class ProductModal extends React.Component {
       stockQuantity: this.state.stockQuantity,
       price: this.state.price,
       history: this.state.history,
-      memo: this.state.memo,
+      memo: this.state.memo
     };
 
     // ADDNEW mode
-    if (this.state.mode === 'ADDNEW' && answer) {
-      console.log('ADDNEW: ', data);
+    if (this.state.mode === "ADDNEW" && answer) {
+      console.log("ADDNEW: ", data);
       this.props.onModalClose();
       // Meteor.call('products.insert', data, (err, res) => {
       //   if (!err) {
@@ -366,7 +389,7 @@ export default class ProductModal extends React.Component {
       <Modal
         isOpen={this.props.isOpen}
         onAfterOpen={() => {
-          document.getElementById('accountName').focus();
+          document.getElementById("accountName").focus();
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
@@ -375,8 +398,8 @@ export default class ProductModal extends React.Component {
       >
         <div className="boxed-view__header">
           <h1>
-            {this.state.mode === 'ADDNEW' ? '제품 등록' : undefined}
-            {this.state.mode === 'EDIT' ? '제품 정보수정' : undefined}
+            {this.state.mode === "ADDNEW" ? "제품 등록" : undefined}
+            {this.state.mode === "EDIT" ? "제품 정보수정" : undefined}
           </h1>
         </div>
         <form className="boxed-view__content product-modal__content">
@@ -392,13 +415,15 @@ export default class ProductModal extends React.Component {
               listID="accountNameList"
               errorMessage={
                 this.state.accountNameEmpty
-                  ? '업체명을 입력하세요.'
+                  ? "업체명을 입력하세요."
                   : this.state.accountNameError
-                    ? '존재하지 않는 업체입니다.'
+                    ? "존재하지 않는 업체입니다."
                     : undefined
               }
             />
-            <datalist id="accountNameList">{this.getAccountNameList()}</datalist>
+            <datalist id="accountNameList">
+              {this.getAccountNameList()}
+            </datalist>
             <FormElement
               tagName="input"
               inputType="text"
@@ -407,7 +432,7 @@ export default class ProductModal extends React.Component {
               value={this.state.name}
               onInputChange={this.onInputChange}
               errorMessage={
-                this.state.nameEmpty ? '제품명을 입력하세요.' : undefined
+                this.state.nameEmpty ? "제품명을 입력하세요." : undefined
               }
             />
             <FormElement
@@ -420,8 +445,10 @@ export default class ProductModal extends React.Component {
               onInputChange={this.onInputChange}
               errorMessage={
                 this.state.thickEmpty
-                  ? '두께를 입력하세요.'
-                  : this.state.thickError ? '숫자만 입력 가능합니다.' : undefined
+                  ? "두께를 입력하세요."
+                  : this.state.thickError
+                    ? "숫자만 입력 가능합니다."
+                    : undefined
               }
             />
             <FormElement
@@ -434,8 +461,10 @@ export default class ProductModal extends React.Component {
               onInputChange={this.onInputChange}
               errorMessage={
                 this.state.lengthEmpty
-                  ? '길이(원단)를 입력하세요.'
-                  : this.state.lengthError ? '숫자만 입력 가능합니다.' : undefined
+                  ? "길이(원단)를 입력하세요."
+                  : this.state.lengthError
+                    ? "숫자만 입력 가능합니다."
+                    : undefined
               }
             />
             <FormElement
@@ -448,8 +477,10 @@ export default class ProductModal extends React.Component {
               onInputChange={this.onInputChange}
               errorMessage={
                 this.state.widthEmpty
-                  ? '너비(가공)를 입력하세요.'
-                  : this.state.widthError ? '숫자만 입력 가능합니다.' : undefined
+                  ? "너비(가공)를 입력하세요."
+                  : this.state.widthError
+                    ? "숫자만 입력 가능합니다."
+                    : undefined
               }
             />
 
@@ -457,20 +488,22 @@ export default class ProductModal extends React.Component {
               <div className="form-element__label">
                 <label>무지/인쇄</label>
               </div>
-              <RadioButton
-                name="isPrint"
-                label="무지"
-                value="isPrintFalse"
-                checked={!this.state.isPrint}
-                onInputChange={this.onInputChange}
-              />
-              <RadioButton
-                name="isPrint"
-                label="인쇄"
-                value="isPrintTrue"
-                checked={this.state.isPrint}
-                onInputChange={this.onInputChange}
-              />
+              <div className="form-elements">
+                <RadioButton
+                  name="isPrint"
+                  label="무지"
+                  value="isPrintFalse"
+                  checked={!this.state.isPrint}
+                  onInputChange={this.onInputChange}
+                />
+                <RadioButton
+                  name="isPrint"
+                  label="인쇄"
+                  value="isPrintTrue"
+                  checked={this.state.isPrint}
+                  onInputChange={this.onInputChange}
+                />
+              </div>
             </div>
           </div>
 
@@ -484,35 +517,37 @@ export default class ProductModal extends React.Component {
               value={this.state.extColor}
               onInputChange={this.onInputChange}
               errorMessage={
-                this.state.extColorEmpty ? '원단색상을 입력하세요.' : undefined
+                this.state.extColorEmpty ? "원단색상을 입력하세요." : undefined
               }
             />
             <div className="form-element-container">
               <div className="form-element__label">
                 <label>처리</label>
               </div>
-              <Checkbox
-                name="extAntistatic"
-                label="대전방지"
-                checked={this.state.extAntistatic}
-                onInputChange={this.onInputChange}
-              />
-              <RadioButton
-                name="extPretreat"
-                label="인쇄단면"
-                value="single"
-                disabled={!this.state.isPrint}
-                checked={this.state.extPretreat === 'single' ? true : false}
-                onInputChange={this.onInputChange}
-              />
-              <RadioButton
-                name="extPretreat"
-                label="인쇄양면"
-                value="both"
-                disabled={!this.state.isPrint}
-                checked={this.state.extPretreat === 'both' ? true : false}
-                onInputChange={this.onInputChange}
-              />
+              <div className="form-elements">
+                <Checkbox
+                  name="extAntistatic"
+                  label="대전방지"
+                  checked={this.state.extAntistatic}
+                  onInputChange={this.onInputChange}
+                />
+                <RadioButton
+                  name="extPretreat"
+                  label="인쇄단면"
+                  value="single"
+                  disabled={!this.state.isPrint}
+                  checked={this.state.extPretreat === "single" ? true : false}
+                  onInputChange={this.onInputChange}
+                />
+                <RadioButton
+                  name="extPretreat"
+                  label="인쇄양면"
+                  value="both"
+                  disabled={!this.state.isPrint}
+                  checked={this.state.extPretreat === "both" ? true : false}
+                  onInputChange={this.onInputChange}
+                />
+              </div>
             </div>
             <FormElement
               tagName="Textarea"
@@ -543,7 +578,7 @@ export default class ProductModal extends React.Component {
                 onInputChange={this.onInputChange}
                 errorMessage={
                   this.state.printFrontColorCountError
-                    ? '숫자로 입력하세요.'
+                    ? "숫자로 입력하세요."
                     : undefined
                 }
               />
@@ -563,35 +598,51 @@ export default class ProductModal extends React.Component {
                 value={this.state.printFrontPosition}
                 onInputChange={this.onInputChange}
               />
-              <FormElement
-                tagName="input"
-                inputType="text"
-                id="printBackColorCount"
-                label="후면도수"
-                value={this.state.printBackColorCount}
-                onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.printBackColorCountError
-                    ? '숫자로 입력하세요.'
-                    : undefined
-                }
-              />
-              <FormElement
-                tagName="input"
-                inputType="text"
-                id="printBackColor"
-                label="후면색상"
-                value={this.state.printBackColor}
-                onInputChange={this.onInputChange}
-              />
-              <FormElement
-                tagName="input"
-                inputType="text"
-                id="printBackPosition"
-                label="후면인쇄위치"
-                value={this.state.printBackPosition}
-                onInputChange={this.onInputChange}
-              />
+
+              {this.state.extPretreat === "both" ? (
+                <FormElement
+                  tagName="input"
+                  inputType="text"
+                  id="printBackColorCount"
+                  label="후면도수"
+                  value={this.state.printBackColorCount}
+                  onInputChange={this.onInputChange}
+                  errorMessage={
+                    this.state.printBackColorCountError
+                      ? "숫자로 입력하세요."
+                      : undefined
+                  }
+                />
+              ) : (
+                undefined
+              )}
+
+              {this.state.extPretreat === "both" ? (
+                <FormElement
+                  tagName="input"
+                  inputType="text"
+                  id="printBackColor"
+                  label="후면색상"
+                  value={this.state.printBackColor}
+                  onInputChange={this.onInputChange}
+                />
+              ) : (
+                undefined
+              )}
+
+              {this.state.extPretreat === "both" ? (
+                <FormElement
+                  tagName="input"
+                  inputType="text"
+                  id="printBackPosition"
+                  label="후면인쇄위치"
+                  value={this.state.printBackPosition}
+                  onInputChange={this.onInputChange}
+                />
+              ) : (
+                undefined
+              )}
+
               <FormElement
                 tagName="Textarea"
                 id="printMemo"
@@ -614,33 +665,32 @@ export default class ProductModal extends React.Component {
               value={this.state.cutPosition}
               onInputChange={this.onInputChange}
             />
-            <div className="react-modal__input-container">
-              <div className="label-container">
+            <div className="form-element-container">
+              <div className="form-element__label">
                 <label>가공추가</label>
               </div>
-              <Checkbox
-                name="cutUltrasonic"
-                label="초음파가공"
-                checked={this.state.cutUltrasonic}
-                onInputChange={this.onInputChange}
-              />
-              <Checkbox
-                name="cutPowderPack"
-                label="가루포장"
-                checked={this.state.cutPowderPack}
-                onInputChange={this.onInputChange}
-              />
-            </div>
-            <div className="react-modal__input-container">
-              <div className="label-container">
-                <label>바람구멍</label>
+              <div className="form-elements">
+                <Checkbox
+                  name="cutUltrasonic"
+                  label="초음파가공"
+                  checked={this.state.cutUltrasonic}
+                  onInputChange={this.onInputChange}
+                />
+                <Checkbox
+                  name="cutPowderPack"
+                  label="가루포장"
+                  checked={this.state.cutPowderPack}
+                  onInputChange={this.onInputChange}
+                />
+                <Checkbox
+                  name="cutPunches"
+                  label="바람구멍"
+                  checked={this.state.cutPunches}
+                  onInputChange={this.onInputChange}
+                />
               </div>
-              <Checkbox
-                name="cutPunches"
-                checked={this.state.cutPunches}
-                onInputChange={this.onInputChange}
-              />
             </div>
+
             {this.state.cutPunches ? (
               <FormElement
                 tagName="input"
@@ -651,7 +701,7 @@ export default class ProductModal extends React.Component {
                 onInputChange={this.onInputChange}
                 errorMessage={
                   this.state.cutPunchCountError
-                    ? '숫자로 입력하세요.'
+                    ? "숫자로 입력하세요."
                     : undefined
                 }
               />
@@ -678,7 +728,7 @@ export default class ProductModal extends React.Component {
                 inputType="text"
                 id="cutPunchPosition"
                 label="바람구멍위치"
-                value={this.state.cutPunchCount}
+                value={this.state.cutPunchPosition}
                 onInputChange={this.onInputChange}
               />
             ) : (
@@ -711,16 +761,21 @@ export default class ProductModal extends React.Component {
               label="포장단위"
               value={this.state.packQuantity}
               onInputChange={this.onInputChange}
+              errorMessage={
+                this.state.packQuantityError ? "숫자로 입력하세요." : undefined
+              }
             />
-            <div className="react-modal__input-container">
-              <div className="label-container">
+            <div className="form-element-container">
+              <div className="form-element__label">
                 <label>전량납품</label>
               </div>
-              <Checkbox
-                name="packDeliverAll"
-                checked={this.state.packDeliverAll}
-                onInputChange={this.onInputChange}
-              />
+              <div className="form-elements">
+                <Checkbox
+                  name="packDeliverAll"
+                  checked={this.state.packDeliverAll}
+                  onInputChange={this.onInputChange}
+                />
+              </div>
             </div>
             <FormElement
               tagName="Textarea"
@@ -738,19 +793,24 @@ export default class ProductModal extends React.Component {
           )}
           {this.props.isAdmin || this.props.isManager ? (
             <div className="accordion-panel open">
-              <FormElement
-                tagName="input"
-                inputType="text"
-                id="stockQuantity"
-                label="재고수량"
-                value={this.state.stockQuantity}
-                onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.stockQuantityError
-                    ? '숫자로 입력하세요.'
-                    : undefined
-                }
-              />
+              {this.state.mode === "EDIT" ? (
+                <FormElement
+                  tagName="input"
+                  inputType="text"
+                  id="stockQuantity"
+                  label="재고수량"
+                  value={this.state.stockQuantity}
+                  onInputChange={this.onInputChange}
+                  errorMessage={
+                    this.state.stockQuantityError
+                      ? "숫자로 입력하세요."
+                      : undefined
+                  }
+                />
+              ) : (
+                undefined
+              )}
+
               <FormElement
                 tagName="input"
                 inputType="text"
@@ -759,13 +819,19 @@ export default class ProductModal extends React.Component {
                 value={this.state.price}
                 onInputChange={this.onInputChange}
               />
-              <FormElement
-                tagName="Textarea"
-                id="history"
-                label="작업이력"
-                value={this.state.history}
-                onInputChange={this.onInputChange}
-              />
+
+              {this.state.mode === "EDIT" ? (
+                <FormElement
+                  tagName="Textarea"
+                  id="history"
+                  label="작업이력"
+                  value={this.state.history}
+                  onInputChange={this.onInputChange}
+                />
+              ) : (
+                undefined
+              )}
+
               <FormElement
                 tagName="Textarea"
                 id="memo"
