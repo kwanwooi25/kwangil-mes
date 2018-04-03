@@ -2,11 +2,13 @@
   "name": "kwangilMES",
   "private": true,
   "scripts": {
-    "start": "meteor run"
+    "start": "meteor --settings settings-development.json"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.36",
+    "aws-sdk": "^2.219.1",
     "meteor-node-stubs": "^0.3.2",
+    "node-s3-public-url": "^1.0.2",
     "npm": "^5.8.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

@@ -1,8 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { check } from 'meteor/check';
 import SimpleSchema from 'simpl-schema';
+import s3PublicURL from 'node-s3-public-url';
 
 export const ProductsData = new Mongo.Collection('products');
+export const ProductImages = new Mongo.Collection('product-images');
 
 if (Meteor.isServer) {
   Meteor.publish('products', function() {
@@ -58,4 +61,5 @@ Meteor.methods({
   //
   //   ProductsData.remove({ _id: accountID });
   // }
+  
 });

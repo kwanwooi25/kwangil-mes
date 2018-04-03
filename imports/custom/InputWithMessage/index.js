@@ -15,7 +15,7 @@ export default class InputWithMessage extends React.Component {
 
   render() {
     return (
-      <div className="input-with-message">
+      <div className="form-element">
         <input
           type={this.props.inputType}
           id={this.props.id}
