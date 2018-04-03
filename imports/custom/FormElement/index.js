@@ -31,7 +31,7 @@ export default class FormElement extends React.Component {
           <label htmlFor={this.props.id}>{this.props.label}</label>
         </div>
         <div className="form-element">
-          {TagName === 'Textarea' ? (
+          {TagName === 'textarea' ? (
             <Textarea
               id={this.props.id}
               value={this.props.value}

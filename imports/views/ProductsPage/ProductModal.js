@@ -6,9 +6,9 @@ import { AccountsData } from "../../api/accounts";
 import { ProductsData } from "../../api/products";
 
 import FormElement from "../../custom/FormElement";
+import InputWithMessage from '../../custom/InputWithMessage';
 import RadioButton from "../../custom/RadioButton";
 import Checkbox from "../../custom/Checkbox";
-import Textarea from "../../custom/Textarea";
 import Accordion from "../../custom/Accordion";
 import ConfirmationModal from "../components/ConfirmationModal";
 
@@ -435,54 +435,81 @@ export default class ProductModal extends React.Component {
                 this.state.nameEmpty ? "제품명을 입력하세요." : undefined
               }
             />
-            <FormElement
-              containerClassName="form-element-container product-size"
-              tagName="input"
-              inputType="text"
-              id="thick"
-              label="두께"
-              value={this.state.thick}
-              onInputChange={this.onInputChange}
-              errorMessage={
-                this.state.thickEmpty
-                  ? "두께를 입력하세요."
-                  : this.state.thickError
-                    ? "숫자만 입력 가능합니다."
-                    : undefined
-              }
-            />
-            <FormElement
-              containerClassName="form-element-container product-size"
-              tagName="input"
-              inputType="text"
-              id="length"
-              label="길이"
-              value={this.state.length}
-              onInputChange={this.onInputChange}
-              errorMessage={
-                this.state.lengthEmpty
-                  ? "길이(원단)를 입력하세요."
-                  : this.state.lengthError
-                    ? "숫자만 입력 가능합니다."
-                    : undefined
-              }
-            />
-            <FormElement
-              containerClassName="form-element-container product-size"
-              tagName="input"
-              inputType="text"
-              id="width"
-              label="너비"
-              value={this.state.width}
-              onInputChange={this.onInputChange}
-              errorMessage={
-                this.state.widthEmpty
-                  ? "너비(가공)를 입력하세요."
-                  : this.state.widthError
-                    ? "숫자만 입력 가능합니다."
-                    : undefined
-              }
-            />
+            <div className="form-element-container">
+              <div className="form-element__label">
+                <label>처리</label>
+              </div>
+              <div className="form-elements">
+                <Checkbox
+                  name="extAntistatic"
+                  label="대전방지"
+                  checked={this.state.extAntistatic}
+                  onInputChange={this.onInputChange}
+                />
+                <RadioButton
+                  name="extPretreat"
+                  label="인쇄단면"
+                  value="single"
+                  disabled={!this.state.isPrint}
+                  checked={this.state.extPretreat === "single" ? true : false}
+                  onInputChange={this.onInputChange}
+                />
+                <RadioButton
+                  name="extPretreat"
+                  label="인쇄양면"
+                  value="both"
+                  disabled={!this.state.isPrint}
+                  checked={this.state.extPretreat === "both" ? true : false}
+                  onInputChange={this.onInputChange}
+                />
+              </div>
+            </div>
+            <div className="form-element-container">
+              <div className="form-element__label">
+                <label>규격</label>
+              </div>
+              <div className="form-elements">
+                <InputWithMessage
+                  inputType="text"
+                  id="thick"
+                  value={this.state.thick}
+                  onInputChange={this.onInputChange}
+                  errorMessage={
+                    this.state.thickEmpty
+                      ? "두께를 입력하세요."
+                      : this.state.thickError
+                        ? "숫자만 입력 가능합니다."
+                        : undefined
+                  }
+                />
+                <InputWithMessage
+                  inputType="text"
+                  id="length"
+                  value={this.state.length}
+                  onInputChange={this.onInputChange}
+                  errorMessage={
+                    this.state.lengthEmpty
+                      ? "길이(원단)를 입력하세요."
+                      : this.state.lengthError
+                        ? "숫자만 입력 가능합니다."
+                        : undefined
+                  }
+                />
+                <InputWithMessage
+                  inputType="text"
+                  id="width"
+                  value={this.state.width}
+                  onInputChange={this.onInputChange}
+                  errorMessage={
+                    this.state.widthEmpty
+                      ? "너비(가공)를 입력하세요."
+                      : this.state.widthError
+                        ? "숫자만 입력 가능합니다."
+                        : undefined
+                  }
+                />
+              </div>
+            </div>
 
             <div className="form-element-container">
               <div className="form-element__label">
@@ -550,7 +577,7 @@ export default class ProductModal extends React.Component {
               </div>
             </div>
             <FormElement
-              tagName="Textarea"
+              tagName="textarea"
               id="extMemo"
               label="압출참고"
               value={this.state.extMemo}
@@ -644,7 +671,7 @@ export default class ProductModal extends React.Component {
               )}
 
               <FormElement
-                tagName="Textarea"
+                tagName="textarea"
                 id="printMemo"
                 label="인쇄참고"
                 value={this.state.printMemo}
@@ -736,7 +763,7 @@ export default class ProductModal extends React.Component {
             )}
 
             <FormElement
-              tagName="Textarea"
+              tagName="textarea"
               id="cutMemo"
               label="가공참고"
               value={this.state.cutMemo}
@@ -778,7 +805,7 @@ export default class ProductModal extends React.Component {
               </div>
             </div>
             <FormElement
-              tagName="Textarea"
+              tagName="textarea"
               id="packMemo"
               label="포장참고"
               value={this.state.packMemo}
@@ -822,7 +849,7 @@ export default class ProductModal extends React.Component {
 
               {this.state.mode === "EDIT" ? (
                 <FormElement
-                  tagName="Textarea"
+                  tagName="textarea"
                   id="history"
                   label="작업이력"
                   value={this.state.history}
@@ -833,7 +860,7 @@ export default class ProductModal extends React.Component {
               )}
 
               <FormElement
-                tagName="Textarea"
+                tagName="textarea"
                 id="memo"
                 label="메모"
                 value={this.state.memo}
