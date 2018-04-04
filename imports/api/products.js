@@ -46,20 +46,20 @@ Meteor.methods({
   //   });
   // },
   //
-  // 'products.update'(accountID, data) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //
-  //   ProductsData.update({ _id: accountID }, { $set: data });
-  // },
-  //
-  // 'products.remove'(accountID) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //
-  //   ProductsData.remove({ _id: accountID });
-  // }
-  
+  'products.update'(productID, data) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+
+    ProductsData.update({ _id: productID }, { $set: data });
+  },
+
+  'products.remove'(productID) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+
+    ProductsData.remove({ _id: productID });
+  }
+
 });

@@ -26,6 +26,6 @@ Slingshot.createDirective('upload-product-image', Slingshot.S3Storage, {
     return true;
   },
   key(file) {
-    return `${file.name}`;
+    return `${(file.name)}`;
   }
 });

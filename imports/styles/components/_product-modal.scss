@@ -15,3 +15,40 @@
   margin: 0;
   text-align: center;
 }
+
+.upload {
+  background: $grey--50;
+  border: 3px dashed $grey--500;
+  position: relative;
+  transition: 0.2s;
+  width: 100%;
+
+  &:hover {
+    background: $color-primary--50;
+    border: 3px dashed $color-primary--500;
+  }
+}
+
+.upload-alert {
+  padding: $space-xs;
+  position: relative;
+
+  input[type='file'] {
+    background: $grey--50;
+    border: 3px dashed $grey--500;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  img {
+    // max-height: 50vh;
+    max-width: 100%;
+    width: auto;
+  }
+}
