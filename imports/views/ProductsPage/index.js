@@ -1,6 +1,7 @@
 import React from 'react';
 
 import ProductModal from './ProductModal';
+import ProductList from './ProductList';
 
 export default class ProductsPage extends React.Component {
   constructor(props) {
@@ -183,7 +184,7 @@ export default class ProductsPage extends React.Component {
         </div>
 
         <div className="page-content">
-          {/* <AccountList query={this.state.query} /> */}
+          <ProductList query={this.state.query} />
         </div>
 
         {this.state.isModalNewOpen ? (

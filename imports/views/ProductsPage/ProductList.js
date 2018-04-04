@@ -1,0 +1,283 @@
+import React from "react";
+
+import { AccountsData } from "../../api/accounts";
+import { ProductsData } from "../../api/products";
+
+import Checkbox from "../../custom/Checkbox";
+// import AccountDetailView from './AccountDetailView';
+import ProductModal from './ProductModal';
+import ConfirmationModal from "../components/ConfirmationModal";
+
+export default class ProductList extends React.Component {
+  /*=========================================================================
+  >> props <<
+  query : query string to filter account list
+  ==========================================================================*/
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      accountList: [],
+      data: [],
+      query: props.query,
+      isAdmin: false,
+      isManager: false,
+      isProductModalOpen: false,
+      isDetailViewOpen: false,
+      isDeleteConfirmModalOpen: false,
+      selectedID: "",
+      selectedName: ""
+    };
+
+    this.onInputChange = this.onInputChange.bind(this);
+    // this.onNameClick = this.onNameClick.bind(this);
+    // this.onDetailViewClose = this.onDetailViewClose.bind(this);
+    this.onEditClick = this.onEditClick.bind(this);
+    this.onProductModalClose = this.onProductModalClose.bind(this);
+    // this.onDeleteClick = this.onDeleteClick.bind(this);
+    // this.onDeleteConfirmModalClose = this.onDeleteConfirmModalClose.bind(this);
+  }
+
+  // set state on props change
+  componentWillReceiveProps(props) {
+    this.setState({ query: props.query });
+  }
+
+  componentDidMount() {
+    // tracks data change
+    this.databaseTracker = Tracker.autorun(() => {
+      Meteor.subscribe("accounts");
+      Meteor.subscribe("products");
+
+      this.setState({
+        accountList: AccountsData.find(
+          {},
+          { fields: { _id: 1, name: 1 } }
+        ).fetch(),
+        data: ProductsData.find({}, { sort: { name: 1 } }).fetch()
+      });
+    });
+
+    // tracks if the user logged in is admin or manager
+    this.authTracker = Tracker.autorun(() => {
+      if (Meteor.user()) {
+        this.setState({
+          isAdmin: Meteor.user().profile.isAdmin,
+          isManager: Meteor.user().profile.isManager
+        });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.databaseTracker.stop();
+    this.authTracker.stop();
+  }
+
+  onInputChange(e) {
+    if (e.target.name === "selectAll") {
+      const checkboxes = document.querySelectorAll(
+        '#product-list input[type="checkbox"]'
+      );
+
+      for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = e.target.checked;
+        console.log(checkboxes[i]);
+      }
+    } else {
+      if (e.target.checked) {
+        console.log('selectedProductID = ', e.target.name);
+      } else {
+        console.log('unselectedProductID = ', e.target.name);
+      }
+    }
+  }
+
+  // show detail view modal
+  onNameClick(e) {
+    const selectedID = e.target.parentNode.parentNode.parentNode.id;
+    console.log(selectedID);
+    // this.setState({
+    //   isDetailViewOpen: true,
+    //   selectedID
+    // });
+  }
+  //
+  // onDetailViewClose() {
+  //   this.setState({ isDetailViewOpen: false });
+  // }
+  //
+  // show account modal (EDIT mode)
+  onEditClick(e) {
+    let selectedID = '';
+    if (e.target.tagName === 'SPAN') {
+      selectedID = e.target.parentNode.parentNode.parentNode.id;
+    } else if (e.target.tagName === 'A') {
+      selectedID = e.target.parentNode.parentNode.id;
+    }
+
+    this.setState({
+      isProductModalOpen: true,
+      selectedID
+    }, () => {console.log(this.state.selectedID)});
+  }
+
+  onProductModalClose() {
+    this.setState({ isProductModalOpen: false });
+  }
+
+  // // show confirmation modal before delete
+  // onDeleteClick(e) {
+  //   let selectedID = '';
+  //   if (e.target.tagName === 'SPAN') {
+  //     selectedID = e.target.parentNode.parentNode.parentNode.id;
+  //     selectedName = e.target.parentNode.parentNode.parentNode.querySelector(
+  //       '.account-name'
+  //     ).textContent;
+  //   } else if (e.target.tagName === 'A') {
+  //     selectedID = e.target.parentNode.parentNode.id;
+  //     selectedName = e.target.parentNode.parentNode.querySelector(
+  //       '.account-name'
+  //     ).textContent;
+  //   }
+  //
+  //   this.setState({
+  //     isDeleteConfirmModalOpen: true,
+  //     selectedID,
+  //     selectedName
+  //   });
+  // }
+  //
+  // onDeleteConfirmModalClose(answer) {
+  //   this.setState({ isDeleteConfirmModalOpen: false });
+  //
+  //   if (answer) {
+  //     Meteor.call('accounts.remove', this.state.selectedID);
+  //   }
+  // }
+
+  getProductList(query) {
+    return this.state.data.map(product => {
+      console.log(product);
+      const account = this.state.accountList.find(
+        account => account._id === product.accountID
+      );
+      let print = "";
+      if (product.printFrontColorCount) {
+        if (product.printBackColorCount) {
+          print = `(전면 ${product.printFrontColorCount}도, 후면 ${
+            product.printBackColorCount
+          }도)`;
+        } else {
+          print = `(전면 ${product.printFrontColorCount}도)`;
+        }
+      }
+      // let matchQuery = false;
+      // for (let key in account) {
+      //   if (key !== '_id' && account[key].indexOf(query) > -1) {
+      //     matchQuery = true;
+      //   }
+      // }
+      //
+      // // only show account that has matching query text
+      // if (matchQuery) {
+      return (
+        <li className="product" key={product._id} id={product._id}>
+          <div className="product-checkbox-container">
+            <Checkbox name={product._id} onInputChange={this.onInputChange} />
+          </div>
+          <div className="product-container">
+            <div className="product-name-container">
+              <span className="product-accountName">{account.name}</span>
+              <a className="product-name" onClick={this.onNameClick}>
+                {product.name}
+              </a>
+            </div>
+            <div className="product-details-container">
+              <div className="product-size-container">
+                <span className="product-size__thick">{product.thick}</span>
+                <i className="fa fa-times" />
+                <span className="product-size__length">{product.length}</span>
+                <i className="fa fa-times" />
+                <span className="product-size__width">{product.width}</span>
+              </div>
+              <div className="product-isPrint-container">
+                <span className="product-isPrint">
+                  {product.isPrint ? `인쇄 ${print}` : "무지"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {this.state.isAdmin || this.state.isManager ? (
+            <div className="product-buttons-container">
+              <button
+                className="button-circle product-button"
+                onClick={this.onEditClick}
+              >
+                <i className="fa fa-edit fa-lg" />
+                <span>수정</span>
+              </button>
+              <button
+                className="button-circle product-button"
+                onClick={this.onDeleteClick}
+              >
+                <i className="fa fa-trash fa-lg" />
+                <span>삭제</span>
+              </button>
+            </div>
+          ) : (
+            undefined
+          )}
+        </li>
+      );
+      // }
+    });
+  }
+
+  render() {
+    return (
+      <ul id="product-list">
+        <div className="product-select-all">
+          <Checkbox
+            name="selectAll"
+            label="전체선택"
+            onInputChange={this.onInputChange}
+          />
+        </div>
+
+        {this.getProductList(this.state.query)}
+        {/* {this.state.isDetailViewOpen ? (
+          <AccountDetailView
+            isOpen={this.state.isDetailViewOpen}
+            selectedID={this.state.selectedID}
+            onDetailViewClose={this.onDetailViewClose}
+          />
+        ) : (
+          undefined
+        )} */}
+        {this.state.isProductModalOpen ? (
+          <ProductModal
+            isOpen={this.state.isProductModalOpen}
+            selectedID={this.state.selectedID}
+            onModalClose={this.onProductModalClose}
+          />
+        ) : (
+          undefined
+        )}
+        {/* {this.state.isDeleteConfirmModalOpen ? (
+          <ConfirmationModal
+            isOpen={this.state.isDeleteConfirmModalOpen}
+            title="거래처 삭제"
+            description={`[${
+              this.state.selectedName
+            }] 업체를 삭제하시겠습니까?`}
+            onModalClose={this.onDeleteConfirmModalClose}
+          />
+        ) : (
+          undefined
+        )} */}
+      </ul>
+    );
+  }
+}

@@ -33,7 +33,7 @@
   & input:checked ~ .checkmark:after {
     opacity: 1;
     transform: rotate(40deg);
-    transition: transform .3s;
+    transition: transform .2s;
   }
 }
 
