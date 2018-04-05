@@ -1,35 +1,29 @@
 import React from "react";
 
-export default class Textarea extends React.Component {
+export default class TextInput extends React.Component {
   /*=========================================================================
   >> props <<
   className
-  id            : for id and name attribute
+  inputType
+  id                 : for id and name attribute
   value
-  onInputChange : for onChange and onBlur function
+  onInputChange      : for onChange and onBlur function
+  listID             : datalist id for autocomplete
+  errorMessage
   ==========================================================================*/
-
-  componentDidMount() {
-    const textarea = document.getElementById(this.props.id);
-    textarea.addEventListener("keydown", () => {
-      setTimeout(() => {
-        textarea.style.cssText = "height: auto;";
-        textarea.style.cssText = `height: ${textarea.scrollHeight - 10}px`;
-      }, 0);
-    });
-  }
-
   render() {
     return (
       <div className={this.props.className}>
-        <textarea
+        <input
+          type={this.props.inputType}
           id={this.props.id}
           name={this.props.id}
           value={this.props.value}
           onChange={this.props.onInputChange}
           onBlur={this.props.onInputChange}
-          rows="1"
+          list={this.props.listID}
         />
+        <span>{this.props.errorMessage}</span>
       </div>
     );
   }

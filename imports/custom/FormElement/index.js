@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import Textarea from '../Textarea';
+import Textarea from "../Textarea";
 
 export default class FormElement extends React.Component {
   /*=========================================================================
@@ -23,15 +23,15 @@ export default class FormElement extends React.Component {
       <div
         className={
           this.props.containerClassName
-            ? this.props.containerClassName
-            : 'form-element-container'
+            ? "form-element-container " + this.props.containerClassName
+            : "form-element-container"
         }
       >
         <div className="form-element__label">
           <label htmlFor={this.props.id}>{this.props.label}</label>
         </div>
         <div className="form-element">
-          {TagName === 'textarea' ? (
+          {TagName === "textarea" ? (
             <Textarea
               id={this.props.id}
               value={this.props.value}

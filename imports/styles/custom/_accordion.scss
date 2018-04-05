@@ -1,5 +1,5 @@
 .accordion {
-  background: $color-primary--400;
+  background: $color-primary--300;
   color: white;
   cursor: pointer;
   font-size: $font-size--md;
@@ -7,17 +7,16 @@
   text-align: left;
   border: none;
   outline: none;
-  width: 100%;
   margin-bottom: $space-xs;
+  width: 100%;
 
   &:hover {
-    background: $color-primary--500;
+    background: $color-primary--400;
   }
 }
 
 .accordion.open {
   width: 100%;
-  margin: 0;
 }
 
 .accordion:after {
@@ -35,10 +34,22 @@
 
 .accordion-panel {
   display: none;
-  width: 100%;
 }
 
 .accordion-panel.open {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   width: 100%;
+}
+
+.accordion-panel__row {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+
+  @media (min-width: $break--sm) {
+    flex-direction: row;
+  }
 }

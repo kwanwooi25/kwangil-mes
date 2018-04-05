@@ -269,6 +269,8 @@ export default class ProductList extends React.Component {
             isOpen={this.state.isProductModalOpen}
             selectedID={this.state.selectedID}
             onModalClose={this.onProductModalClose}
+            isAdmin={this.state.isAdmin}
+            isManager={this.state.isManager}
           />
         ) : (
           undefined

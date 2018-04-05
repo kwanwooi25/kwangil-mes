@@ -1,6 +1,10 @@
 .product-modal {
-  width: 90%;
-  max-width: $break--md;
+  width: 95%;
+  max-width: $break--lg;
+}
+
+.product-modal__content {
+  padding: 0;
 }
 
 .product-modal__button-group {
@@ -16,12 +20,12 @@
   text-align: center;
 }
 
-.upload {
+.upload-area {
   background: $grey--50;
   border: 3px dashed $grey--500;
+  margin: $space-xs;
+  padding: $space-xs;
   position: relative;
-  transition: 0.2s;
-  width: 100%;
 
   &:hover {
     background: $color-primary--50;
@@ -29,11 +33,60 @@
   }
 }
 
+.product-modal__size-container {
+  align-items: flex-start;
+
+  i {
+    padding: $space-xs;
+  }
+}
+
+.product-modal__size {
+  width: 25%;
+}
+
+.product-modal__print-detail-container,
+.product-modal__punch-detail-container {
+  label {
+    margin-bottom: $space-xs;
+    padding: $space-xs;
+  }
+}
+
+.product-modal__color-count,
+.product-modal__punch-count {
+  margin-bottom: $space-xs;
+  width: 21%;
+
+  input {
+    text-align: right;
+  }
+
+  & + label {
+    width: 13%;
+  }
+}
+
+.product-modal__color,
+.product-modal__punch-size {
+  margin-bottom: $space-xs;
+  width: 50%;
+}
+
 .upload-alert {
+  color: $grey--700;
+  margin: 0;
   padding: $space-xs;
   position: relative;
+  text-align: center;
+  height: 100%;
+  width: 100%;
 
-  input[type='file'] {
+  &:hover {
+    color: $color-primary--700;
+  }
+
+  input[type="file"] {
     background: $grey--50;
     border: 3px dashed $grey--500;
     position: absolute;
@@ -47,8 +100,29 @@
   }
 
   img {
-    // max-height: 50vh;
-    max-width: 100%;
-    width: auto;
+    width: 100%;
+  }
+}
+
+@media (min-width: $break--md) {
+  .product-modal__color-count,
+  .product-modal__punch-count {
+    margin-bottom: 0;
+    width: 10%;
+
+    & + label {
+      width: 5%;
+    }
+  }
+
+  .product-modal__color,
+  .product-modal__punch-size {
+    margin-bottom: 0;
+    width: 20%;
+  }
+
+  .product-modal__print-position,
+  .product-modal__punch-position {
+    width: 40%;
   }
 }
