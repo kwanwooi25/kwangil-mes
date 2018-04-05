@@ -1,7 +1,20 @@
+.form-element-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  @media (min-width: $break--md) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
 .form-element-container {
   align-items: center;
   display: flex;
+  margin: 0 auto;
   padding: $space-xs;
+  width: 95%;
 }
 
 .form-element__label {

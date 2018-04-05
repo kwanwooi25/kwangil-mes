@@ -82,7 +82,7 @@ export default class AccountList extends React.Component {
     let selectedID = '';
     if (e.target.tagName === 'SPAN') {
       selectedID = e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'A') {
+    } else if (e.target.tagName === 'BUTTON') {
       selectedID = e.target.parentNode.parentNode.id;
     }
 
@@ -104,7 +104,7 @@ export default class AccountList extends React.Component {
       selectedName = e.target.parentNode.parentNode.parentNode.querySelector(
         '.account-name'
       ).textContent;
-    } else if (e.target.tagName === 'A') {
+    } else if (e.target.tagName === 'BUTTON') {
       selectedID = e.target.parentNode.parentNode.id;
       selectedName = e.target.parentNode.parentNode.querySelector(
         '.account-name'

@@ -2,6 +2,7 @@ import React from 'react';
 
 import ProductModal from './ProductModal';
 import ProductList from './ProductList';
+import ProductNewMultiModal from './ProductNewMultiModal';
 
 export default class ProductsPage extends React.Component {
   constructor(props) {
@@ -11,7 +12,7 @@ export default class ProductsPage extends React.Component {
       isAdmin: false,
       isManager: false,
       isModalNewOpen: false,
-      // isModalNewMultiOpen: false,
+      isModalNewMultiOpen: false,
       query: ''
     };
 
@@ -75,7 +76,7 @@ export default class ProductsPage extends React.Component {
   }
 
   onClickNewMulti() {
-    // this.setState({ isModalNewMultiOpen: true });
+    this.setState({ isModalNewMultiOpen: true });
   }
 
   onModalClose() {
@@ -198,14 +199,14 @@ export default class ProductsPage extends React.Component {
           undefined
         )}
 
-        {/* {this.state.isModalNewMultiOpen ? (
-          <AccountNewMultiModal
+        {this.state.isModalNewMultiOpen ? (
+          <ProductNewMultiModal
             isOpen={this.state.isModalNewMultiOpen}
             onModalClose={this.onModalClose}
           />
-          ) : (
+        ) : (
           undefined
-        )} */}
+        )}
       </div>
     );
   }

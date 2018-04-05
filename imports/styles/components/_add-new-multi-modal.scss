@@ -1,4 +1,9 @@
-#accountsJSON {
+.add-new-multi-modal {
+  width: 90%;
+  max-width: $break--sm;
+}
+
+.add-new-multi-modal__textarea {
   border: 1px solid $color-primary--100;
   border-radius: $border-radius;
   color: $color-primary--500;
@@ -18,7 +23,7 @@
   }
 }
 
-.account-new-multi-modal__message {
+.add-new-multi-modal__message {
   color: $color-primary--900;
   font-size: $font-size--sm;
   text-align: center;
@@ -29,7 +34,7 @@
   }
 }
 
-.account-new-multi-modal__button-group {
+.add-new-multi-modal__button-group {
   display: flex;
   justify-content: center;
 }

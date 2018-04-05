@@ -4,7 +4,8 @@ import Modal from 'react-modal';
 
 import { AccountsData } from '../../api/accounts';
 
-import FormElement from '../../custom/FormElement';
+import TextInput from '../../custom/TextInput';
+import Textarea from '../../custom/Textarea';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class AccountModal extends React.Component {
@@ -269,95 +270,143 @@ export default class AccountModal extends React.Component {
           </h1>
         </div>
         <form className="boxed-view__content">
-          <FormElement
-            tagName="input"
-            inputType="text"
-            id="name"
-            label="업체명"
-            value={this.state.name}
-            onInputChange={this.onInputChange}
-            errorMessage={
-              this.state.accountNameEmpty ? '업체명을 입력하세요.' : undefined
-            }
-          />
-          <FormElement
-            tagName="input"
-            inputType="tel"
-            id="phone_1"
-            label="전화번호1"
-            value={this.state.phone_1}
-            onInputChange={this.onInputChange}
-            errorMessage={
-              this.state.phone_1Empty
-                ? '전화번호를 입력하세요.'
-                : this.state.phone_1Error
+          <div className="form-element-container">
+            <div className="form-element__label">
+              <label htmlFor="name">업체명</label>
+            </div>
+            <div className="form-elements">
+              <TextInput
+                className="form-element"
+                inputType="text"
+                id="name"
+                value={this.state.name}
+                onInputChange={this.onInputChange}
+                errorMessage={
+                  this.state.nameEmpty ? "업체명을 입력하세요." : undefined
+                }
+              />
+            </div>
+          </div>
+          <div className="form-element-container">
+            <div className="form-element__label">
+              <label htmlFor="phone_1">전화번호1</label>
+            </div>
+            <div className="form-elements">
+              <TextInput
+                className="form-element"
+                inputType="tel"
+                id="phone_1"
+                value={this.state.phone_1}
+                onInputChange={this.onInputChange}
+                errorMessage={
+                  this.state.phone_1Empty
+                    ? '전화번호를 입력하세요.'
+                    : this.state.phone_1Error
+                      ? '숫자만 입력 가능합니다.'
+                      : undefined
+                }
+              />
+            </div>
+          </div>
+          <div className="form-element-container">
+            <div className="form-element__label">
+              <label htmlFor="phone_2">전화번호2</label>
+            </div>
+            <div className="form-elements">
+              <TextInput
+                className="form-element"
+                inputType="tel"
+                id="phone_2"
+                value={this.state.phone_2}
+                onInputChange={this.onInputChange}
+                errorMessage={this.state.phone_2Error
                   ? '숫자만 입력 가능합니다.'
                   : undefined
-            }
-          />
-          <FormElement
-            tagName="input"
-            inputType="tel"
-            id="phone_2"
-            label="전화번호2"
-            value={this.state.phone_2}
-            onInputChange={this.onInputChange}
-            errorMessage={this.state.phone_2Error
-              ? '숫자만 입력 가능합니다.'
-              : undefined
-            }
-          />
-          <FormElement
-            tagName="input"
-            inputType="tel"
-            id="fax"
-            label="팩스번호"
-            value={this.state.fax}
-            onInputChange={this.onInputChange}
-            errorMessage={this.state.faxError
-              ? '숫자만 입력 가능합니다.'
-              : undefined
-            }
-          />
-          <FormElement
-            tagName="input"
-            inputType="email"
-            id="email_1"
-            label="이메일1"
-            value={this.state.email_1}
-            onInputChange={this.onInputChange}
-            errorMessage={this.state.email_1Error
-              ? '올바른 이메일 형식이 아닙니다.'
-              : undefined
-            }
-          />
-          <FormElement
-            tagName="input"
-            inputType="email"
-            id="email_2"
-            label="이메일2"
-            value={this.state.email_2}
-            onInputChange={this.onInputChange}
-            errorMessage={this.state.email_2Error
-              ? '올바른 이메일 형식이 아닙니다.'
-              : undefined
-            }
-          />
-          <FormElement
-            tagName="input"
-            inputType="text"
-            id="address"
-            label="주소"
-            value={this.state.address}
-            onInputChange={this.onInputChange}
-          />
-          <FormElement
-            tagName="textarea"
-            id="memo"
-            label="메모"
-            value={this.state.memo}
-            onInputChange={this.onInputChange}
-          />
+                }
+              />
+            </div>
+          </div>
+          <div className="form-element-container">
+            <div className="form-element__label">
+              <label htmlFor="fax">팩스번호</label>
+            </div>
+            <div className="form-elements">
+              <TextInput
+                className="form-element"
+                inputType="tel"
+                id="fax"
+                value={this.state.fax}
+                onInputChange={this.onInputChange}
+                errorMessage={this.state.faxError
+                  ? '숫자만 입력 가능합니다.'
+                  : undefined
+                }
+              />
+            </div>
+          </div>
+          <div className="form-element-container">
+            <div className="form-element__label">
+              <label htmlFor="email_1">이메일1</label>
+            </div>
+            <div className="form-elements">
+              <TextInput
+                className="form-element"
+                inputType="email"
+                id="email_1"
+                value={this.state.email_1}
+                onInputChange={this.onInputChange}
+                errorMessage={this.state.email_1Error
+                  ? '올바른 이메일 형식이 아닙니다.'
+                  : undefined
+                }
+              />
+            </div>
+          </div>
+          <div className="form-element-container">
+            <div className="form-element__label">
+              <label htmlFor="email_2">이메일2</label>
+            </div>
+            <div className="form-elements">
+              <TextInput
+                className="form-element"
+                inputType="email"
+                id="email_2"
+                value={this.state.email_2}
+                onInputChange={this.onInputChange}
+                errorMessage={this.state.email_2Error
+                  ? '올바른 이메일 형식이 아닙니다.'
+                  : undefined
+                }
+              />
+            </div>
+          </div>
+          <div className="form-element-container">
+            <div className="form-element__label">
+              <label htmlFor="address">주소</label>
+            </div>
+            <div className="form-elements">
+              <TextInput
+                className="form-element"
+                inputType="text"
+                id="address"
+                value={this.state.address}
+                onInputChange={this.onInputChange}
+              />
+            </div>
+          </div>
+          <div className="form-element-container">
+            <div className="form-element__label">
+              <label htmlFor="memo">메모</label>
+            </div>
+            <div className="form-elements">
+              <Textarea
+                className="form-element"
+                id="memo"
+                value={this.state.memo}
+                onInputChange={this.onInputChange}
+              />
+            </div>
+          </div>
 
           {this.state.error ? (
             <p className="account-modal__error">{this.state.error}</p>

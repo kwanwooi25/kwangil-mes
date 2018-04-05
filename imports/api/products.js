@@ -2,10 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
 import SimpleSchema from 'simpl-schema';
-import s3PublicURL from 'node-s3-public-url';
 
 export const ProductsData = new Mongo.Collection('products');
-export const ProductImages = new Mongo.Collection('product-images');
 
 if (Meteor.isServer) {
   Meteor.publish('products', function() {
@@ -35,17 +33,17 @@ Meteor.methods({
     }
   },
 
-  // 'products.insertmany'(json) {
-  //   console.log(json);
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //   json.map(account => {
-  //     console.log(account);
-  //     ProductsData.insert(account);
-  //   });
-  // },
-  //
+  'products.insertmany'(json) {
+    console.log(json);
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+    json.map(product => {
+      console.log(product);
+      ProductsData.insert(product);
+    });
+  },
+
   'products.update'(productID, data) {
     if (!this.userId) {
       throw new Meteor.Error('User not logged in!');

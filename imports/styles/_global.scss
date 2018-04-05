@@ -102,27 +102,28 @@
   overflow-y: scroll;
 }
 
-
-.sm5 { width: 5% !important }
-.sm10 { width: 10% !important }
-.sm15 { width: 15% !important }
-.sm20 { width: 20% !important }
-.sm25 { width: 25% !important }
-.sm30 { width: 30% !important }
-.sm35 { width: 35% !important }
-.sm40 { width: 40% !important }
-.sm45 { width: 45% !important }
-.sm50 { width: 50% !important }
-.sm55 { width: 55% !important }
-.sm60 { width: 60% !important }
-.sm65 { width: 65% !important }
-.sm70 { width: 70% !important }
-.sm75 { width: 75% !important }
-.sm80 { width: 80% !important }
-.sm85 { width: 85% !important }
-.sm90 { width: 90% !important }
-.sm95 { width: 95% !important }
-.sm100 { width: 100% !important }
+@media (min-width: $break--sm) {
+  .sm5 { width: 5% !important }
+  .sm10 { width: 10% !important }
+  .sm15 { width: 15% !important }
+  .sm20 { width: 20% !important }
+  .sm25 { width: 25% !important }
+  .sm30 { width: 30% !important }
+  .sm35 { width: 35% !important }
+  .sm40 { width: 40% !important }
+  .sm45 { width: 45% !important }
+  .sm50 { width: 50% !important }
+  .sm55 { width: 55% !important }
+  .sm60 { width: 60% !important }
+  .sm65 { width: 65% !important }
+  .sm70 { width: 70% !important }
+  .sm75 { width: 75% !important }
+  .sm80 { width: 80% !important }
+  .sm85 { width: 85% !important }
+  .sm90 { width: 90% !important }
+  .sm95 { width: 95% !important }
+  .sm100 { width: 100% !important }
+}
 
 @media (min-width: $break--md) {
   .md5 { width: 5% !important }
