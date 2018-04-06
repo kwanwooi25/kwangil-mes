@@ -111,7 +111,7 @@ export default class ProductNewMultiModal extends React.Component {
         {this.state.isConfirmationModalOpen ? (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
-            title="거래처 대량등록"
+            title="품목 대량등록"
             description="계속 하시겠습니까?"
             onModalClose={this.onConfirmationModalClose}
           />

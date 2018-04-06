@@ -77,7 +77,7 @@ export default class AccountDetailView extends React.Component {
         overlayClassName="react-modal__bg"
       >
         <div className="boxed-view__header">
-          <h1>거래처 정보</h1>
+          <h1>거래처 상세정보</h1>
         </div>
         <div className="boxed-view__content">
           <div className="account-detail__container">

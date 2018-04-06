@@ -4,7 +4,7 @@ import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
 
 import Checkbox from '../../custom/Checkbox';
-// import AccountDetailView from './AccountDetailView';
+import ProductDetailView from './ProductDetailView';
 import ProductModal from './ProductModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -31,8 +31,8 @@ export default class ProductList extends React.Component {
     };
 
     this.onInputChange = this.onInputChange.bind(this);
-    // this.onNameClick = this.onNameClick.bind(this);
-    // this.onDetailViewClose = this.onDetailViewClose.bind(this);
+    this.onNameClick = this.onNameClick.bind(this);
+    this.onDetailViewClose = this.onDetailViewClose.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
     this.onProductModalClose = this.onProductModalClose.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
@@ -101,16 +101,16 @@ export default class ProductList extends React.Component {
   onNameClick(e) {
     const selectedID = e.target.parentNode.parentNode.parentNode.id;
     console.log(selectedID);
-    // this.setState({
-    //   isDetailViewOpen: true,
-    //   selectedID
-    // });
+    this.setState({
+      isDetailViewOpen: true,
+      selectedID
+    });
   }
-  //
-  // onDetailViewClose() {
-  //   this.setState({ isDetailViewOpen: false });
-  // }
-  //
+
+  onDetailViewClose() {
+    this.setState({ isDetailViewOpen: false });
+  }
+
   // show account modal (EDIT mode)
   onEditClick(e) {
     let selectedID = '';
@@ -255,15 +255,15 @@ export default class ProductList extends React.Component {
         )}
 
         {this.getProductList(this.state.query)}
-        {/* {this.state.isDetailViewOpen ? (
-          <AccountDetailView
+        {this.state.isDetailViewOpen ? (
+          <ProductDetailView
             isOpen={this.state.isDetailViewOpen}
             selectedID={this.state.selectedID}
             onDetailViewClose={this.onDetailViewClose}
           />
           ) : (
           undefined
-        )} */}
+        )}
         {this.state.isProductModalOpen ? (
           <ProductModal
             isOpen={this.state.isProductModalOpen}

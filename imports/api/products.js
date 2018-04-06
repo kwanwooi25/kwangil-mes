@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { check } from 'meteor/check';
 import SimpleSchema from 'simpl-schema';
 
 export const ProductsData = new Mongo.Collection('products');

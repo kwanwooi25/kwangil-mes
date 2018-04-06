@@ -11,6 +11,8 @@ export default class Textarea extends React.Component {
 
   componentDidMount() {
     const textarea = document.getElementById(this.props.id);
+    textarea.style.cssText = "height: auto;";
+    textarea.style.cssText = `height: ${textarea.scrollHeight - 10}px`;
     textarea.addEventListener("keydown", () => {
       setTimeout(() => {
         textarea.style.cssText = "height: auto;";
