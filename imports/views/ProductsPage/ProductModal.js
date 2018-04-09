@@ -185,6 +185,16 @@ export default class ProductModal extends React.Component {
     });
   }
 
+  comma(str) {
+    str = String(str);
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+  }
+
+  uncomma(str) {
+    str = String(str);
+    return str.replace(/[^\d]+/g, '');
+  }
+
   onInputChange(e) {
     // add and remove class 'changed' on EDIT mode
     if (
@@ -273,6 +283,8 @@ export default class ProductModal extends React.Component {
       } else {
         this.setState({ printImageFile: '', printImageFileName: '' });
       }
+    } else if (e.target.name === 'packQuantity') {
+      this.setState({ [e.target.name]: this.comma(this.uncomma(e.target.value))})
     } else {
       this.setState({ [e.target.name]: e.target.value });
       console.log(e.target.name, '=', e.target.value);
@@ -362,7 +374,7 @@ export default class ProductModal extends React.Component {
       name === 'stockQuantity' ||
       name === 'price'
     ) {
-      if (isNaN(value)) {
+      if (isNaN(this.uncomma(value))) {
         this.setState({ [`${name}Error`]: true });
         inputContainer.classList.add('error');
       } else {
@@ -441,7 +453,7 @@ export default class ProductModal extends React.Component {
       cutPunchPosition: this.state.cutPunchPosition,
       cutMemo: this.state.cutMemo,
       packMaterial: this.state.packMaterial,
-      packQuantity: this.state.packQuantity,
+      packQuantity: this.uncomma(this.state.packQuantity),
       packDeliverAll: this.state.packDeliverAll,
       packMemo: this.state.packMemo,
       stockQuantity: this.state.stockQuantity,

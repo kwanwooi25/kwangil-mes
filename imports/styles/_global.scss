@@ -6,11 +6,20 @@
 }
 
 .page-header {
-  align-items: center;
   display: flex;
-  justify-content: space-between;
-  margin-bottom: $space-sm;
-  overflow: hidden;
+  flex-direction: column;
+
+  .page-header__row {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: $space-sm;
+
+    &.hidden {
+      display: none;
+    }
+  }
 }
 
 .page-header__title {
@@ -30,7 +39,7 @@
 }
 
 .page-header__search {
-  font-family: "FontAwesome";
+  font-family: 'FontAwesome';
   border: none;
   outline: none;
   margin: 0 $space-xs;
@@ -96,6 +105,88 @@
   }
 }
 
+.product-search__input-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 80%;
+
+  @media (min-width: $break--sm) {
+    width: 85%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 90%;
+  }
+}
+
+.product-search__button-container {
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  width: 20%;
+
+  @media (min-width: $break--sm) {
+    width: 15%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 10%;
+  }
+}
+
+.product-search-button {
+  width: 100%;
+}
+
+.search-by-account-name {
+  width: 37%;
+
+  @media (min-width: $break--sm) {
+    width: 39%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 15%;
+  }
+}
+
+.search-by-product-name {
+  width: 50%;
+
+  @media (min-width: $break--sm) {
+    width: 52%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 22%;
+  }
+}
+
+.search-by-size {
+  width: 27%;
+
+  @media (min-width: $break--sm) {
+    width: 10%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 6%;
+  }
+}
+
+.search-by-color {
+  width: 43%;
+
+  @media (min-width: $break--sm) {
+    width: 23%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 13%;
+  }
+}
+
 .page-content {
   border-top: 1.8px solid $color-primary--100;
   overflow-x: hidden;
@@ -103,93 +194,253 @@
 }
 
 @media (min-width: $break--sm) {
-  .sm5 { width: 5% !important }
-  .sm10 { width: 10% !important }
-  .sm15 { width: 15% !important }
-  .sm20 { width: 20% !important }
-  .sm25 { width: 25% !important }
-  .sm30 { width: 30% !important }
-  .sm35 { width: 35% !important }
-  .sm40 { width: 40% !important }
-  .sm45 { width: 45% !important }
-  .sm50 { width: 50% !important }
-  .sm55 { width: 55% !important }
-  .sm60 { width: 60% !important }
-  .sm65 { width: 65% !important }
-  .sm70 { width: 70% !important }
-  .sm75 { width: 75% !important }
-  .sm80 { width: 80% !important }
-  .sm85 { width: 85% !important }
-  .sm90 { width: 90% !important }
-  .sm95 { width: 95% !important }
-  .sm100 { width: 100% !important }
+  .sm5 {
+    width: 5% !important;
+  }
+  .sm10 {
+    width: 10% !important;
+  }
+  .sm15 {
+    width: 15% !important;
+  }
+  .sm20 {
+    width: 20% !important;
+  }
+  .sm25 {
+    width: 25% !important;
+  }
+  .sm30 {
+    width: 30% !important;
+  }
+  .sm35 {
+    width: 35% !important;
+  }
+  .sm40 {
+    width: 40% !important;
+  }
+  .sm45 {
+    width: 45% !important;
+  }
+  .sm50 {
+    width: 50% !important;
+  }
+  .sm55 {
+    width: 55% !important;
+  }
+  .sm60 {
+    width: 60% !important;
+  }
+  .sm65 {
+    width: 65% !important;
+  }
+  .sm70 {
+    width: 70% !important;
+  }
+  .sm75 {
+    width: 75% !important;
+  }
+  .sm80 {
+    width: 80% !important;
+  }
+  .sm85 {
+    width: 85% !important;
+  }
+  .sm90 {
+    width: 90% !important;
+  }
+  .sm95 {
+    width: 95% !important;
+  }
+  .sm100 {
+    width: 100% !important;
+  }
 }
 
 @media (min-width: $break--md) {
-  .md5 { width: 5% !important }
-  .md10 { width: 10% !important }
-  .md15 { width: 15% !important }
-  .md20 { width: 20% !important }
-  .md25 { width: 25% !important }
-  .md30 { width: 30% !important }
-  .md35 { width: 35% !important }
-  .md40 { width: 40% !important }
-  .md45 { width: 45% !important }
-  .md50 { width: 50% !important }
-  .md55 { width: 55% !important }
-  .md60 { width: 60% !important }
-  .md65 { width: 65% !important }
-  .md70 { width: 70% !important }
-  .md75 { width: 75% !important }
-  .md80 { width: 80% !important }
-  .md85 { width: 85% !important }
-  .md90 { width: 90% !important }
-  .md95 { width: 95% !important }
-  .md100 { width: 100% !important }
+  .md5 {
+    width: 5% !important;
+  }
+  .md10 {
+    width: 10% !important;
+  }
+  .md15 {
+    width: 15% !important;
+  }
+  .md20 {
+    width: 20% !important;
+  }
+  .md25 {
+    width: 25% !important;
+  }
+  .md30 {
+    width: 30% !important;
+  }
+  .md35 {
+    width: 35% !important;
+  }
+  .md40 {
+    width: 40% !important;
+  }
+  .md45 {
+    width: 45% !important;
+  }
+  .md50 {
+    width: 50% !important;
+  }
+  .md55 {
+    width: 55% !important;
+  }
+  .md60 {
+    width: 60% !important;
+  }
+  .md65 {
+    width: 65% !important;
+  }
+  .md70 {
+    width: 70% !important;
+  }
+  .md75 {
+    width: 75% !important;
+  }
+  .md80 {
+    width: 80% !important;
+  }
+  .md85 {
+    width: 85% !important;
+  }
+  .md90 {
+    width: 90% !important;
+  }
+  .md95 {
+    width: 95% !important;
+  }
+  .md100 {
+    width: 100% !important;
+  }
 }
 
 @media (min-width: $break--lg) {
-  .lg5 { width: 5% !important }
-  .lg10 { width: 10% !important }
-  .lg15 { width: 15% !important }
-  .lg20 { width: 20% !important }
-  .lg25 { width: 25% !important }
-  .lg30 { width: 30% !important }
-  .lg35 { width: 35% !important }
-  .lg40 { width: 40% !important }
-  .lg45 { width: 45% !important }
-  .lg50 { width: 50% !important }
-  .lg55 { width: 55% !important }
-  .lg60 { width: 60% !important }
-  .lg65 { width: 65% !important }
-  .lg70 { width: 70% !important }
-  .lg75 { width: 75% !important }
-  .lg80 { width: 80% !important }
-  .lg85 { width: 85% !important }
-  .lg90 { width: 90% !important }
-  .lg95 { width: 95% !important }
-  .lg100 { width: 100% !important }
+  .lg5 {
+    width: 5% !important;
+  }
+  .lg10 {
+    width: 10% !important;
+  }
+  .lg15 {
+    width: 15% !important;
+  }
+  .lg20 {
+    width: 20% !important;
+  }
+  .lg25 {
+    width: 25% !important;
+  }
+  .lg30 {
+    width: 30% !important;
+  }
+  .lg35 {
+    width: 35% !important;
+  }
+  .lg40 {
+    width: 40% !important;
+  }
+  .lg45 {
+    width: 45% !important;
+  }
+  .lg50 {
+    width: 50% !important;
+  }
+  .lg55 {
+    width: 55% !important;
+  }
+  .lg60 {
+    width: 60% !important;
+  }
+  .lg65 {
+    width: 65% !important;
+  }
+  .lg70 {
+    width: 70% !important;
+  }
+  .lg75 {
+    width: 75% !important;
+  }
+  .lg80 {
+    width: 80% !important;
+  }
+  .lg85 {
+    width: 85% !important;
+  }
+  .lg90 {
+    width: 90% !important;
+  }
+  .lg95 {
+    width: 95% !important;
+  }
+  .lg100 {
+    width: 100% !important;
+  }
 }
 
 @media (min-width: $break--xl) {
-  .xl5 { width: 5% !important }
-  .xl10 { width: 10% !important }
-  .xl15 { width: 15% !important }
-  .xl20 { width: 20% !important }
-  .xl25 { width: 25% !important }
-  .xl30 { width: 30% !important }
-  .xl35 { width: 35% !important }
-  .xl40 { width: 40% !important }
-  .xl45 { width: 45% !important }
-  .xl50 { width: 50% !important }
-  .xl55 { width: 55% !important }
-  .xl60 { width: 60% !important }
-  .xl65 { width: 65% !important }
-  .xl70 { width: 70% !important }
-  .xl75 { width: 75% !important }
-  .xl80 { width: 80% !important }
-  .xl85 { width: 85% !important }
-  .xl90 { width: 90% !important }
-  .xl95 { width: 95% !important }
-  .xl100 { width: 100% !important }
+  .xl5 {
+    width: 5% !important;
+  }
+  .xl10 {
+    width: 10% !important;
+  }
+  .xl15 {
+    width: 15% !important;
+  }
+  .xl20 {
+    width: 20% !important;
+  }
+  .xl25 {
+    width: 25% !important;
+  }
+  .xl30 {
+    width: 30% !important;
+  }
+  .xl35 {
+    width: 35% !important;
+  }
+  .xl40 {
+    width: 40% !important;
+  }
+  .xl45 {
+    width: 45% !important;
+  }
+  .xl50 {
+    width: 50% !important;
+  }
+  .xl55 {
+    width: 55% !important;
+  }
+  .xl60 {
+    width: 60% !important;
+  }
+  .xl65 {
+    width: 65% !important;
+  }
+  .xl70 {
+    width: 70% !important;
+  }
+  .xl75 {
+    width: 75% !important;
+  }
+  .xl80 {
+    width: 80% !important;
+  }
+  .xl85 {
+    width: 85% !important;
+  }
+  .xl90 {
+    width: 90% !important;
+  }
+  .xl95 {
+    width: 95% !important;
+  }
+  .xl100 {
+    width: 100% !important;
+  }
 }

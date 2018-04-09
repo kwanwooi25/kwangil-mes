@@ -19,7 +19,7 @@ export default class ProductList extends React.Component {
     this.state = {
       accountList: [],
       data: [],
-      query: props.query,
+      queryObj: props.queryObj,
       isAdmin: false,
       isManager: false,
       isProductModalOpen: false,
@@ -41,7 +41,7 @@ export default class ProductList extends React.Component {
 
   // set state on props change
   componentWillReceiveProps(props) {
-    this.setState({ query: props.query });
+    this.setState({ queryObj: props.queryObj });
   }
 
   componentDidMount() {
@@ -86,13 +86,6 @@ export default class ProductList extends React.Component {
 
       for (let i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = e.target.checked;
-        console.log(checkboxes[i]);
-      }
-    } else {
-      if (e.target.checked) {
-        console.log('selectedProductID = ', e.target.name);
-      } else {
-        console.log('unselectedProductID = ', e.target.name);
       }
     }
   }
@@ -100,7 +93,6 @@ export default class ProductList extends React.Component {
   // show detail view modal
   onNameClick(e) {
     const selectedID = e.target.parentNode.parentNode.parentNode.id;
-    console.log(selectedID);
     this.setState({
       isDetailViewOpen: true,
       selectedID
@@ -160,9 +152,8 @@ export default class ProductList extends React.Component {
     }
   }
 
-  getProductList(query) {
+  getProductList(queryObj) {
     return this.state.data.map(product => {
-      console.log(product);
       const account = this.state.accountList.find(
         account => account._id === product.accountID
       );
@@ -176,77 +167,91 @@ export default class ProductList extends React.Component {
           print = `(전면 ${product.printFrontColorCount}도)`;
         }
       }
-      // let matchQuery = false;
-      // for (let key in account) {
-      //   if (key !== '_id' && account[key].indexOf(query) > -1) {
-      //     matchQuery = true;
-      //   }
-      // }
-      //
-      // // only show account that has matching query text
-      // if (matchQuery) {
-      return (
-        <li className="product" key={product._id} id={product._id}>
-          <div className="product-checkbox-container">
-            <Checkbox name={product._id} onInputChange={this.onInputChange} />
-          </div>
-          <div className="product-container">
-            <div className="product-name-container">
-              <span className="product-accountName">{account.name}</span>
-              <a className="product-name" onClick={this.onNameClick}>
-                {product.name}
-              </a>
-            </div>
-            <div className="product-details-container">
-              <div className="product-size-container">
-                <span className="product-size__thick">{product.thick}</span>
-                <i className="fa fa-times" />
-                <span className="product-size__length">{product.length}</span>
-                <i className="fa fa-times" />
-                <span className="product-size__width">{product.width}</span>
-              </div>
-              <div className="product-isPrint-container">
-                <span className="product-isPrint">
-                  {product.isPrint ? `인쇄 ${print}` : '무지'}
-                </span>
-              </div>
-            </div>
-          </div>
 
-          {this.state.isAdmin || this.state.isManager ? (
-            <div className="product-buttons-container">
-              <button
-                className="button-circle product-button"
-                onClick={this.onEditClick}
-              >
-                <i className="fa fa-edit fa-lg" />
-                <span>수정</span>
-              </button>
-              <button
-                className="button-circle product-button"
-                onClick={this.onDeleteClick}
-              >
-                <i className="fa fa-trash fa-lg" />
-                <span>삭제</span>
-              </button>
+      let matchQuery = false;
+      let matchCount = 0;
+      Object.keys(queryObj).forEach(key => {
+        if (!queryObj[key]) delete queryObj[key];
+      });
+      if (Object.keys(queryObj).length === 0) {
+        matchQuery = true;
+      } else {
+        Object.keys(queryObj).forEach(key => {
+          if (product[key].indexOf(queryObj[key]) > -1) {
+            console.log(queryObj[key], product[key]);
+            matchCount++;
+          }
+        });
+      }
+      if (matchCount === Object.keys(queryObj).length) {
+        matchQuery = true;
+      }
+
+      // only show product that has matching query text
+      if (matchQuery) {
+        return (
+          <li className="product" key={product._id} id={product._id}>
+            <div className="product-checkbox-container">
+              <Checkbox name={product._id} onInputChange={this.onInputChange} />
             </div>
-          ) : (
-            undefined
-          )}
-        </li>
-      );
-      // }
+            <div className="product-container">
+              <div className="product-name-container">
+                <span className="product-accountName">{account.name}</span>
+                <a className="product-name" onClick={this.onNameClick}>
+                  {product.name}
+                </a>
+              </div>
+              <div className="product-details-container">
+                <div className="product-size-container">
+                  <span className="product-size__thick">{product.thick}</span>
+                  <i className="fa fa-times" />
+                  <span className="product-size__length">{product.length}</span>
+                  <i className="fa fa-times" />
+                  <span className="product-size__width">{product.width}</span>
+                </div>
+                <div className="product-isPrint-container">
+                  <span className="product-isPrint">
+                    {product.isPrint ? `인쇄 ${print}` : '무지'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {this.state.isAdmin || this.state.isManager ? (
+              <div className="product-buttons-container">
+                <button
+                  className="button-circle product-button"
+                  onClick={this.onEditClick}
+                >
+                  <i className="fa fa-edit fa-lg" />
+                  <span>수정</span>
+                </button>
+                <button
+                  className="button-circle product-button"
+                  onClick={this.onDeleteClick}
+                >
+                  <i className="fa fa-trash fa-lg" />
+                  <span>삭제</span>
+                </button>
+              </div>
+            ) : (
+              undefined
+            )}
+          </li>
+        );
+      }
     });
   }
 
   render() {
     return (
       <ul id="product-list">
-        {this.state.productsCount ? (
+        {this.state.productsCount &&
+        (this.state.isAdmin || this.state.isManager) ? (
           <div className="product-select-all">
             <Checkbox
               name="selectAll"
-              label=" 전체선택"
+              label="전체선택"
               onInputChange={this.onInputChange}
             />
           </div>
@@ -254,14 +259,14 @@ export default class ProductList extends React.Component {
           undefined
         )}
 
-        {this.getProductList(this.state.query)}
+        {this.getProductList(this.state.queryObj)}
         {this.state.isDetailViewOpen ? (
           <ProductDetailView
             isOpen={this.state.isDetailViewOpen}
             selectedID={this.state.selectedID}
             onDetailViewClose={this.onDetailViewClose}
           />
-          ) : (
+        ) : (
           undefined
         )}
         {this.state.isProductModalOpen ? (

@@ -13,10 +13,22 @@ export default class ProductsPage extends React.Component {
       isManager: false,
       isModalNewOpen: false,
       isModalNewMultiOpen: false,
-      query: ''
+      queryObj: {
+        accountName: '',
+        name: '',
+        thick: '',
+        length: '',
+        width: '',
+        extColor: '',
+        printFrontColor: '',
+        printBackColor: ''
+      }
     };
 
     this.onInputSearchChange = this.onInputSearchChange.bind(this);
+    this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
+    this.onProductSearchChange = this.onProductSearchChange.bind(this);
+    this.onProductSearchReset = this.onProductSearchReset.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onClickExportExcel = this.onClickExportExcel.bind(this);
@@ -29,6 +41,13 @@ export default class ProductsPage extends React.Component {
     window.addEventListener('resize', () => {
       this.setLayout();
     });
+    document
+      .getElementById('product-search-toggle')
+      .addEventListener('click', () => {
+        setTimeout(() => {
+          this.setLayout();
+        }, 0);
+      });
 
     // tracks if the user logged in is admin or manager
     this.authTracker = Tracker.autorun(() => {
@@ -50,13 +69,17 @@ export default class ProductsPage extends React.Component {
     const headerHeight = document
       .querySelector('.header')
       .getBoundingClientRect().height;
+    const pageHeaderHeight = document
+      .querySelector('.page-header')
+      .getBoundingClientRect().height;
     const main = document.querySelector('.main');
     const pageContent = document.querySelector('.page-content');
-    const mainY = headerHeight + 50;
-    const mainHeight = `calc(100vh - ${mainY}px)`;
-    const contentHeight = `calc(100vh - ${mainY + 70}px)`;
+    const mainHeight = `calc(100vh - ${headerHeight + 35}px)`;
+    const contentHeight = `calc(100vh - ${headerHeight +
+      35 +
+      pageHeaderHeight}px)`;
     main.style.height = mainHeight;
-    main.style.marginTop = `${headerHeight + 10}px`;
+    main.style.marginTop = `${headerHeight + 5}px`;
     pageContent.style.height = contentHeight;
   }
 
@@ -67,8 +90,42 @@ export default class ProductsPage extends React.Component {
       e.target.classList.remove('hasValue');
     }
 
-    const query = e.target.value.trim().toLowerCase();
-    this.setState({ query });
+    const queryObj = {
+      name: e.target.value.trim().toLowerCase()
+    };
+    this.setState({ queryObj });
+  }
+
+  onSearchExpandClick(e) {
+    const productSearch = document.getElementById('product-search');
+    productSearch.classList.toggle('hidden');
+  }
+
+  onProductSearchChange() {
+    const queryObj = {
+      accountName: this.refs.searchByAccountName.value.trim().toLowerCase(),
+      name: this.refs.searchByProductName.value.trim().toLowerCase(),
+      thick: this.refs.searchByThick.value.trim().toLowerCase(),
+      length: this.refs.searchByLength.value.trim().toLowerCase(),
+      width: this.refs.searchByWidth.value.trim().toLowerCase(),
+      extColor: this.refs.searchByExtColor.value.trim().toLowerCase(),
+      printFrontColor: this.refs.searchByPrintColor.value.trim().toLowerCase(),
+      printBackColor: this.refs.searchByPrintColor.value.trim().toLowerCase()
+    };
+
+    this.setState({ queryObj });
+  }
+
+  onProductSearchReset() {
+    this.refs.searchByAccountName.value = '';
+    this.refs.searchByProductName.value = '';
+    this.refs.searchByThick.value = '';
+    this.refs.searchByLength.value = '';
+    this.refs.searchByWidth.value = '';
+    this.refs.searchByExtColor.value = '';
+    this.refs.searchByPrintColor.value = '';
+    this.refs.searchByPrintColor.value = '';
+    this.onProductSearchChange();
   }
 
   onClickNew() {
@@ -140,52 +197,130 @@ export default class ProductsPage extends React.Component {
     return (
       <div className="main">
         <div className="page-header">
-          <h1 className="page-header__title">제품목록</h1>
-          <input
-            className="page-header__search"
-            type="text"
-            placeholder="&#xf002;"
-            onChange={this.onInputSearchChange}
-            onFocus={e => {
-              e.target.select();
-            }}
-          />
+          <div className="page-header__row">
+            <h1 className="page-header__title">제품목록</h1>
+            <input
+              className="page-header__search"
+              type="text"
+              placeholder="&#xf002;"
+              onChange={this.onInputSearchChange}
+              onFocus={e => {
+                e.target.select();
+              }}
+            />
 
-          <div className="page-header__buttons">
-            <button
-              className="button-circle page-header__button"
-              onClick={this.onClickExportExcel}
-            >
-              <i className="fa fa-table fa-lg" />
-              <span>엑셀</span>
-            </button>
-            {this.state.isAdmin ? (
+            <div className="page-header__buttons">
+              <button
+                id="product-search-toggle"
+                className="button-circle page-header__button"
+                onClick={this.onSearchExpandClick}
+              >
+                <i className="fa fa-search-plus" />
+                <span>확장검색</span>
+              </button>
               <button
                 className="button-circle page-header__button"
-                onClick={this.onClickNewMulti}
+                onClick={this.onClickExportExcel}
               >
-                <i className="fa fa-plus-square fa-lg" />
-                <span>대량등록</span>
+                <i className="fa fa-table fa-lg" />
+                <span>엑셀</span>
               </button>
-            ) : (
-              undefined
-            )}
-            {this.state.isAdmin || this.state.isManager ? (
+              {this.state.isAdmin ? (
+                <button
+                  className="button-circle page-header__button"
+                  onClick={this.onClickNewMulti}
+                >
+                  <i className="fa fa-plus-square fa-lg" />
+                  <span>대량등록</span>
+                </button>
+              ) : (
+                undefined
+              )}
+              {this.state.isAdmin || this.state.isManager ? (
+                <button
+                  className="button-circle page-header__button"
+                  onClick={this.onClickNew}
+                >
+                  <i className="fa fa-plus fa-lg" />
+                  <span>신규</span>
+                </button>
+              ) : (
+                undefined
+              )}
+            </div>
+          </div>
+          <div id="product-search" className="page-header__row hidden">
+            <div className="product-search__input-container">
+              <input
+                className="input search-by-account-name"
+                type="text"
+                placeholder="업체명"
+                ref="searchByAccountName"
+                name="searchByAccountName"
+                onChange={this.onProductSearchChange}
+              />
+              <input
+                className="input search-by-product-name"
+                type="text"
+                placeholder="품명"
+                ref="searchByProductName"
+                name="searchByProductName"
+                onChange={this.onProductSearchChange}
+              />
+              <input
+                className="input search-by-size"
+                type="text"
+                placeholder="두께"
+                ref="searchByThick"
+                name="searchByThick"
+                onChange={this.onProductSearchChange}
+              />
+              <input
+                className="input search-by-size"
+                type="text"
+                placeholder="길이"
+                ref="searchByLength"
+                name="searchByLength"
+                onChange={this.onProductSearchChange}
+              />
+              <input
+                className="input search-by-size"
+                type="text"
+                placeholder="너비"
+                ref="searchByWidth"
+                name="searchByWidth"
+                onChange={this.onProductSearchChange}
+              />
+              <input
+                className="input search-by-color"
+                type="text"
+                placeholder="압출색상"
+                ref="searchByExtColor"
+                name="searchByExtColor"
+                onChange={this.onProductSearchChange}
+              />
+              <input
+                className="input search-by-color"
+                type="text"
+                placeholder="인쇄색상"
+                ref="searchByPrintColor"
+                name="searchByPrintColor"
+                onChange={this.onProductSearchChange}
+              />
+            </div>
+            <div className="product-search__button-container">
               <button
-                className="button-circle page-header__button"
-                onClick={this.onClickNew}
+                className="button product-search-button"
+                onClick={this.onProductSearchReset}
               >
-                <i className="fa fa-plus fa-lg" />
-                <span>신규</span>
+                초기화
               </button>
-            ) : (
-              undefined
-            )}
+            </div>
           </div>
         </div>
 
         <div className="page-content">
-          <ProductList query={this.state.query} />
+          <ProductList queryObj={this.state.queryObj} />
         </div>
 
         {this.state.isModalNewOpen ? (
