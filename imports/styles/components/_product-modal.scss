@@ -199,27 +199,4 @@
     margin-left: 0;
     justify-content: center;
   }
-
-  .product-modal__print-detail-container {
-    label {
-      margin-bottom: 0;
-    }
-  }
-
-  .product-modal__color-count{
-    margin-bottom: 0;
-    width: 8%;
-    & + label {
-      width: 5%;
-    }
-  }
-
-  .product-modal__color {
-    margin-bottom: 0;
-    width: 15%;
-  }
-
-  .product-modal__print-position {
-    width: 30%;
-  }
 }

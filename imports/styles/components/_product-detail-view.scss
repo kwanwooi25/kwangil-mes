@@ -1,3 +1,8 @@
+.product-detail-modal {
+  width: 95%;
+  max-width: $break--md;
+}
+
 .product-detail__container {
   display: flex;
   flex-direction: column;
@@ -5,6 +10,11 @@
   & * {
     margin: 0;
   }
+}
+
+.product-detail__subsection {
+  display: flex;
+  flex-direction: column;
 }
 
 .product-detail__accountName {
@@ -28,17 +38,11 @@
   padding: $space-xs;
 }
 
-.product-detail__printImage {
-  width: 100%;
+.product-detail__print-image {
+  margin: 0 auto;
+  max-height: 50vh;
+  max-width: 100%;
 }
 
 @media (min-width: $break--md) {
-  .product-detail__container {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .product-detail__subsection {
-    width: 50%;
-  }
 }

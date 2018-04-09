@@ -246,7 +246,7 @@ export default class ProductList extends React.Component {
           <div className="product-select-all">
             <Checkbox
               name="selectAll"
-              label="전체선택"
+              label=" 전체선택"
               onInputChange={this.onInputChange}
             />
           </div>

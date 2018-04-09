@@ -23,100 +23,126 @@ export default class ProductDetailView extends React.Component {
     this.props.onDetailViewClose();
   }
 
+  comma(str) {
+    str = String(str);
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
+  }
+
   getProductDetails() {
     const product = ProductsData.findOne({ _id: this.props.selectedID });
     const accountName = AccountsData.findOne({ _id: product.accountID }).name;
-    let printText = "";
+
+    let extSurmmaryText = "",
+      printSummaryText = "",
+      printFrontText = "",
+      printBackText = "",
+      cutPositionText = "",
+      cutExtraText = "",
+      cutPunchText = "",
+      packDetailText = "",
+      priceText = "";
+
+    extSummaryText = `${product.extColor}원단`;
+    if (product.extPretreat === "single") {
+      extSummaryText += " / 단면처리";
+    } else if (product.extPretreat === "both") {
+      extSummaryText += " / 양면처리";
+    }
+    if (product.extAntistatic) {
+      extSummaryText += " / 대전방지";
+    }
+
     if (product.isPrint) {
-      printText += `인쇄 ${Number(product.printFrontColorCount) +
-        Number(product.printBackColorCount)}도 (전면 ${
-        product.printFrontColorCount
-      }도`;
-      if (product.printBackColorCount) {
-        printText += `, 후면 ${product.printBackColorCount}도)`;
-      } else {
-        printText += ")";
+      const printCountTotal =
+        Number(product.printFrontColorCount) +
+        Number(product.printBackColorCount);
+      printSummaryText += `인쇄 ${printCountTotal}도`;
+      printSummaryText += ` (전면 ${product.printFrontColorCount}도`;
+      printFrontText = `
+          전면: ${product.printFrontColorCount}도 /
+                ${product.printFrontColor}
+        `;
+      if (product.printFrontPosition) {
+        printFrontText += ` / ${product.printFrontPosition}`;
       }
+      if (product.printBackColorCount) {
+        printSummaryText += `, 후면 ${product.printBackColorCount}도)`;
+        printBackText = `
+            후면: ${product.printBackColorCount}도 /
+                  ${product.printBackColor}
+          `;
+        if (product.printBackPosition) {
+          printBackText +=` / ${product.printBackPosition}`;
+        }
+      } else {
+        printSummaryText += ")";
+      }
+    }
+
+    if (product.cutPosition) {
+      cutPositionText = `가공위치: ${product.cutPosition}`;
+    }
+
+    if (product.cutUltrasonic) {
+      cutExtraText = "초음파가공";
+      if (product.cutPowderPack) {
+        cutExtraText += " / 가루포장";
+      }
+    } else if (product.cutPowderPack) {
+      cutExtraText = "가루포장";
+    }
+
+    if (product.cutPunches) {
+      cutPunchText = `바람구멍: ${product.cutPunchCount}개`;
+      if (product.cutPunchSize) {
+        cutPunchText += ` (${product.cutPunchSize})`;
+      }
+      if (product.cutPunchPosition) {
+        cutPunchText += ` / ${product.cutPunchPosition}`;
+      }
+    }
+
+    packDetailText = `${product.packMaterial} 포장`;
+    if (product.packQuantity) {
+      packDetailText += ` (${this.comma(product.packQuantity)}매씩)`;
+    }
+    if (product.packDeliverAll) {
+      packDetailText += " / 전량납품";
+    }
+
+    if (product.price) {
+      priceText = `단가: ${product.price}원`;
     }
 
     return (
       <div className="product-detail__container">
         <div className="product-detail__subsection">
-          <div className="product-detail__row">
-            <h3 className="product-detail__accountName">{accountName}</h3>
-          </div>
-          <div className="product-detail__row">
-            <h2 className="product-detail__productName">{product.name}</h2>
-          </div>
-        </div>
-        <div className="product-detail__subsection">
-          <div className="product-detail__row md50">
-            <p className="product-detail__description">
-              {product.thick} &times; {product.length} &times; {product.width}
-            </p>
-          </div>
-          <div className="product-detail__row md45">
-            <p className="product-detail__description">
-              {product.isPrint ? printText : "무지"}
-            </p>
-          </div>
+          <h3 className="product-detail__accountName">{accountName}</h3>
+          <h2 className="product-detail__productName">{product.name}</h2>
+          <p className="product-detail__description">
+            {product.thick} &times; {product.length} &times; {product.width}
+          </p>
+          <p className="product-detail__description">
+            {product.isPrint ? printSummaryText : "무지"}
+          </p>
         </div>
 
         <div className="product-detail__subsection">
           <h3 className="product-detail__subtitle">압출</h3>
-          <div className="product-detail__row">
-            <p className="product-detail__description">
-              {product.extColor}원단
-              {product.extPretreat === "single"
-                ? " / 단면처리"
-                : product.extPretreat === "both" ? " / 양면처리" : undefined}
-              {product.extAntistatic ? " / 대전방지" : undefined}
-            </p>
-          </div>
-          <div className="product-detail__row">
-            <p className="product-detail__description">{product.extMemo}</p>
-          </div>
+          <p className="product-detail__description">{extSummaryText}</p>
+          <p className="product-detail__description">{product.extMemo}</p>
         </div>
 
         {product.isPrint ? (
           <div className="product-detail__subsection">
             <h3 className="product-detail__subtitle">인쇄</h3>
-            <div className="product-detail__row">
-              <img
-                className="product-detail__printImage"
-                src={product.printImageURL}
-              />
-            </div>
-            <div className="product-detail__row">
-              <p className="product-detail__description">
-                전면: {product.printFrontColorCount}도 ({
-                  product.printFrontColor
-                })
-              </p>
-              <p className="product-detail__description">
-                {product.printFrontPosition}
-              </p>
-              {product.printBackColorCount ? (
-                <p className="product-detail__description">
-                  후면: {product.printBackColorCount}도 ({
-                    product.printBackColor
-                  })
-                </p>
-              ) : (
-                undefined
-              )}
-              {product.printBackColorCount ? (
-                <p className="product-detail__description">
-                  {product.printBackPosition}
-                </p>
-              ) : (
-                undefined
-              )}
-            </div>
-
-            <div className="product-detail__row">
-              <p className="product-detail__description">{product.printMemo}</p>
-            </div>
+            <img
+              className="product-detail__print-image"
+              src={product.printImageURL}
+            />
+            <p className="product-detail__description">{printFrontText}</p>
+            <p className="product-detail__description">{printBackText}</p>
+            <p className="product-detail__description">{product.printMemo}</p>
           </div>
         ) : (
           undefined
@@ -124,66 +150,22 @@ export default class ProductDetailView extends React.Component {
 
         <div className="product-detail__subsection">
           <h3 className="product-detail__subtitle">가공</h3>
-          <div className="product-detail__row">
-            <p className="product-detail__description">
-              {product.cutPosition
-                ? `가공위치: ${product.cutPosition}`
-                : undefined}
-            </p>
-          </div>
-          <div className="product-detail__row">
-            <p className="product-detail__description">
-              {product.cutUltrasonic ? "초음파가공" : undefined}
-              {product.cutUltrasonic && product.cutPowderPack
-                ? " / "
-                : undefined}
-              {product.cutPowderPack ? "가루포장" : undefined}
-            </p>
-          </div>
-          {product.cutPunches ? (
-            <div className="product-detail__row">
-              <p className="product-detail__description">
-                바람구멍: {product.cutPunchCount}개{" "}
-                {product.cutPunchSize ? `(${product.cutPunchSize})` : undefined}
-              </p>
-              <p className="product-detail__description">
-                {product.cutPunchPosition}
-              </p>
-            </div>
-          ) : (
-            undefined
-          )}
-          <div className="product-detail__row">
-            <p className="product-detail__description">{product.cutMemo}</p>
-          </div>
+          <p className="product-detail__description">{cutPositionText}</p>
+          <p className="product-detail__description">{cutExtraText}</p>
+          <p className="product-detail__description">{cutPunchText}</p>
+          <p className="product-detail__description">{product.cutMemo}</p>
         </div>
 
         <div className="product-detail__subsection">
           <h3 className="product-detail__subtitle">포장</h3>
-          <div className="product-detail__row">
-            <p className="product-detail__description">
-              {product.packMaterial}포장{" "}
-              {product.packQuantity
-                ? `(${product.packQuantity}매씩)`
-                : undefined}{" "}
-              {product.packDeliverAll ? " / 전량납품" : undefined}
-            </p>
-          </div>
-          <div className="product-detail__row">
-            <p className="product-detail__description">{product.packMemo}</p>
-          </div>
+          <p className="product-detail__description">{packDetailText}</p>
+          <p className="product-detail__description">{product.packMemo}</p>
         </div>
 
         <div className="product-detail__subsection">
           <h3 className="product-detail__subtitle">관리자 참고사항</h3>
-          <div className="product-detail__row">
-            <p className="product-detail__description">
-              {product.price ? `단가: ${product.price}원` : undefined}
-            </p>
-          </div>
-          <div className="product-detail__row">
-            <p className="product-detail__description">{product.memo}</p>
-          </div>
+          <p className="product-detail__description">{priceText}</p>
+          <p className="product-detail__description">{product.memo}</p>
         </div>
       </div>
     );
@@ -195,7 +177,7 @@ export default class ProductDetailView extends React.Component {
         isOpen={this.props.isOpen}
         onRequestClose={this.props.onDetailViewClose}
         ariaHideApp={false}
-        className="boxed-view__box product-modal"
+        className="boxed-view__box product-detail-modal"
         overlayClassName="react-modal__bg"
       >
         <div className="boxed-view__header">
