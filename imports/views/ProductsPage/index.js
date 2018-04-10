@@ -1,8 +1,10 @@
-import React from 'react';
+import React from "react";
 
-import ProductModal from './ProductModal';
-import ProductList from './ProductList';
-import ProductNewMultiModal from './ProductNewMultiModal';
+import ProductModal from "./ProductModal";
+import ProductList from "./ProductList";
+import ProductNewMultiModal from "./ProductNewMultiModal";
+
+import { ProductsData } from "../../api/products";
 
 export default class ProductsPage extends React.Component {
   constructor(props) {
@@ -14,14 +16,14 @@ export default class ProductsPage extends React.Component {
       isModalNewOpen: false,
       isModalNewMultiOpen: false,
       queryObj: {
-        accountName: '',
-        name: '',
-        thick: '',
-        length: '',
-        width: '',
-        extColor: '',
-        printFrontColor: '',
-        printBackColor: ''
+        accountName: "",
+        name: "",
+        thick: "",
+        length: "",
+        width: "",
+        extColor: "",
+        printFrontColor: "",
+        printBackColor: ""
       }
     };
 
@@ -38,12 +40,12 @@ export default class ProductsPage extends React.Component {
   componentDidMount() {
     // dynamically adjust height
     this.setLayout();
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       this.setLayout();
     });
     document
-      .getElementById('product-search-toggle')
-      .addEventListener('click', () => {
+      .getElementById("product-search-toggle")
+      .addEventListener("click", () => {
         setTimeout(() => {
           this.setLayout();
         }, 0);
@@ -67,13 +69,13 @@ export default class ProductsPage extends React.Component {
   // dynamically adjust height
   setLayout() {
     const headerHeight = document
-      .querySelector('.header')
+      .querySelector(".header")
       .getBoundingClientRect().height;
     const pageHeaderHeight = document
-      .querySelector('.page-header')
+      .querySelector(".page-header")
       .getBoundingClientRect().height;
-    const main = document.querySelector('.main');
-    const pageContent = document.querySelector('.page-content');
+    const main = document.querySelector(".main");
+    const pageContent = document.querySelector(".page-content");
     const mainHeight = `calc(100vh - ${headerHeight + 35}px)`;
     const contentHeight = `calc(100vh - ${headerHeight +
       35 +
@@ -84,23 +86,32 @@ export default class ProductsPage extends React.Component {
   }
 
   onInputSearchChange(e) {
-    if (e.target.value !== '') {
-      e.target.classList.add('hasValue');
+    if (e.target.value !== "") {
+      e.target.classList.add("hasValue");
     } else {
-      e.target.classList.remove('hasValue');
+      e.target.classList.remove("hasValue");
     }
 
     const queryObj = {
-      name: e.target.value.trim().toLowerCase()
+      accountName: "",
+      name: e.target.value.trim().toLowerCase(),
+      thick: "",
+      length: "",
+      width: "",
+      extColor: "",
+      printFrontColor: "",
+      printBackColor: ""
     };
     this.setState({ queryObj });
   }
 
   onSearchExpandClick(e) {
-    const productSearch = document.getElementById('product-search')
-    const productSearchExpand = document.getElementById('product-search-expand');
-    productSearch.classList.toggle('hidden');
-    productSearchExpand.classList.toggle('hidden');
+    const productSearch = document.getElementById("product-search");
+    const productSearchExpand = document.getElementById(
+      "product-search-expand"
+    );
+    productSearch.classList.toggle("hidden");
+    productSearchExpand.classList.toggle("hidden");
   }
 
   onProductSearchChange() {
@@ -119,14 +130,14 @@ export default class ProductsPage extends React.Component {
   }
 
   onProductSearchReset() {
-    this.refs.searchByAccountName.value = '';
-    this.refs.searchByProductName.value = '';
-    this.refs.searchByThick.value = '';
-    this.refs.searchByLength.value = '';
-    this.refs.searchByWidth.value = '';
-    this.refs.searchByExtColor.value = '';
-    this.refs.searchByPrintColor.value = '';
-    this.refs.searchByPrintColor.value = '';
+    this.refs.searchByAccountName.value = "";
+    this.refs.searchByProductName.value = "";
+    this.refs.searchByThick.value = "";
+    this.refs.searchByLength.value = "";
+    this.refs.searchByWidth.value = "";
+    this.refs.searchByExtColor.value = "";
+    this.refs.searchByPrintColor.value = "";
+    this.refs.searchByPrintColor.value = "";
     this.onProductSearchChange();
   }
 
@@ -143,56 +154,102 @@ export default class ProductsPage extends React.Component {
   }
 
   onClickExportExcel() {
-    // const list = document.getElementById('account-list');
-    // const filename = '광일거래처.csv';
-    // const slice = Array.prototype.slice;
-    //
-    // // get account list
-    // const lis = list.querySelectorAll('li');
-    // const accounts = [];
-    // const keys = ['_id', 'name', 'phone_1', 'phone_2', 'fax', 'email_1', 'email_2', 'address', 'memo']
-    //
-    // for (let i = 0; i < lis.length; i++) {
-    //   accounts.push(AccountsData.findOne({ _id: lis[i].id }))
-    // }
-    //
-    // // generate header csv
-    // const headerCSV = '거래처ID,거래처명,전화번호,전화번호,팩스,이메일,이메일,주소,메모';
-    // // generate body csv from account list
-    // const bodyCSV = accounts.map(account => {
-    //   return keys.map(key => {
-    //     if (account[key] === undefined) {
-    //       return '""';
-    //     } else {
-    //       return '"t"'.replace('t', account[key]);
-    //     }
-    //   }).join(',');
-    // }).join('\r\n');
-    //
-    // // function to generate download anchor
-    // const downloadAnchor = content => {
-    //   const anchor = document.createElement('a');
-    //   anchor.style = 'display:none !important';
-    //   anchor.id = 'downloadanchor';
-    //   document.body.appendChild(anchor);
-    //
-    //   if ('download' in anchor) {
-    //     anchor.download = filename;
-    //   }
-    //   anchor.href = content;
-    //   anchor.click();
-    //   anchor.remove();
-    // };
-    //
-    // // ** must add '\ueff' to prevent broken korean font
-    // const blob = new Blob(['\ufeff' + headerCSV + '\r\n' + bodyCSV], {
-    //   type: 'text/csv;charset=utf-8;'
-    // });
-    // if (navigator.msSaveOrOpenBlob) {
-    //   navigator.msSaveOrOpenBlob(blob, filename);
-    // } else {
-    //   downloadAnchor(URL.createObjectURL(blob))
-    // }
+    const list = document.getElementById("product-list");
+    const filename = "광일지퍼백.csv";
+    const slice = Array.prototype.slice;
+
+    // get account list
+    const lis = list.querySelectorAll("li");
+    const products = [];
+    const keys = [
+      "accountID",
+      "accountName",
+      "_id",
+      "name",
+      "thick",
+      "length",
+      "width",
+      "isPrint",
+      "extColor",
+      "extAntistatic",
+      "extPretreat",
+      "extMemo",
+      "printImageURL",
+      "printFrontColorCount",
+      "printFrontColor",
+      "printFrontPosition",
+      "printBackColorCount",
+      "printBackColor",
+      "printBackPosition",
+      "printMemo",
+      "cutPosition",
+      "utUltrasonic",
+      "cutPowderPack",
+      "cutPunches",
+      "cutPunchCount",
+      "cutPunchSize",
+      "cutPunchPosition",
+      "cutMemo",
+      "packMaterial",
+      "packQuantity",
+      "packDeliverAll",
+      "packMemo",
+      "stockQuantity"
+    ];
+
+    for (let i = 0; i < lis.length; i++) {
+      products.push(ProductsData.findOne({ _id: lis[i].id }));
+    }
+
+    // generate header csv
+    let headerCSV =
+      "업체ID,업체명,제품ID,제품명,두께,길이,너비,무지_인쇄,원단색상,대전방지,처리,압출메모,도안URL,전면도수,전면색상,전면위치,후면도수,후면색상,후면위치,인쇄메모,가공위치,초음파가공,가루포장,바람구멍,바람구멍개수,바람구멍크기,바람구멍위치,가공메모,포장방법,포장수량,전량납품,포장메모,재고수량";
+
+    // for managers
+    if (this.state.isAdmin || this.state.isManager) {
+      keys.push(["price", "history", "memo"]);
+      headerCSV += ",가격,작업이력,메모";
+    }
+
+    // generate body csv from account list
+    const bodyCSV = products
+      .map(product => {
+        return keys
+          .map(key => {
+            if (product[key] === undefined) {
+              return '""';
+            } else {
+              return '"t"'.replace("t", product[key]);
+            }
+          })
+          .join(",");
+      })
+      .join("\r\n");
+
+    // function to generate download anchor
+    const downloadAnchor = content => {
+      const anchor = document.createElement("a");
+      anchor.style = "display:none !important";
+      anchor.id = "downloadanchor";
+      document.body.appendChild(anchor);
+
+      if ("download" in anchor) {
+        anchor.download = filename;
+      }
+      anchor.href = content;
+      anchor.click();
+      anchor.remove();
+    };
+
+    // ** must add '\ueff' to prevent broken korean font
+    const blob = new Blob(["\ufeff" + headerCSV + "\r\n" + bodyCSV], {
+      type: "text/csv;charset=utf-8;"
+    });
+    if (navigator.msSaveOrOpenBlob) {
+      navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+      downloadAnchor(URL.createObjectURL(blob));
+    }
   }
 
   render() {
@@ -261,6 +318,9 @@ export default class ProductsPage extends React.Component {
                 ref="searchByAccountName"
                 name="searchByAccountName"
                 onChange={this.onProductSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
               />
               <input
                 className="input search-by-product-name"
@@ -269,6 +329,9 @@ export default class ProductsPage extends React.Component {
                 ref="searchByProductName"
                 name="searchByProductName"
                 onChange={this.onProductSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
               />
               <input
                 className="input search-by-size"
@@ -277,6 +340,9 @@ export default class ProductsPage extends React.Component {
                 ref="searchByThick"
                 name="searchByThick"
                 onChange={this.onProductSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
               />
               <input
                 className="input search-by-size"
@@ -285,6 +351,9 @@ export default class ProductsPage extends React.Component {
                 ref="searchByLength"
                 name="searchByLength"
                 onChange={this.onProductSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
               />
               <input
                 className="input search-by-size"
@@ -293,6 +362,9 @@ export default class ProductsPage extends React.Component {
                 ref="searchByWidth"
                 name="searchByWidth"
                 onChange={this.onProductSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
               />
               <input
                 className="input search-by-color"
@@ -301,6 +373,9 @@ export default class ProductsPage extends React.Component {
                 ref="searchByExtColor"
                 name="searchByExtColor"
                 onChange={this.onProductSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
               />
               <input
                 className="input search-by-color"
@@ -309,6 +384,9 @@ export default class ProductsPage extends React.Component {
                 ref="searchByPrintColor"
                 name="searchByPrintColor"
                 onChange={this.onProductSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
               />
             </div>
             <div className="product-search__button-container">

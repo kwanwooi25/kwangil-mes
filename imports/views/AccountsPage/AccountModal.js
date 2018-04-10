@@ -294,7 +294,7 @@ export default class AccountModal extends React.Component {
             <div className="form-elements">
               <TextInput
                 className="form-element"
-                inputType="tel"
+                inputType="text"
                 id="phone_1"
                 value={this.state.phone_1}
                 onInputChange={this.onInputChange}
@@ -315,7 +315,7 @@ export default class AccountModal extends React.Component {
             <div className="form-elements">
               <TextInput
                 className="form-element"
-                inputType="tel"
+                inputType="text"
                 id="phone_2"
                 value={this.state.phone_2}
                 onInputChange={this.onInputChange}
@@ -333,7 +333,7 @@ export default class AccountModal extends React.Component {
             <div className="form-elements">
               <TextInput
                 className="form-element"
-                inputType="tel"
+                inputType="text"
                 id="fax"
                 value={this.state.fax}
                 onInputChange={this.onInputChange}

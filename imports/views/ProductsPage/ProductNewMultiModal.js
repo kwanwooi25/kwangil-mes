@@ -57,7 +57,6 @@ export default class ProductNewMultiModal extends React.Component {
 
   onConfirmationModalClose(answer) {
     this.setState({ isConfirmationModalOpen: false });
-    console.log(answer);
     if (answer) {
       const json = JSON.parse(this.refs.productsJSON.value);
       Meteor.call('products.insertmany', json, (err, res) => {

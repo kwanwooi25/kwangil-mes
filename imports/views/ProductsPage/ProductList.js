@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
+import { AccountsData } from "../../api/accounts";
+import { ProductsData } from "../../api/products";
 
-import Checkbox from '../../custom/Checkbox';
-import ProductDetailView from './ProductDetailView';
-import ProductModal from './ProductModal';
-import ConfirmationModal from '../components/ConfirmationModal';
+import Checkbox from "../../custom/Checkbox";
+import ProductDetailView from "./ProductDetailView";
+import ProductModal from "./ProductModal";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 export default class ProductList extends React.Component {
   /*=========================================================================
@@ -25,8 +25,8 @@ export default class ProductList extends React.Component {
       isProductModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmModalOpen: false,
-      selectedID: '',
-      selectedName: '',
+      selectedID: "",
+      selectedName: "",
       productsCount: 0
     };
 
@@ -47,8 +47,8 @@ export default class ProductList extends React.Component {
   componentDidMount() {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
+      Meteor.subscribe("accounts");
+      Meteor.subscribe("products");
       const accountList = AccountsData.find(
         {},
         { fields: { _id: 1, name: 1 } }
@@ -79,7 +79,7 @@ export default class ProductList extends React.Component {
   }
 
   onInputChange(e) {
-    if (e.target.name === 'selectAll') {
+    if (e.target.name === "selectAll") {
       const checkboxes = document.querySelectorAll(
         '#product-list input[type="checkbox"]'
       );
@@ -105,10 +105,10 @@ export default class ProductList extends React.Component {
 
   // show account modal (EDIT mode)
   onEditClick(e) {
-    let selectedID = '';
-    if (e.target.tagName === 'SPAN') {
+    let selectedID = "";
+    if (e.target.tagName === "SPAN") {
       selectedID = e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'BUTTON') {
+    } else if (e.target.tagName === "BUTTON") {
       selectedID = e.target.parentNode.parentNode.id;
     }
 
@@ -124,16 +124,16 @@ export default class ProductList extends React.Component {
 
   // show confirmation modal before delete
   onDeleteClick(e) {
-    let selectedID = '';
-    if (e.target.tagName === 'SPAN') {
+    let selectedID = "";
+    if (e.target.tagName === "SPAN") {
       selectedID = e.target.parentNode.parentNode.parentNode.id;
       selectedName = e.target.parentNode.parentNode.parentNode.querySelector(
-        '.product-name'
+        ".product-name"
       ).textContent;
-    } else if (e.target.tagName === 'BUTTON') {
+    } else if (e.target.tagName === "BUTTON") {
       selectedID = e.target.parentNode.parentNode.id;
       selectedName = e.target.parentNode.parentNode.querySelector(
-        '.product-name'
+        ".product-name"
       ).textContent;
     }
 
@@ -148,7 +148,7 @@ export default class ProductList extends React.Component {
     this.setState({ isDeleteConfirmModalOpen: false });
 
     if (answer) {
-      Meteor.call('products.remove', this.state.selectedID);
+      Meteor.call("products.remove", this.state.selectedID);
     }
   }
 
@@ -157,7 +157,7 @@ export default class ProductList extends React.Component {
       const account = this.state.accountList.find(
         account => account._id === product.accountID
       );
-      let print = '';
+      let print = "";
       if (product.printFrontColorCount) {
         if (product.printBackColorCount) {
           print = `(전면 ${product.printFrontColorCount}도, 후면 ${
@@ -169,21 +169,25 @@ export default class ProductList extends React.Component {
       }
 
       let matchQuery = false;
-      let matchCount = 0;
-      Object.keys(queryObj).forEach(key => {
-        if (!queryObj[key]) delete queryObj[key];
-      });
-      const filterKeys = Object.keys(queryObj);
-      if (filterKeys.length === 0) {
-        matchQuery = true;
-      } else {
-        filterKeys.forEach(key => {
-          if (product[key].indexOf(queryObj[key]) > -1) {
-            matchCount++;
-          }
-        });
-      }
-      if (matchCount === Object.keys(queryObj).length) {
+
+      if (
+        product.accountName &&
+        product.accountName.indexOf(queryObj.accountName) > -1 &&
+        product.name &&
+        product.name.indexOf(queryObj.name) > -1 &&
+        product.thick &&
+        product.thick.indexOf(queryObj.thick) > -1 &&
+        product.length &&
+        product.length.indexOf(queryObj.length) > -1 &&
+        product.width &&
+        product.width.indexOf(queryObj.width) > -1 &&
+        product.extColor &&
+        product.extColor.indexOf(queryObj.extColor) > -1 &&
+        ((product.printFrontColor &&
+          product.printFrontColor.indexOf(queryObj.printFrontColor) > -1) ||
+          (product.printBackColor &&
+            product.printBackColor.indexOf(queryObj.printBackColor) > -1))
+      ) {
         matchQuery = true;
       }
 
@@ -211,7 +215,7 @@ export default class ProductList extends React.Component {
                 </div>
                 <div className="product-isPrint-container">
                   <span className="product-isPrint">
-                    {product.isPrint ? `인쇄 ${print}` : '무지'}
+                    {product.isPrint ? `인쇄 ${print}` : "무지"}
                   </span>
                 </div>
               </div>
