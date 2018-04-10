@@ -23,7 +23,7 @@ Meteor.methods({
 
     const user = Meteor.users.findOne(this.userId);
 
-    if (user.profile.isAdmin === true || user.profile.isManager === true) {
+    if (user.profile.isAdmin || user.profile.isManager ) {
       if (
         !ProductsData.findOne({
           accountID: data.accountID,
