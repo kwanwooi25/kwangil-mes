@@ -468,7 +468,7 @@ export default class ProductModal extends React.Component {
 
     // ADDNEW mode
     if (this.state.mode === 'ADDNEW' && answer) {
-      if (this.refs.printImageFile.files[0]) {
+      if (this.refs.printImageFile && this.refs.printImageFile.files[0]) {
         this.uploadImage(this.refs.printImageFile.files[0]).then(
           convertedURL => {
             this.setState({ printImageURL: convertedURL }, () => {

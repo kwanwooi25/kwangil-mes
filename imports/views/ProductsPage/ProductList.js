@@ -173,12 +173,12 @@ export default class ProductList extends React.Component {
       Object.keys(queryObj).forEach(key => {
         if (!queryObj[key]) delete queryObj[key];
       });
-      if (Object.keys(queryObj).length === 0) {
+      const filterKeys = Object.keys(queryObj);
+      if (filterKeys.length === 0) {
         matchQuery = true;
       } else {
-        Object.keys(queryObj).forEach(key => {
+        filterKeys.forEach(key => {
           if (product[key].indexOf(queryObj[key]) > -1) {
-            console.log(queryObj[key], product[key]);
             matchCount++;
           }
         });

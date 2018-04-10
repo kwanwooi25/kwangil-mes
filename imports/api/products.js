@@ -24,10 +24,18 @@ Meteor.methods({
     const user = Meteor.users.findOne(this.userId);
 
     if (user.profile.isAdmin === true || user.profile.isManager === true) {
-      if (!ProductsData.findOne({ name: data.name })) {
+      if (
+        !ProductsData.findOne({
+          accountID: data.accountID,
+          name: data.name,
+          thick: data.thick,
+          length: data.length,
+          width: data.width
+        })
+      ) {
         ProductsData.insert(data);
       } else {
-        throw new Meteor.Error('이미 존재하는 업체입니다.');
+        throw new Meteor.Error('이미 존재하는 품목입니다.');
       }
     }
   },
@@ -58,5 +66,4 @@ Meteor.methods({
 
     ProductsData.remove({ _id: productID });
   }
-
 });

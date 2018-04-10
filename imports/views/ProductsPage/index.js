@@ -97,8 +97,10 @@ export default class ProductsPage extends React.Component {
   }
 
   onSearchExpandClick(e) {
-    const productSearch = document.getElementById('product-search');
+    const productSearch = document.getElementById('product-search')
+    const productSearchExpand = document.getElementById('product-search-expand');
     productSearch.classList.toggle('hidden');
+    productSearchExpand.classList.toggle('hidden');
   }
 
   onProductSearchChange() {
@@ -200,6 +202,7 @@ export default class ProductsPage extends React.Component {
           <div className="page-header__row">
             <h1 className="page-header__title">제품목록</h1>
             <input
+              id="product-search"
               className="page-header__search"
               type="text"
               placeholder="&#xf002;"
@@ -249,7 +252,7 @@ export default class ProductsPage extends React.Component {
               )}
             </div>
           </div>
-          <div id="product-search" className="page-header__row hidden">
+          <div id="product-search-expand" className="page-header__row hidden">
             <div className="product-search__input-container">
               <input
                 className="input search-by-account-name"

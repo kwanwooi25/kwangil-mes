@@ -157,47 +157,49 @@ export default class AccountsPage extends React.Component {
     return (
       <div className="main">
         <div className="page-header">
-          <h1 className="page-header__title">거래처목록</h1>
-          <input
-            className="page-header__search"
-            type="text"
-            placeholder="&#xf002;"
-            onChange={this.onInputSearchChange}
-            onFocus={e => {
-              e.target.select();
-            }}
-          />
+          <div className="page-header__row">
+            <h1 className="page-header__title">거래처목록</h1>
+            <input
+              className="page-header__search"
+              type="text"
+              placeholder="&#xf002;"
+              onChange={this.onInputSearchChange}
+              onFocus={e => {
+                e.target.select();
+              }}
+            />
 
-          <div className="page-header__buttons">
-            <button
-              className="button-circle page-header__button"
-              onClick={this.onClickExportExcel}
-            >
-              <i className="fa fa-table fa-lg" />
-              <span>엑셀</span>
-            </button>
-            {this.state.isAdmin ? (
+            <div className="page-header__buttons">
               <button
                 className="button-circle page-header__button"
-                onClick={this.onClickNewMulti}
+                onClick={this.onClickExportExcel}
               >
-                <i className="fa fa-plus-square fa-lg" />
-                <span>대량등록</span>
+                <i className="fa fa-table fa-lg" />
+                <span>엑셀</span>
               </button>
-            ) : (
-              undefined
-            )}
-            {this.state.isAdmin || this.state.isManager ? (
-              <button
-                className="button-circle page-header__button"
-                onClick={this.onClickNew}
-              >
-                <i className="fa fa-plus fa-lg" />
-                <span>신규</span>
-              </button>
-            ) : (
-              undefined
-            )}
+              {this.state.isAdmin ? (
+                <button
+                  className="button-circle page-header__button"
+                  onClick={this.onClickNewMulti}
+                >
+                  <i className="fa fa-plus-square fa-lg" />
+                  <span>대량등록</span>
+                </button>
+              ) : (
+                undefined
+              )}
+              {this.state.isAdmin || this.state.isManager ? (
+                <button
+                  className="button-circle page-header__button"
+                  onClick={this.onClickNew}
+                >
+                  <i className="fa fa-plus fa-lg" />
+                  <span>신규</span>
+                </button>
+              ) : (
+                undefined
+              )}
+            </div>
           </div>
         </div>
 

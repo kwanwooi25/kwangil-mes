@@ -5,6 +5,10 @@
   padding: $space-md;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .page-header {
   display: flex;
   flex-direction: column;
@@ -15,10 +19,6 @@
     flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: $space-sm;
-
-    &.hidden {
-      display: none;
-    }
   }
 }
 
