@@ -5,6 +5,7 @@ import { ProductsData } from "../../api/products";
 
 import Checkbox from "../../custom/Checkbox";
 import ProductDetailView from "./ProductDetailView";
+import ProductOrderModal from "./ProductOrderModal";
 import ProductModal from "./ProductModal";
 import ConfirmationModal from "../components/ConfirmationModal";
 
@@ -22,6 +23,7 @@ export default class ProductList extends React.Component {
       queryObj: props.queryObj,
       isAdmin: false,
       isManager: false,
+      isProductOrderModalOpen: false,
       isProductModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmModalOpen: false,
@@ -33,6 +35,8 @@ export default class ProductList extends React.Component {
     this.onInputChange = this.onInputChange.bind(this);
     this.onNameClick = this.onNameClick.bind(this);
     this.onDetailViewClose = this.onDetailViewClose.bind(this);
+    this.onProductOrderClick = this.onProductOrderClick.bind(this);
+    this.onProductOrderModalClose = this.onProductOrderModalClose.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
     this.onProductModalClose = this.onProductModalClose.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
@@ -101,6 +105,25 @@ export default class ProductList extends React.Component {
 
   onDetailViewClose() {
     this.setState({ isDetailViewOpen: false });
+  }
+
+  // show product order modal
+  onProductOrderClick(e) {
+    let selectedID = "";
+    if (e.target.tagName === "SPAN") {
+      selectedID = e.target.parentNode.parentNode.parentNode.id;
+    } else if (e.target.tagName === "BUTTON") {
+      selectedID = e.target.parentNode.parentNode.id;
+    }
+
+    this.setState({
+      isProductOrderModalOpen: true,
+      selectedID
+    });
+  }
+
+  onProductOrderModalClose() {
+    this.setState({ isProductOrderModalOpen: false });
   }
 
   // show account modal (EDIT mode)
@@ -225,6 +248,13 @@ export default class ProductList extends React.Component {
               <div className="product-buttons-container">
                 <button
                   className="button-circle product-button"
+                  onClick={this.onProductOrderClick}
+                >
+                  <i className="fa fa-industry fa-lg" />
+                  <span>작업지시</span>
+                </button>
+                <button
+                  className="button-circle product-button"
                   onClick={this.onEditClick}
                 >
                   <i className="fa fa-edit fa-lg" />
@@ -269,6 +299,17 @@ export default class ProductList extends React.Component {
             isOpen={this.state.isDetailViewOpen}
             selectedID={this.state.selectedID}
             onDetailViewClose={this.onDetailViewClose}
+          />
+        ) : (
+          undefined
+        )}
+        {this.state.isProductOrderModalOpen ? (
+          <ProductOrderModal
+            isOpen={this.state.isProductOrderModalOpen}
+            selectedID={this.state.selectedID}
+            onModalClose={this.onProductOrderModalClose}
+            isAdmin={this.state.isAdmin}
+            isManager={this.state.isManager}
           />
         ) : (
           undefined
