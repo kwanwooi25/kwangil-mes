@@ -1,19 +1,20 @@
-import { Meteor } from "meteor/meteor";
-import React from "react";
-import Modal from "react-modal";
-import moment from "moment";
+import { Meteor } from 'meteor/meteor';
+import React from 'react';
+import Modal from 'react-modal';
+import moment from 'moment';
 
-import { AccountsData } from "../../api/accounts";
-import { ProductsData } from "../../api/products";
+import { ProductsData } from '../../api/products';
+import { OrdersData } from '../../api/orders';
 
-import DatePicker from "../../custom/DatePicker";
-import TextInput from "../../custom/TextInput";
-import Textarea from "../../custom/Textarea";
-import RadioButton from "../../custom/RadioButton";
-import Checkbox from "../../custom/Checkbox";
-import Accordion from "../../custom/Accordion";
-import ConfirmationModal from "../components/ConfirmationModal";
+import DatePicker from '../../custom/DatePicker';
+import TextInput from '../../custom/TextInput';
+import Textarea from '../../custom/Textarea';
+import RadioButton from '../../custom/RadioButton';
+import Checkbox from '../../custom/Checkbox';
+import Accordion from '../../custom/Accordion';
+import ConfirmationModal from '../components/ConfirmationModal';
 
+import noImage from '../../assets/no-image.png';
 
 export default class ProductModal extends React.Component {
   /*=========================================================================
@@ -38,6 +39,7 @@ export default class ProductModal extends React.Component {
       width: product.width,
       isPrint: product.isPrint,
       extColor: product.extColor,
+      extAntistatic: product.extAntistatic,
       extPretreat: product.extPretreat,
       printImageURL: product.printImageURL,
       printFrontColorCount: product.printFrontColorCount,
@@ -55,18 +57,18 @@ export default class ProductModal extends React.Component {
       packDeliverAll: product.packDeliverAll,
       orderedAt: moment(),
       deliverBefore: moment(),
-      orderQuantity: "",
+      orderQuantity: '',
       deliverDateStrict: false,
       deliverFast: false,
-      plateStatus: "confirm", // "confirm" : 확인, "new" : 신규, "edit" : 수정
-      workMemo: "",
-      deliverMemo: "",
+      plateStatus: 'confirm', // "confirm" : 확인, "new" : 신규, "edit" : 수정
+      workMemo: '',
+      deliverMemo: '',
       orderedAtEmpty: false,
       deliverBeforeEmpty: false,
       orderQuantityEmpty: false,
       isConfirmationModalOpen: false,
-      confirmationTitle: "",
-      confirmationDescription: ""
+      confirmationTitle: '',
+      confirmationDescription: ''
     };
 
     this.onInputChange = this.onInputChange.bind(this);
@@ -77,52 +79,85 @@ export default class ProductModal extends React.Component {
 
   componentDidMount() {
     // set deliverBefore
+    let leadtime = 0;
     if (this.state.isPrint) {
-      const deliverBefore = this.avoidWeekend(moment().add(10, "days"));
-      this.setState({ deliverBefore });
+      leadtime = 10;
+    } else {
+      leadtime = 7;
     }
+    const deliverBefore = this.avoidWeekend(moment().add(leadtime, 'days'));
+    this.setState({ deliverBefore });
   }
 
   // function to set deliverBefore date to be weekdays
   // passes moment() object
   avoidWeekend(date) {
     if (date.day() === 6) {
-      date = date.subtract(1, "days");
+      date = date.subtract(1, 'days');
     } else if (date.day() === 7) {
-      date = date.add(1, "days");
+      date = date.add(1, 'days');
     }
     return date;
   }
 
   comma(str) {
     str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
   }
 
   uncomma(str) {
     str = String(str);
-    return str.replace(/[^\d]+/g, "");
+    return str.replace(/[^\d]+/g, '');
   }
 
   getProductInfo() {
     const sizeText = `
       ${this.state.thick} x ${this.state.length} x ${this.state.width}
     `;
-    let printText = "";
-    let printDetailText = "";
+
+    let extPrintText = `${this.state.extColor}원단`;
+    let printDetailText = '';
     if (this.state.isPrint) {
-      printText = `인쇄 ${Number(this.state.printFrontColorCount) +
+      extPrintText += ` / 인쇄 ${Number(this.state.printFrontColorCount) +
         Number(this.state.printBackColorCount)}도`;
-      printDetailText = `전면 ${this.state.printFrontColorCount}도: ${
+      printDetailText = `(전면 ${this.state.printFrontColorCount}도: ${
         this.state.printFrontColor
       }`;
       if (this.state.printBackColorCount) {
-        printDetailText += ` / 후면 ${this.state.printBackColorCount}도: ${
+        printDetailText += `, 후면 ${this.state.printBackColorCount}도: ${
           this.state.printBackColor
-        }`;
+        })`;
+      } else {
+        printDetailText += ')';
       }
     } else {
-      printText = `무지`;
+      extPrintText += ` / 무지`;
+    }
+
+    let cutDetailText = '';
+    if (this.state.cutUltrasonic) {
+      cutDetailText = '초음파가공';
+      if (this.state.cutPowderPack) {
+        cutDetailText += ' / 가루포장';
+      }
+      if (this.state.cutPunches) {
+        cutDetailText += ` / 바람구멍 (${this.state.cutPunchCount}개)`;
+      }
+    } else if (this.state.cutPowderPack) {
+      cutDetailText = '가루포장';
+      if (this.state.cutPunches) {
+        cutDetailText += ` / 바람구멍 (${this.state.cutPunchCount}개)`;
+      }
+    } else if (this.state.cutPunches) {
+      cutDetailText = `바람구멍 (${this.state.cutPunchCount}개)`;
+    }
+
+    let packDetailText = `${this.state.packMaterial}포장`;
+    if (this.state.packQuantity) {
+      packDetailText += ` (${this.comma(this.state.packQuantity)}매씩)`;
+    }
+    if (this.state.packDeliverAll) {
+      packDetailText += ' / 전량납품';
     }
 
     return (
@@ -131,30 +166,52 @@ export default class ProductModal extends React.Component {
           {this.state.accountName}
         </p>
         <p className="product-order-modal__productName">{this.state.name}</p>
-        <p className="product-order-modal__size">{sizeText}</p>
-        <p className="product-order-modal__isPrint">{printText}</p>
-        <p className="product-order-modal__isPrint">{printDetailText}</p>
-        <img
-          classNme="product-order-modal__printImage"
-          src={this.state.printImageURL}
-        />
+        <p className="product-order-modal__description">{sizeText}</p>
+        <p className="product-order-modal__description">{extPrintText}</p>
+        {printDetailText ? (
+          <p className="product-order-modal__description">{printDetailText}</p>
+        ) : (
+          undefined
+        )}
+        {cutDetailText ? (
+          <p className="product-order-modal__description">{cutDetailText}</p>
+        ) : (
+          undefined
+        )}
+        {packDetailText ? (
+          <p className="product-order-modal__description">{packDetailText}</p>
+        ) : (
+          undefined
+        )}
+        {this.state.isPrint ? (
+          <img
+            className="product-order-modal__print-image"
+            src={this.state.printImageURL || noImage}
+          />
+        ) : (
+          undefined
+        )}
       </div>
     );
   }
 
   onInputChange(e) {
-    if (e.target.name === "orderQuantity") {
+    if (e.target.name === 'orderQuantity') {
       this.setState({
         [e.target.name]: this.comma(this.uncomma(e.target.value))
       });
-    } else if (e.target.type === "checkbox") {
+    } else if (e.target.type === 'checkbox') {
       this.setState({ [e.target.name]: e.target.checked });
     } else {
       this.setState({ [e.target.name]: e.target.value });
     }
 
     // check validation
-    if (e.target.type !== "checkbox" && e.target.type !== "radio") {
+    if (
+      e.target.type !== 'checkbox' &&
+      e.target.type !== 'radio' &&
+      e.target.type !== 'textarea'
+    ) {
       this.validate(e.target.name, e.target.value);
     }
   }
@@ -163,13 +220,13 @@ export default class ProductModal extends React.Component {
     const inputContainer = document.getElementById(name).parentNode;
 
     // check if the value empty
-    if (value === "" || value === null) {
+    if (value === '' || value === null) {
       this.setState({ [`${name}Empty`]: true });
-      inputContainer.classList.add("error");
+      inputContainer.classList.add('error');
       return false;
     } else {
       this.setState({ [`${name}Empty`]: false });
-      inputContainer.classList.remove("error");
+      inputContainer.classList.remove('error');
       return true;
     }
   }
@@ -177,19 +234,17 @@ export default class ProductModal extends React.Component {
   onClickOK(e) {
     e.preventDefault();
 
-    console.log("onClickOK: ", this.state);
-
     // validation
-    if (!this.validate("orderedAt", this.state.orderedAt)) {
-      document.getElementById("orderedAt").focus();
-    } else if (!this.validate("deliverBefore", this.state.deliverBefore)) {
-      document.getElementById("deliverBefore").focus();
-    } else if (!this.validate("orderQuantity", this.state.orderQuantity)) {
-      document.getElementById("orderQuantity").focus();
+    if (!this.validate('orderedAt', this.state.orderedAt)) {
+      document.getElementById('orderedAt').focus();
+    } else if (!this.validate('deliverBefore', this.state.deliverBefore)) {
+      document.getElementById('deliverBefore').focus();
+    } else if (!this.validate('orderQuantity', this.state.orderQuantity)) {
+      document.getElementById('orderQuantity').focus();
     } else {
       this.setState({
         isConfirmationModalOpen: true,
-        confirmationTitle: "신규 작업지시",
+        confirmationTitle: '신규 작업지시',
         confirmationDescription: `
           [ ${this.state.name} :
           ${this.state.thick} x
@@ -204,76 +259,28 @@ export default class ProductModal extends React.Component {
 
   onConfirmationModalClose(answer) {
     this.setState({ isConfirmationModalOpen: false });
-    //
-    // // ADDNEW mode
-    // if (this.state.mode === "ADDNEW" && answer) {
-    //   if (this.refs.printImageFile && this.refs.printImageFile.files[0]) {
-    //     this.uploadImage(this.refs.printImageFile.files[0]).then(
-    //       convertedURL => {
-    //         this.setState({ printImageURL: convertedURL }, () => {
-    //           const data = this.getDataToSave();
-    //           Meteor.call("products.insert", data, (err, res) => {
-    //             if (!err) {
-    //               this.props.onModalClose();
-    //             } else {
-    //               this.setState({ error: err.error });
-    //             }
-    //           });
-    //         });
-    //       }
-    //     );
-    //   } else {
-    //     const data = this.getDataToSave();
-    //     Meteor.call("products.insert", data, (err, res) => {
-    //       if (!err) {
-    //         this.props.onModalClose();
-    //       } else {
-    //         this.setState({ error: err.error });
-    //       }
-    //     });
-    //   }
-    //
-    //   // EDIT mode
-    // } else if (this.state.mode === "EDIT" && answer) {
-    //   if (
-    //     initialState.printImageFileName !== this.state.printImageFileName &&
-    //     this.refs.printImageFile.files[0]
-    //   ) {
-    //     this.uploadImage(this.refs.printImageFile.files[0]).then(
-    //       convertedURL => {
-    //         this.setState({ printImageURL: convertedURL }, () => {
-    //           const data = this.getDataToSave();
-    //           Meteor.call(
-    //             "products.update",
-    //             this.state.productID,
-    //             data,
-    //             (err, res) => {
-    //               if (!err) {
-    //                 this.props.onModalClose();
-    //               } else {
-    //                 this.setState({ error: err.error });
-    //               }
-    //             }
-    //           );
-    //         });
-    //       }
-    //     );
-    //   } else {
-    //     const data = this.getDataToSave();
-    //     Meteor.call(
-    //       "products.update",
-    //       this.state.productID,
-    //       data,
-    //       (err, res) => {
-    //         if (!err) {
-    //           this.props.onModalClose();
-    //         } else {
-    //           this.setState({ error: err.error });
-    //         }
-    //       }
-    //     );
-    //   }
-    // }
+
+    if (answer) {
+      const data = {
+        productID: this.state.productID,
+        orderedAt: this.state.orderedAt.format('YYYY-MM-DD'),
+        deliverBefore: this.state.deliverBefore.format('YYYY-MM-DD'),
+        orderQuantity: this.uncomma(this.state.orderQuantity),
+        deliverDateStrict: this.state.deliverDateStrict,
+        deliverFast: this.state.deliverFast,
+        plateStatus: this.state.isPrint ? this.state.plateStatus : '',
+        workMemo: this.state.workMemo,
+        deliverMemo: this.state.deliverMemo
+      };
+
+      Meteor.call('orders.insert', data, (err, res) => {
+        if (!err) {
+          this.props.onModalClose();
+        } else {
+          this.setState({ error: err.error });
+        }
+      });
+    }
   }
 
   onClickCancel(e) {
@@ -286,7 +293,7 @@ export default class ProductModal extends React.Component {
       <Modal
         isOpen={this.props.isOpen}
         onAfterOpen={() => {
-          document.getElementById("orderQuantity").focus();
+          document.getElementById('orderQuantity').focus();
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
@@ -296,13 +303,13 @@ export default class ProductModal extends React.Component {
         <div className="boxed-view__header">
           <h1>작업지시 작성</h1>
         </div>
-        <form className="boxed-view__content product-modal__content">
-          <div className="accordion-container">
+        <form className="boxed-view__content product-order-modal__content">
+          <div className="accordion-container product-order-modal__accordion">
             <Accordion title="제품정보" />
             <div className="accordion-panel open">{this.getProductInfo()}</div>
           </div>
 
-          <div className="accordion-container">
+          <div className="accordion-container product-order-modal__accordion">
             <Accordion title="작업지시 내용" />
             <div className="accordion-panel open">
               <div className="form-element-group">
@@ -323,7 +330,7 @@ export default class ProductModal extends React.Component {
                       }}
                       errorMessage={
                         this.state.orderedAtEmpty
-                          ? "발주일을 입력하세요."
+                          ? '발주일을 입력하세요.'
                           : undefined
                       }
                     />
@@ -343,7 +350,7 @@ export default class ProductModal extends React.Component {
                       }}
                       errorMessage={
                         this.state.deliverBeforeEmpty
-                          ? "납기일을 입력하세요."
+                          ? '납기일을 입력하세요.'
                           : undefined
                       }
                     />
@@ -362,7 +369,7 @@ export default class ProductModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.orderQuantityEmpty
-                          ? "발주수량을 입력하세요."
+                          ? '발주수량을 입력하세요.'
                           : undefined
                       }
                     />
@@ -389,39 +396,47 @@ export default class ProductModal extends React.Component {
                   </div>
                 </div>
 
-                <div className="form-element-container">
-                  <div className="form-element__label">
-                    <label>동판</label>
+                {this.state.isPrint ? (
+                  <div className="form-element-container">
+                    <div className="form-element__label">
+                      <label>동판</label>
+                    </div>
+                    <div className="form-elements">
+                      <RadioButton
+                        name="plateStatus"
+                        label="확인"
+                        value="confirm"
+                        disabled={!this.state.isPrint}
+                        checked={
+                          this.state.plateStatus === 'confirm' ? true : false
+                        }
+                        onInputChange={this.onInputChange}
+                      />
+                      <RadioButton
+                        name="plateStatus"
+                        label="신규"
+                        value="new"
+                        disabled={!this.state.isPrint}
+                        checked={
+                          this.state.plateStatus === 'new' ? true : false
+                        }
+                        onInputChange={this.onInputChange}
+                      />
+                      <RadioButton
+                        name="plateStatus"
+                        label="수정"
+                        value="edit"
+                        disabled={!this.state.isPrint}
+                        checked={
+                          this.state.plateStatus === 'edit' ? true : false
+                        }
+                        onInputChange={this.onInputChange}
+                      />
+                    </div>
                   </div>
-                  <div className="form-elements">
-                    <RadioButton
-                      name="plateStatus"
-                      label="확인"
-                      value="confirm"
-                      disabled={!this.state.isPrint}
-                      checked={
-                        this.state.plateStatus === "confirm" ? true : false
-                      }
-                      onInputChange={this.onInputChange}
-                    />
-                    <RadioButton
-                      name="plateStatus"
-                      label="신규"
-                      value="new"
-                      disabled={!this.state.isPrint}
-                      checked={this.state.plateStatus === "new" ? true : false}
-                      onInputChange={this.onInputChange}
-                    />
-                    <RadioButton
-                      name="plateStatus"
-                      label="수정"
-                      value="edit"
-                      disabled={!this.state.isPrint}
-                      checked={this.state.plateStatus === "edit" ? true : false}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
-                </div>
+                ) : (
+                  undefined
+                )}
               </div>
 
               <div className="form-element-group">

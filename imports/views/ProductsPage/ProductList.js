@@ -1,18 +1,18 @@
-import React from "react";
+import React from 'react';
 
-import { AccountsData } from "../../api/accounts";
-import { ProductsData } from "../../api/products";
+import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
 
-import Checkbox from "../../custom/Checkbox";
-import ProductDetailView from "./ProductDetailView";
-import ProductOrderModal from "./ProductOrderModal";
-import ProductModal from "./ProductModal";
-import ConfirmationModal from "../components/ConfirmationModal";
+import Checkbox from '../../custom/Checkbox';
+import ProductDetailView from './ProductDetailView';
+import ProductOrderModal from './ProductOrderModal';
+import ProductModal from './ProductModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class ProductList extends React.Component {
   /*=========================================================================
   >> props <<
-  query : query string to filter account list
+  query : query object to filter product list
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -27,8 +27,8 @@ export default class ProductList extends React.Component {
       isProductModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmModalOpen: false,
-      selectedID: "",
-      selectedName: "",
+      selectedID: '',
+      selectedName: '',
       productsCount: 0
     };
 
@@ -51,8 +51,8 @@ export default class ProductList extends React.Component {
   componentDidMount() {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe("accounts");
-      Meteor.subscribe("products");
+      Meteor.subscribe('accounts');
+      Meteor.subscribe('products');
       const accountList = AccountsData.find(
         {},
         { fields: { _id: 1, name: 1 } }
@@ -83,7 +83,7 @@ export default class ProductList extends React.Component {
   }
 
   onInputChange(e) {
-    if (e.target.name === "selectAll") {
+    if (e.target.name === 'selectAll') {
       const checkboxes = document.querySelectorAll(
         '#product-list input[type="checkbox"]'
       );
@@ -109,10 +109,10 @@ export default class ProductList extends React.Component {
 
   // show product order modal
   onProductOrderClick(e) {
-    let selectedID = "";
-    if (e.target.tagName === "SPAN") {
+    let selectedID = '';
+    if (e.target.tagName === 'SPAN') {
       selectedID = e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === "BUTTON") {
+    } else if (e.target.tagName === 'BUTTON') {
       selectedID = e.target.parentNode.parentNode.id;
     }
 
@@ -128,10 +128,10 @@ export default class ProductList extends React.Component {
 
   // show account modal (EDIT mode)
   onEditClick(e) {
-    let selectedID = "";
-    if (e.target.tagName === "SPAN") {
+    let selectedID = '';
+    if (e.target.tagName === 'SPAN') {
       selectedID = e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === "BUTTON") {
+    } else if (e.target.tagName === 'BUTTON') {
       selectedID = e.target.parentNode.parentNode.id;
     }
 
@@ -147,16 +147,16 @@ export default class ProductList extends React.Component {
 
   // show confirmation modal before delete
   onDeleteClick(e) {
-    let selectedID = "";
-    if (e.target.tagName === "SPAN") {
+    let selectedID = '';
+    if (e.target.tagName === 'SPAN') {
       selectedID = e.target.parentNode.parentNode.parentNode.id;
       selectedName = e.target.parentNode.parentNode.parentNode.querySelector(
-        ".product-name"
+        '.product-name'
       ).textContent;
-    } else if (e.target.tagName === "BUTTON") {
+    } else if (e.target.tagName === 'BUTTON') {
       selectedID = e.target.parentNode.parentNode.id;
       selectedName = e.target.parentNode.parentNode.querySelector(
-        ".product-name"
+        '.product-name'
       ).textContent;
     }
 
@@ -171,7 +171,7 @@ export default class ProductList extends React.Component {
     this.setState({ isDeleteConfirmModalOpen: false });
 
     if (answer) {
-      Meteor.call("products.remove", this.state.selectedID);
+      Meteor.call('products.remove', this.state.selectedID);
     }
   }
 
@@ -180,7 +180,7 @@ export default class ProductList extends React.Component {
       const account = this.state.accountList.find(
         account => account._id === product.accountID
       );
-      let print = "";
+      let print = '';
       if (product.printFrontColorCount) {
         if (product.printBackColorCount) {
           print = `(전면 ${product.printFrontColorCount}도, 후면 ${
@@ -205,13 +205,22 @@ export default class ProductList extends React.Component {
         product.width &&
         product.width.indexOf(queryObj.width) > -1 &&
         product.extColor &&
-        product.extColor.indexOf(queryObj.extColor) > -1 &&
-        ((product.printFrontColor &&
-          product.printFrontColor.indexOf(queryObj.printFrontColor) > -1) ||
-          (product.printBackColor &&
-            product.printBackColor.indexOf(queryObj.printBackColor) > -1))
+        product.extColor.indexOf(queryObj.extColor) > -1
       ) {
-        matchQuery = true;
+        if (queryObj.printColor) {
+          if (product.isPrint) {
+            if (
+              (product.printFrontColor &&
+                product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
+              (product.printBackColor &&
+                product.printBackColor.indexOf(queryObj.printColor) > -1)
+            ) {
+              matchQuery = true;
+            }
+          }
+        } else {
+          matchQuery = true;
+        }
       }
 
       // only show product that has matching query text
@@ -238,7 +247,7 @@ export default class ProductList extends React.Component {
                 </div>
                 <div className="product-isPrint-container">
                   <span className="product-isPrint">
-                    {product.isPrint ? `인쇄 ${print}` : "무지"}
+                    {product.isPrint ? `인쇄 ${print}` : '무지'}
                   </span>
                 </div>
               </div>

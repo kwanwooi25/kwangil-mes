@@ -22,8 +22,7 @@ export default class ProductsPage extends React.Component {
         length: "",
         width: "",
         extColor: "",
-        printFrontColor: "",
-        printBackColor: ""
+        printColor: ""
       }
     };
 
@@ -99,8 +98,7 @@ export default class ProductsPage extends React.Component {
       length: "",
       width: "",
       extColor: "",
-      printFrontColor: "",
-      printBackColor: ""
+      printColor: ""
     };
     this.setState({ queryObj });
   }
@@ -122,8 +120,7 @@ export default class ProductsPage extends React.Component {
       length: this.refs.searchByLength.value.trim().toLowerCase(),
       width: this.refs.searchByWidth.value.trim().toLowerCase(),
       extColor: this.refs.searchByExtColor.value.trim().toLowerCase(),
-      printFrontColor: this.refs.searchByPrintColor.value.trim().toLowerCase(),
-      printBackColor: this.refs.searchByPrintColor.value.trim().toLowerCase()
+      printColor: this.refs.searchByPrintColor.value.trim().toLowerCase()
     };
 
     this.setState({ queryObj });
@@ -136,7 +133,6 @@ export default class ProductsPage extends React.Component {
     this.refs.searchByLength.value = "";
     this.refs.searchByWidth.value = "";
     this.refs.searchByExtColor.value = "";
-    this.refs.searchByPrintColor.value = "";
     this.refs.searchByPrintColor.value = "";
     this.onProductSearchChange();
   }

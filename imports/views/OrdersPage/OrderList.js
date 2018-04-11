@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import { AccountsData } from "../../api/accounts";
-import { ProductsData } from "../../api/products";
+import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
 import { OrdersData } from '../../api/orders';
 
 export default class OrderList extends React.Component {
@@ -14,6 +14,7 @@ export default class OrderList extends React.Component {
 
     this.state = {
       accountList: [],
+      productList: [],
       data: [],
       queryObj: props.queryObj,
       isAdmin: false,
@@ -21,8 +22,8 @@ export default class OrderList extends React.Component {
       isProductModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmModalOpen: false,
-      selectedID: "",
-      selectedName: "",
+      selectedID: '',
+      selectedName: '',
       productsCount: 0
     };
 
@@ -43,18 +44,20 @@ export default class OrderList extends React.Component {
   componentDidMount() {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe("accounts");
-      Meteor.subscribe("products");
+      Meteor.subscribe('accounts');
+      Meteor.subscribe('products');
       Meteor.subscribe('orders');
       const accountList = AccountsData.find(
         {},
         { fields: { _id: 1, name: 1 } }
       ).fetch();
       const productList = ProductsData.find({}, { sort: { name: 1 } }).fetch();
+      const orderList = OrdersData.find({}, { sort: { _id: 1}}).fetch();
 
       this.setState({
         accountList,
-        data: productList,
+        productList,
+        data: orderList,
         productsCount: productList.length
       });
     });
@@ -245,6 +248,7 @@ export default class OrderList extends React.Component {
   // }
 
   render() {
+    console.log(this.state.data);
     return (
       <ul id="order-list">
         {/* {this.state.productsCount &&
