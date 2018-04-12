@@ -4,6 +4,7 @@
 @import './global';
 @import './boxed-view';
 @import './elements/input';
+@import './elements/select';
 @import './elements/checkbox';
 @import './elements/radio-button';
 @import './elements/buttons';
@@ -11,6 +12,7 @@
 @import './custom/form-element';
 @import './custom/datepicker';
 @import './components/header';
+@import './components/confirmation-modal';
 @import './components/react-modal';
 @import './components/account-list';
 @import './components/account-modal';
@@ -20,4 +22,4 @@
 @import './components/product-list';
 @import './components/product-detail-view';
 @import './components/product-order-modal';
-@import './components/confirmation-modal';
+@import './components/order-list';

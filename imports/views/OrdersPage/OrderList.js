@@ -30,6 +30,7 @@ export default class OrderList extends React.Component {
     };
 
     // this.onInputChange = this.onInputChange.bind(this);
+    this.onStatusChange = this.onStatusChange.bind(this);
     // this.onNameClick = this.onNameClick.bind(this);
     // this.onDetailViewClose = this.onDetailViewClose.bind(this);
     // this.onEditClick = this.onEditClick.bind(this);
@@ -103,17 +104,35 @@ export default class OrderList extends React.Component {
     return str.replace(/[^\d]+/g, '');
   }
 
-  // onInputChange(e) {
-  //   if (e.target.name === "selectAll") {
-  //     const checkboxes = document.querySelectorAll(
-  //       '#product-list input[type="checkbox"]'
-  //     );
-  //
-  //     for (let i = 0; i < checkboxes.length; i++) {
-  //       checkboxes[i].checked = e.target.checked;
-  //     }
-  //   }
-  // }
+  onInputChange(e) {
+    if (e.target.name === 'selectAll') {
+      const checkboxes = document.querySelectorAll(
+        '#order-list input[type="checkbox"]'
+      );
+
+      for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = e.target.checked;
+      }
+    }
+  }
+
+  onStatusChange(e) {
+    const targetID = e.target.parentNode.parentNode.parentNode.id;
+    const statusValue = e.target.value;
+    const order = this.state.data.find(order => order._id === targetID);
+    let data = order.data;
+    data.status = statusValue;
+
+    console.log(targetID, statusValue, data);
+
+    Meteor.call('orders.update', targetID, data, (err, res) => {
+      if (!err) {
+        console.log('status updated');
+      } else {
+        this.setState({ error: err.error });
+      }
+    });
+  }
   //
   // // show detail view modal
   // onNameClick(e) {
@@ -193,18 +212,16 @@ export default class OrderList extends React.Component {
         isPrintText = '인쇄';
         switch (order.plateStatus) {
           case 'confirm':
-            isPrintText += '(확인)';
+            isPrintText += ' (동판확인)';
             break;
           case 'new':
-            isPrintText += '(신규)';
+            isPrintText += ' (동판신규)';
             break;
           case 'edit':
-            isPrintText += '(수정)';
+            isPrintText += ' (동판수정)';
             break;
         }
       }
-      // 납기일
-      // 납기엄수/지급
 
       let matchQuery = true;
 
@@ -216,68 +233,95 @@ export default class OrderList extends React.Component {
               <Checkbox name={_id} onInputChange={this.onInputChange} />
             </div>
             <div className="order-container">
-              <div className="order-orderedAt-container">
-                <span className="order-orderedAt">{order.orderedAt}</span>
+              <div className="order-deliver-remark-container">
+                {order.deliverFast ? (
+                  <span className="order-list__text">
+                    <i className="fa fa-star" /> 지급
+                  </span>
+                ) : (
+                  undefined
+                )}
+                {order.deliverDateStrict ? (
+                  <span className="order-list__text">
+                    <i className="fa fa-star" /> 납기엄수
+                  </span>
+                ) : (
+                  undefined
+                )}
               </div>
-              <div className="order-names-container">
-                <a className="order-accountName">{account.name}</a>
-                <a className="order-productName">{product.name}</a>
+              <div className="order-status-select-container">
+                <select
+                  className="select"
+                  value={order.status}
+                  onChange={this.onStatusChange}
+                >
+                  <option value="extruding">압출중</option>
+                  <option value="printing">인쇄중</option>
+                  <option value="cutting">가공중</option>
+                </select>
               </div>
+
+              <div className="order-id-container">
+                <p className="order-list__text">{_id}</p>
+              </div>
+
+              <div className="order-dates-container">
+                <p className="order-list__text">발주일: {order.orderedAt}</p>
+                <p className="order-list__text">
+                  납기일: {order.deliverBefore}
+                </p>
+              </div>
+
               <div className="order-product-details-container">
+                <div className="order-names-container">
+                  <a className="order-list__subtitle">{account.name}</a>
+                  <a className="order-list__title">{product.name}</a>
+                </div>
                 <div className="order-product-size-container">
-                  <span className="order-product-size__thick">
-                    {product.thick}
-                  </span>
+                  <span className="order-list__text">{product.thick}</span>
                   <i className="fa fa-times" />
-                  <span className="order-product-size__length">
-                    {product.length}
-                  </span>
+                  <span className="order-list__text">{product.length}</span>
                   <i className="fa fa-times" />
-                  <span className="order-product-size__width">
-                    {product.width}
-                  </span>
+                  <span className="order-list__text">{product.width}</span>
                 </div>
                 <div className="order-product-isPrint-container">
-                  <span className="order-product-isPrint">{isPrintText}</span>
+                  <p className="order-list__text">{isPrintText}</p>
                 </div>
-              </div>
-              <div className="order-details-container">
-                <span className="order-orderQuantity">
-                  {this.comma(order.orderQuantity) + '매'}
-                </span>
-                <span className="order-deliverBefore">{order.deliverBefore}</span>
-                <span className="order-deliverIcons">
-                  {order.deliverFast ? (
-                    <i className="fa fa-shipping-fast" />
-                  ) : order.deliverDateStrict ? (
-                    <i className="fa fa-exclamation-circle" />
-                  ) : (
-                    undefined
-                  )}
-                </span>
+                <div className="order-orderQuantity-container">
+                  <p className="order-list__text">
+                    {this.comma(order.orderQuantity) + '매'}
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* {this.state.isAdmin || this.state.isManager ? (
+            {this.state.isAdmin || this.state.isManager ? (
               <div className="order-buttons-container">
                 <button
-              className="button-circle order-button"
-              onClick={this.onEditClick}
+                  className="button-circle order-button"
+                  onClick={this.onCompleteClick}
                 >
-              <i className="fa fa-edit fa-lg" />
-              <span>수정</span>
+                  <i className="fa fa-check fa-lg" />
+                  <span>완료</span>
                 </button>
                 <button
-              className="button-circle order-button"
-              onClick={this.onDeleteClick}
+                  className="button-circle order-button"
+                  onClick={this.onEditClick}
                 >
-              <i className="fa fa-trash fa-lg" />
-              <span>삭제</span>
+                  <i className="fa fa-edit fa-lg" />
+                  <span>수정</span>
+                </button>
+                <button
+                  className="button-circle order-button"
+                  onClick={this.onDeleteClick}
+                >
+                  <i className="fa fa-trash fa-lg" />
+                  <span>삭제</span>
                 </button>
               </div>
-              ) : (
+            ) : (
               undefined
-            )} */}
+            )}
           </li>
         );
       }
@@ -287,18 +331,18 @@ export default class OrderList extends React.Component {
   render() {
     return (
       <ul id="order-list">
-        {/* {this.state.ordersCount &&
-          (this.state.isAdmin || this.state.isManager) ? (
-            <div className="product-select-all">
-          <Checkbox
-          name="selectAll"
-          label="전체선택"
-          onInputChange={this.onInputChange}
-          />
-            </div>
-          ) : (
-            undefined
-        )} */}
+        {this.state.ordersCount &&
+        (this.state.isAdmin || this.state.isManager) ? (
+          <div className="order-select-all">
+            <Checkbox
+              name="selectAll"
+              label="전체선택"
+              onInputChange={this.onInputChange}
+            />
+          </div>
+        ) : (
+          undefined
+        )}
 
         {this.getOrderList(this.state.queryObj)}
         {/* {this.state.isDetailViewOpen ? (

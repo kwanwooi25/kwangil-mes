@@ -41,7 +41,7 @@ Meteor.methods({
       const orderID = `${counterID}-${('00' + seq).slice(-3)}`;
       OrdersData.insert({ _id: orderID, data });
     }
-  }
+  },
 
   // 'orders.insertmany'(json) {
   //   console.log(json);
@@ -54,13 +54,14 @@ Meteor.methods({
   //   });
   // },
   //
-  // 'orders.update'(productID, data) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //
-  //   OrdersData.update({ _id: productID }, { $set: data });
-  // },
+
+  'orders.update'(orderID, data) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+
+    OrdersData.update({ _id: orderID }, { data });
+  }
   //
   // 'orders.remove'(productID) {
   //   if (!this.userId) {

@@ -270,7 +270,13 @@ export default class ProductModal extends React.Component {
         deliverFast: this.state.deliverFast,
         plateStatus: this.state.isPrint ? this.state.plateStatus : '',
         workMemo: this.state.workMemo,
-        deliverMemo: this.state.deliverMemo
+        deliverMemo: this.state.deliverMemo,
+        status: 'extruding', // 작업지시 직후: 압출중, --> 'printing' --> 'cutting'
+        isCompleted: false,
+        isDelivered: false,
+        completedQuantity: '',
+        completedAt: '',
+        deliveredAt: ''
       };
 
       Meteor.call('orders.insert', data, (err, res) => {
