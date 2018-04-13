@@ -29,10 +29,11 @@
   align-items: center;
   display: flex;
   color: $grey--900;
-  flex-grow: 1;
+  // flex-grow: 1;
   flex-wrap: wrap;
   justify-content: flex-start;
   padding: $space-sm 0;
+  width: 100%;
 }
 
 .order-deliver-remark-container {
@@ -41,6 +42,12 @@
   .order-list__text {
     color: $color-error--500;
   }
+}
+
+.order-list__select {
+  font-size: $font-size--sm;
+  height: 2rem;
+  margin: 0;
 }
 
 .order-status-select-container {
@@ -75,18 +82,18 @@
   width: 100%;
 }
 
-.order-product-size-container,
-.order-product-isPrint-container,
-.order-orderQuantity-container {
-  width: 33%;
+.order-product-size-container {
+  width: 100%;
 }
 
 .order-product-isPrint-container {
-  text-align: center;
+  text-align: left;
+  width: 40%;
 }
 
 .order-orderQuantity-container {
   text-align: right;
+  width: 60%;
 }
 
 .order-id-container,
@@ -128,7 +135,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 20%;
+  width: 12%;
 }
 
 .order-button {
@@ -137,10 +144,30 @@
   margin: $space-xs;
 }
 
+@media (min-width: $break--sm) {
+  .order-names-container {
+    width: 70%;
+  }
+
+  .order-product-size-container {
+    text-align: right;
+    width: 30%;
+  }
+
+  .order-buttons-container {
+    width: 10%;
+  }
+}
+
 @media (min-width: $break--md) {
+  .order-deliver-remark-container {
+    .order-list__text {
+      font-size: $font-size--md;
+    }
+  }
   .order-id-container {
     text-align: center;
-    width: 18%;
+    width: 17%;
 
     .order-list__text {
       font-size: $font-size--sm;
@@ -149,26 +176,101 @@
 
   .order-dates-container {
     text-align: center;
-    width: 25%;
+    width: 20%;
   }
 
   .order-product-details-container {
-    width: 57%;
+    width: 63%;
+  }
+
+  .order-names-container {
+    width: 65%;
   }
 
   .order-product-size-container {
-    width: 38%;
+    text-align: right;
+    width: 35%;
+
+    .order-list__text {
+      font-size: $font-size--sm;
+    }
   }
 
   .order-product-isPrint-container {
-    width: 33%;
+    text-align: left;
+    width: 40%;
   }
 
   .order-orderQuantity-container {
-    width: 29%;
+    text-align: right;
+    width: 60%;
+
+    .order-list__text {
+      font-size: $font-size--sm;
+    }
+  }
+
+  .order-list__title {
+    font-size: $font-size--md;
+  }
+
+  .order-list__subtitle {
+    font-size: $font-size--sm;
+  }
+
+  .order-list__text {
+    font-size: $font-size--xs;
+  }
+}
+
+@media (min-width: $break--lg) {
+  .order-id-container {
+    width: 13%;
+  }
+
+  .order-dates-container {
+    width: 14%;
+  }
+
+  .order-product-details-container {
+    width: 73%;
+  }
+
+  .order-names-container {
+    width: 44%;
+  }
+
+  .order-product-size-container {
+    text-align: center;
+    width: 23%;
+  }
+
+  .order-product-isPrint-container {
+    text-align: center;
+    width: 15%;
+  }
+
+  .order-orderQuantity-container {
+    width: 18%;
   }
 
   .order-buttons-container {
-    width: 10%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 12%;
+  }
+
+  .order-button {
+    height: 2rem;
+    width: 2rem;
+
+    i {
+      font-size: $font-size--sm;
+    }
+
+    span {
+      font-size: $font-size--xs / 4 * 3;
+    }
   }
 }

@@ -223,6 +223,8 @@ export default class OrderList extends React.Component {
         }
       }
 
+      const weight = Number(product.thick) * (Number(product.length) + 5) * Number(product.width) / 100 * 0.0184 * Number(data.orderQuantity);
+
       let matchQuery = true;
 
       // only show product that has matching query text
@@ -251,7 +253,7 @@ export default class OrderList extends React.Component {
               </div>
               <div className="order-status-select-container">
                 <select
-                  className="select"
+                  className="select order-list__select"
                   value={order.status}
                   onChange={this.onStatusChange}
                 >
@@ -289,7 +291,7 @@ export default class OrderList extends React.Component {
                 </div>
                 <div className="order-orderQuantity-container">
                   <p className="order-list__text">
-                    {this.comma(order.orderQuantity) + '매'}
+                    {this.comma(order.orderQuantity) + '매 (' + this.comma(weight.toFixed(0)) + 'kg)'}
                   </p>
                 </div>
               </div>
