@@ -1,10 +1,11 @@
-import React from 'react';
+import React from "react";
+import moment from "moment";
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
-import { OrdersData } from '../../api/orders';
+import { AccountsData } from "../../api/accounts";
+import { ProductsData } from "../../api/products";
+import { OrdersData } from "../../api/orders";
 
-import Checkbox from '../../custom/Checkbox';
+import Checkbox from "../../custom/Checkbox";
 
 export default class OrderList extends React.Component {
   /*=========================================================================
@@ -24,8 +25,8 @@ export default class OrderList extends React.Component {
       isProductModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmModalOpen: false,
-      selectedID: '',
-      selectedName: '',
+      selectedID: "",
+      selectedName: "",
       ordersCount: 0
     };
 
@@ -47,9 +48,9 @@ export default class OrderList extends React.Component {
   componentDidMount() {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
-      Meteor.subscribe('orders');
+      Meteor.subscribe("accounts");
+      Meteor.subscribe("products");
+      Meteor.subscribe("orders");
       const accountList = AccountsData.find(
         {},
         { fields: { _id: 1, name: 1 } }
@@ -96,16 +97,16 @@ export default class OrderList extends React.Component {
 
   comma(str) {
     str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
   }
 
   uncomma(str) {
     str = String(str);
-    return str.replace(/[^\d]+/g, '');
+    return str.replace(/[^\d]+/g, "");
   }
 
   onInputChange(e) {
-    if (e.target.name === 'selectAll') {
+    if (e.target.name === "selectAll") {
       const checkboxes = document.querySelectorAll(
         '#order-list input[type="checkbox"]'
       );
@@ -125,9 +126,9 @@ export default class OrderList extends React.Component {
 
     console.log(targetID, statusValue, data);
 
-    Meteor.call('orders.update', targetID, data, (err, res) => {
+    Meteor.call("orders.update", targetID, data, (err, res) => {
       if (!err) {
-        console.log('status updated');
+        console.log("status updated");
       } else {
         this.setState({ error: err.error });
       }
@@ -205,27 +206,53 @@ export default class OrderList extends React.Component {
       const account = this.state.accountList.find(
         account => account._id === product.accountID
       );
-      console.log(_id, order, product, account);
 
-      let isPrintText = '무지';
+      let isPrintText = "무지";
       if (product.isPrint) {
-        isPrintText = '인쇄';
+        isPrintText = "인쇄";
         switch (order.plateStatus) {
-          case 'confirm':
-            isPrintText += ' (동판확인)';
+          case "confirm":
+            isPrintText += " (동판확인)";
             break;
-          case 'new':
-            isPrintText += ' (동판신규)';
+          case "new":
+            isPrintText += " (동판신규)";
             break;
-          case 'edit':
-            isPrintText += ' (동판수정)';
+          case "edit":
+            isPrintText += " (동판수정)";
             break;
         }
       }
 
-      const weight = Number(product.thick) * (Number(product.length) + 5) * Number(product.width) / 100 * 0.0184 * Number(data.orderQuantity);
+      const weight =
+        Number(product.thick) *
+        (Number(product.length) + 5) *
+        Number(product.width) /
+        100 *
+        0.0184 *
+        Number(data.orderQuantity);
 
-      let matchQuery = true;
+      let matchQuery = false;
+
+      const orderedAt = moment(order.orderedAt);
+      const searchFrom = moment(queryObj.searchFrom);
+      const searchTo = moment(queryObj.searchTo);
+
+      if (
+        searchFrom <= orderedAt &&
+        orderedAt <= searchTo &&
+        account.name.indexOf(queryObj.accountName) > -1 &&
+        product.name.indexOf(queryObj.productName) > -1
+      ) {
+        if (queryObj.isPrintQuery === 'both') {
+          matchQuery = true;
+        }
+        if (queryObj.isPrintQuery === 'false' && !product.isPrint) {
+          matchQuery = true;
+        }
+        if (queryObj.isPrintQuery === 'true' && product.isPrint) {
+          matchQuery = true;
+        }
+      }
 
       // only show product that has matching query text
       if (matchQuery) {
@@ -291,7 +318,10 @@ export default class OrderList extends React.Component {
                 </div>
                 <div className="order-orderQuantity-container">
                   <p className="order-list__text">
-                    {this.comma(order.orderQuantity) + '매 (' + this.comma(weight.toFixed(0)) + 'kg)'}
+                    {this.comma(order.orderQuantity) +
+                      "매 (" +
+                      this.comma(weight.toFixed(0)) +
+                      "kg)"}
                   </p>
                 </div>
               </div>

@@ -6,7 +6,7 @@ import moment from 'moment';
 import { ProductsData } from '../../api/products';
 import { OrdersData } from '../../api/orders';
 
-import DatePicker from '../../custom/DatePicker';
+import DatePickerWithMessage from '../../custom/DatePicker/DatePickerWithMessage';
 import TextInput from '../../custom/TextInput';
 import Textarea from '../../custom/Textarea';
 import RadioButton from '../../custom/RadioButton';
@@ -324,7 +324,7 @@ export default class ProductModal extends React.Component {
                     <label htmlFor="orderedAt">발주일</label>
                   </div>
                   <div className="form-elements">
-                    <DatePicker
+                    <DatePickerWithMessage
                       className="form-element"
                       id="orderedAt"
                       date={this.state.orderedAt}
@@ -347,7 +347,7 @@ export default class ProductModal extends React.Component {
                     <label htmlFor="deliverBefore">납기일</label>
                   </div>
                   <div className="form-elements">
-                    <DatePicker
+                    <DatePickerWithMessage
                       className="form-element"
                       id="deliverBefore"
                       date={this.state.deliverBefore}

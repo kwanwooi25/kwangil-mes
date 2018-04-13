@@ -1,0 +1,103 @@
+.order-search__input-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 80%;
+
+  @media (min-width: $break--sm) {
+    width: 85%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 90%;
+  }
+}
+
+.order-search__button-container {
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  width: 20%;
+
+  @media (min-width: $break--sm) {
+    width: 15%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 10%;
+  }
+}
+
+.order-search__input-container {
+  .SingleDatePicker {
+    width: 50%;
+
+    @media (min-width: $break--sm) {
+      width: 19%;
+    }
+
+    @media (min-width: $break--lg) {
+      width: 9%;
+    }
+  }
+  .SingleDatePickerInput,
+  .DateInput {
+    width: 100%;
+  }
+  .DateInput_input {
+    width: 90%;
+  }
+}
+
+.order-range-button {
+  width: 22%;
+
+  @media (min-width: $break--sm) {
+    font-size: $font-size--xs;
+    width: 11%;
+  }
+
+  @media (min-width: $break--md) {
+    font-size: $font-size--sm;
+    width: 12%;
+  }
+
+  @media (min-width: $break--lg) {
+    font-size: $font-size--xs;
+    width: 6%;
+  }
+}
+
+.order-search__input-container .search-by-account-name {
+  width: 30%;
+
+  @media (min-width: $break--md) {
+    width: 33%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 14%;
+  }
+}
+
+.order-search__input-container .search-by-product-name {
+  width: 40%;
+
+  @media (min-width: $break--md) {
+    width: 45%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 19%;
+  }
+}
+
+.order-isPrint-select {
+  height: 2rem;
+  margin: $space-xs;
+  padding: $space-xs;
+}
+
+.order-search-reset-button {
+  width: 100%;
+}

@@ -1,10 +1,13 @@
 import React from "react";
+import moment from "moment";
 
 // import ProductModal from "./ProductModal";
 import OrderList from "./OrderList";
 // import ProductNewMultiModal from "./ProductNewMultiModal";
 
 // import { ProductsData } from "../../api/products";
+
+import RangePicker from "../../custom/DatePicker/RangePicker";
 
 export default class OrdersPage extends React.Component {
   constructor(props) {
@@ -15,22 +18,26 @@ export default class OrdersPage extends React.Component {
       isManager: false,
       isModalNewOpen: false,
       isModalNewMultiOpen: false,
-      // queryObj: {
-      //   accountName: "",
-      //   name: "",
-      //   thick: "",
-      //   length: "",
-      //   width: "",
-      //   extColor: "",
-      //   printFrontColor: "",
-      //   printBackColor: ""
-      // }
+      searchFrom: moment().subtract(2, "weeks"),
+      searchTo: moment(),
+      isPrintQuery: "both",
+      searchByAccountName: "",
+      searchByProductName: "",
+      queryObj: {
+        searchFrom: moment()
+          .subtract(2, "weeks")
+          .format("YYYY-MM-DD"),
+        searchTo: moment().format("YYYY-MM-DD"),
+        isPrintQuery: "both",
+        accountName: "",
+        productName: ""
+      }
     };
 
     // this.onInputSearchChange = this.onInputSearchChange.bind(this);
     // this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
-    // this.onProductSearchChange = this.onProductSearchChange.bind(this);
-    // this.onProductSearchReset = this.onProductSearchReset.bind(this);
+    this.onOrderSearchChange = this.onOrderSearchChange.bind(this);
+    this.onOrderSearchReset = this.onOrderSearchReset.bind(this);
     // this.onClickNewMulti = this.onClickNewMulti.bind(this);
     // this.onClickExportExcel = this.onClickExportExcel.bind(this);
     // this.onModalClose = this.onModalClose.bind(this);
@@ -113,33 +120,62 @@ export default class OrdersPage extends React.Component {
   //   productSearchExpand.classList.toggle("hidden");
   // }
   //
-  // onProductSearchChange() {
-  //   const queryObj = {
-  //     accountName: this.refs.searchByAccountName.value.trim().toLowerCase(),
-  //     name: this.refs.searchByProductName.value.trim().toLowerCase(),
-  //     thick: this.refs.searchByThick.value.trim().toLowerCase(),
-  //     length: this.refs.searchByLength.value.trim().toLowerCase(),
-  //     width: this.refs.searchByWidth.value.trim().toLowerCase(),
-  //     extColor: this.refs.searchByExtColor.value.trim().toLowerCase(),
-  //     printFrontColor: this.refs.searchByPrintColor.value.trim().toLowerCase(),
-  //     printBackColor: this.refs.searchByPrintColor.value.trim().toLowerCase()
-  //   };
+
+  onOrderSearchChange(e) {
+    if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") {
+      this.setState({ [e.target.name]: e.target.value }, () => {
+        this.refresh();
+      });
+    }
+
+    if (e.target.tagName === "BUTTON") {
+      switch (e.target.name) {
+        case "order-range__2weeks":
+          this.setState({ searchFrom: moment().subtract(2, "weeks") }, () => {
+            this.refresh();
+          });
+          break;
+        case "order-range__1month":
+          this.setState({ searchFrom: moment().subtract(1, "months") }, () => {
+            this.refresh();
+          });
+          break;
+        case "order-range__3months":
+          this.setState({ searchFrom: moment().subtract(3, "months") }, () => {
+            this.refresh();
+          });
+          break;
+        case "order-range__6months":
+          this.setState({ searchFrom: moment().subtract(6, "months") }, () => {
+            this.refresh();
+          });
+          break;
+      }
+    }
+  }
+
+  refresh() {
+    const queryObj = {
+      searchFrom: this.state.searchFrom.format("YYYY-MM-DD"),
+      searchTo: this.state.searchTo.format("YYYY-MM-DD"),
+      isPrintQuery: this.state.isPrintQuery,
+      accountName: this.state.searchByAccountName,
+      productName: this.state.searchByProductName
+    };
+
+    this.setState({ queryObj });
+  }
+
+  onOrderSearchReset() {
+    this.setState({
+      searchFrom: moment().subtract(2, "weeks"),
+      searchTo: moment(),
+      isPrintQuery: "both",
+      accountName: "",
+      productName: ""
+    });
+  }
   //
-  //   this.setState({ queryObj });
-  // }
-  //
-  // onProductSearchReset() {
-  //   this.refs.searchByAccountName.value = "";
-  //   this.refs.searchByProductName.value = "";
-  //   this.refs.searchByThick.value = "";
-  //   this.refs.searchByLength.value = "";
-  //   this.refs.searchByWidth.value = "";
-  //   this.refs.searchByExtColor.value = "";
-  //   this.refs.searchByPrintColor.value = "";
-  //   this.refs.searchByPrintColor.value = "";
-  //   this.onProductSearchChange();
-  // }
-  // 
   // onClickExportExcel() {
   //   const list = document.getElementById("product-list");
   //   const filename = "광일지퍼백.csv";
@@ -245,26 +281,8 @@ export default class OrdersPage extends React.Component {
         <div className="page-header">
           <div className="page-header__row">
             <h1 className="page-header__title">작업지시목록</h1>
-            <input
-              id="order-search"
-              className="page-header__search"
-              type="text"
-              placeholder="&#xf002;"
-              onChange={this.onInputSearchChange}
-              onFocus={e => {
-                e.target.select();
-              }}
-            />
 
             <div className="page-header__buttons">
-              {/* <button
-                id="product-search-toggle"
-                className="button-circle page-header__button"
-                onClick={this.onSearchExpandClick}
-                >
-                <i className="fa fa-search-plus" />
-                <span>확장검색</span>
-              </button> */}
               <button
                 className="button-circle page-header__button"
                 // onClick={this.onClickExportExcel}
@@ -274,95 +292,119 @@ export default class OrdersPage extends React.Component {
               </button>
             </div>
           </div>
-          {/* <div id="product-search-expand" className="page-header__row hidden">
-            <div className="product-search__input-container">
-              <input
-            className="input search-by-account-name"
-            type="text"
-            placeholder="업체명"
-            ref="searchByAccountName"
-            name="searchByAccountName"
-            onChange={this.onProductSearchChange}
-            onFocus={e => {
-            e.target.select();
-            }}
+          <div id="order-search" className="page-header__row">
+            <div className="order-search__input-container">
+              <RangePicker
+                startDate={this.state.searchFrom}
+                startDateId="searchFrom"
+                startDatePlaceholderText="부터"
+                endDate={this.state.searchTo}
+                endDateId="searchTo"
+                endDatePlaceholderText="까지"
+                isOutsideRange={() => {
+                  return false;
+                }}
+                onDatesChange={({ startDate, endDate }) => {
+                  this.setState(
+                    { searchFrom: startDate, searchTo: endDate },
+                    () => {
+                      this.refresh();
+                    }
+                  );
+                }}
               />
-              <input
-            className="input search-by-product-name"
-            type="text"
-            placeholder="품명"
-            ref="searchByProductName"
-            name="searchByProductName"
-            onChange={this.onProductSearchChange}
-            onFocus={e => {
-            e.target.select();
-            }}
+              {/* <DatePicker
+                id="searchFrom"
+                placeholder="부터"
+                date={this.state.searchFrom}
+                onDateChange={searchFrom => {
+                  this.setState({ searchFrom });
+                }}
+                isOutsideRange={() => {
+                  return false;
+                }}
               />
-              <input
-            className="input search-by-size"
-            type="text"
-            placeholder="두께"
-            ref="searchByThick"
-            name="searchByThick"
-            onChange={this.onProductSearchChange}
-            onFocus={e => {
-            e.target.select();
-            }}
-              />
-              <input
-            className="input search-by-size"
-            type="text"
-            placeholder="길이"
-            ref="searchByLength"
-            name="searchByLength"
-            onChange={this.onProductSearchChange}
-            onFocus={e => {
-            e.target.select();
-            }}
-              />
-              <input
-            className="input search-by-size"
-            type="text"
-            placeholder="너비"
-            ref="searchByWidth"
-            name="searchByWidth"
-            onChange={this.onProductSearchChange}
-            onFocus={e => {
-            e.target.select();
-            }}
-              />
-              <input
-            className="input search-by-color"
-            type="text"
-            placeholder="압출색상"
-            ref="searchByExtColor"
-            name="searchByExtColor"
-            onChange={this.onProductSearchChange}
-            onFocus={e => {
-            e.target.select();
-            }}
-              />
-              <input
-            className="input search-by-color"
-            type="text"
-            placeholder="인쇄색상"
-            ref="searchByPrintColor"
-            name="searchByPrintColor"
-            onChange={this.onProductSearchChange}
-            onFocus={e => {
-            e.target.select();
-            }}
-              />
-            </div>
-            <div className="product-search__button-container">
+              <DatePicker
+                id="searchTo"
+                placeholder="까지"
+                date={this.state.searchTo}
+                onDateChange={searchTo => {
+                  this.setState({ searchTo });
+                }}
+                isOutsideRange={() => {
+                  return false;
+                }}
+              /> */}
               <button
-            className="button product-search-button"
-            onClick={this.onProductSearchReset}
+                name="order-range__2weeks"
+                className="button order-range-button"
+                onClick={this.onOrderSearchChange}
               >
-            초기화
+                2주
+              </button>
+              <button
+                name="order-range__1month"
+                className="button order-range-button"
+                onClick={this.onOrderSearchChange}
+              >
+                1개월
+              </button>
+              <button
+                name="order-range__3months"
+                className="button order-range-button"
+                onClick={this.onOrderSearchChange}
+              >
+                3개월
+              </button>
+              <button
+                name="order-range__6months"
+                className="button order-range-button"
+                onClick={this.onOrderSearchChange}
+              >
+                6개월
+              </button>
+              <input
+                className="input search-by-account-name"
+                type="text"
+                placeholder="업체명"
+                ref="searchByAccountName"
+                name="searchByAccountName"
+                onChange={this.onOrderSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
+              />
+              <input
+                className="input search-by-product-name"
+                type="text"
+                placeholder="품명"
+                ref="searchByProductName"
+                name="searchByProductName"
+                onChange={this.onOrderSearchChange}
+                onFocus={e => {
+                  e.target.select();
+                }}
+              />
+              <select
+                className="select order-isPrint-select"
+                name="isPrintQuery"
+                value={this.state.isPrintQuery}
+                onChange={this.onOrderSearchChange}
+              >
+                <option value="both">둘다</option>
+                <option value="false">무지</option>
+                <option value="true">인쇄</option>
+              </select>
+            </div>
+            <div className="order-search__button-container">
+              <button
+                className="button order-search-reset-button"
+                onClick={this.onOrderSearchReset}
+              >
+                초기화
               </button>
             </div>
-          </div> */}
+          </div>
         </div>
 
         <div className="page-content">
