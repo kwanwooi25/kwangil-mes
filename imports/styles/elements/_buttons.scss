@@ -44,4 +44,18 @@
       display: inline-block;
     }
   }
+
+  &:disabled {
+    background: $grey--700;
+    cursor: default;
+
+    &:hover {
+      i {
+        display: inline-block;
+      }
+      span {
+        display: none;
+      }
+    }
+  }
 }

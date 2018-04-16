@@ -42,32 +42,20 @@ Meteor.methods({
       OrdersData.insert({ _id: orderID, data });
     }
   },
-
-  // 'orders.insertmany'(json) {
-  //   console.log(json);
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //   json.map(product => {
-  //     console.log(product);
-  //     OrdersData.insert(product);
-  //   });
-  // },
-  //
-
+  
   'orders.update'(orderID, data) {
     if (!this.userId) {
       throw new Meteor.Error('User not logged in!');
     }
 
     OrdersData.update({ _id: orderID }, { data });
+  },
+
+  'orders.remove'(orderID) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+
+    OrdersData.remove({ _id: orderID });
   }
-  //
-  // 'orders.remove'(productID) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //
-  //   OrdersData.remove({ _id: productID });
-  // }
 });

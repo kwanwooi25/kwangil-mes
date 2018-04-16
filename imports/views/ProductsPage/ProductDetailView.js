@@ -9,7 +9,7 @@ export default class ProductDetailView extends React.Component {
   /*=========================================================================
   >> props <<
   isOpen            : if modal is open
-  selectedID        : account ID to display
+  productID
   onDetailViewClose : function to execute on modal close
   ==========================================================================*/
   constructor(props) {
@@ -29,7 +29,7 @@ export default class ProductDetailView extends React.Component {
   }
 
   getProductDetails() {
-    const product = ProductsData.findOne({ _id: this.props.selectedID });
+    const product = ProductsData.findOne({ _id: this.props.productID });
     const accountName = AccountsData.findOne({ _id: product.accountID }).name;
 
     let extSurmmaryText = "",

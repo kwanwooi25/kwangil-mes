@@ -27,8 +27,8 @@ export default class ProductList extends React.Component {
       isProductModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmModalOpen: false,
-      selectedID: '',
-      selectedName: '',
+      selectedProductID: '',
+      selectedProductName: '',
       productsCount: 0
     };
 
@@ -96,10 +96,10 @@ export default class ProductList extends React.Component {
 
   // show detail view modal
   onNameClick(e) {
-    const selectedID = e.target.parentNode.parentNode.parentNode.id;
+    const selectedProductID = e.target.parentNode.parentNode.parentNode.id;
     this.setState({
       isDetailViewOpen: true,
-      selectedID
+      selectedProductID
     });
   }
 
@@ -109,16 +109,16 @@ export default class ProductList extends React.Component {
 
   // show product order modal
   onProductOrderClick(e) {
-    let selectedID = '';
+    let selectedProductID = '';
     if (e.target.tagName === 'SPAN') {
-      selectedID = e.target.parentNode.parentNode.parentNode.id;
+      selectedProductID = e.target.parentNode.parentNode.parentNode.id;
     } else if (e.target.tagName === 'BUTTON') {
-      selectedID = e.target.parentNode.parentNode.id;
+      selectedProductID = e.target.parentNode.parentNode.id;
     }
 
     this.setState({
       isProductOrderModalOpen: true,
-      selectedID
+      selectedProductID
     });
   }
 
@@ -128,16 +128,16 @@ export default class ProductList extends React.Component {
 
   // show account modal (EDIT mode)
   onEditClick(e) {
-    let selectedID = '';
+    let selectedProductID = '';
     if (e.target.tagName === 'SPAN') {
-      selectedID = e.target.parentNode.parentNode.parentNode.id;
+      selectedProductID = e.target.parentNode.parentNode.parentNode.id;
     } else if (e.target.tagName === 'BUTTON') {
-      selectedID = e.target.parentNode.parentNode.id;
+      selectedProductID = e.target.parentNode.parentNode.id;
     }
 
     this.setState({
       isProductModalOpen: true,
-      selectedID
+      selectedProductID
     });
   }
 
@@ -147,23 +147,23 @@ export default class ProductList extends React.Component {
 
   // show confirmation modal before delete
   onDeleteClick(e) {
-    let selectedID = '';
+    let selectedProductID = '';
     if (e.target.tagName === 'SPAN') {
-      selectedID = e.target.parentNode.parentNode.parentNode.id;
-      selectedName = e.target.parentNode.parentNode.parentNode.querySelector(
+      selectedProductID = e.target.parentNode.parentNode.parentNode.id;
+      selectedProductName = e.target.parentNode.parentNode.parentNode.querySelector(
         '.product-name'
       ).textContent;
     } else if (e.target.tagName === 'BUTTON') {
-      selectedID = e.target.parentNode.parentNode.id;
-      selectedName = e.target.parentNode.parentNode.querySelector(
+      selectedProductID = e.target.parentNode.parentNode.id;
+      selectedProductName = e.target.parentNode.parentNode.querySelector(
         '.product-name'
       ).textContent;
     }
 
     this.setState({
       isDeleteConfirmModalOpen: true,
-      selectedID,
-      selectedName
+      selectedProductID,
+      selectedProductName
     });
   }
 
@@ -171,7 +171,7 @@ export default class ProductList extends React.Component {
     this.setState({ isDeleteConfirmModalOpen: false });
 
     if (answer) {
-      Meteor.call('products.remove', this.state.selectedID);
+      Meteor.call('products.remove', this.state.selectedProductID);
     }
   }
 
@@ -290,23 +290,23 @@ export default class ProductList extends React.Component {
     return (
       <ul id="product-list">
         {this.state.productsCount &&
-        (this.state.isAdmin || this.state.isManager) ? (
-          <div className="product-select-all">
-            <Checkbox
-              name="selectAll"
-              label="전체선택"
-              onInputChange={this.onInputChange}
-            />
-          </div>
-        ) : (
-          undefined
-        )}
+          (this.state.isAdmin || this.state.isManager) ? (
+            <div className="product-select-all">
+              <Checkbox
+                name="selectAll"
+                label="전체선택"
+                onInputChange={this.onInputChange}
+              />
+            </div>
+          ) : (
+            undefined
+          )}
 
         {this.getProductList(this.state.queryObj)}
         {this.state.isDetailViewOpen ? (
           <ProductDetailView
             isOpen={this.state.isDetailViewOpen}
-            selectedID={this.state.selectedID}
+            productID={this.state.selectedProductID}
             onDetailViewClose={this.onDetailViewClose}
           />
         ) : (
@@ -315,7 +315,7 @@ export default class ProductList extends React.Component {
         {this.state.isProductOrderModalOpen ? (
           <ProductOrderModal
             isOpen={this.state.isProductOrderModalOpen}
-            selectedID={this.state.selectedID}
+            productID={this.state.selectedProductID}
             onModalClose={this.onProductOrderModalClose}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
@@ -326,7 +326,7 @@ export default class ProductList extends React.Component {
         {this.state.isProductModalOpen ? (
           <ProductModal
             isOpen={this.state.isProductModalOpen}
-            selectedID={this.state.selectedID}
+            productID={this.state.selectedProductID}
             onModalClose={this.onProductModalClose}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
@@ -339,7 +339,7 @@ export default class ProductList extends React.Component {
             isOpen={this.state.isDeleteConfirmModalOpen}
             title="품목 삭제"
             description={`[${
-              this.state.selectedName
+              this.state.selectedProductName
             }] 품목을 삭제하시겠습니까?`}
             onModalClose={this.onDeleteConfirmModalClose}
           />

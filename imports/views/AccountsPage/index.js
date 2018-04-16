@@ -50,15 +50,19 @@ export default class AccountsPage extends React.Component {
   // dynamically adjust height
   setLayout() {
     const headerHeight = document
-      .querySelector('.header')
+      .querySelector(".header")
       .getBoundingClientRect().height;
-    const main = document.querySelector('.main');
-    const pageContent = document.querySelector('.page-content');
-    const mainY = headerHeight + 50;
-    const mainHeight = `calc(100vh - ${mainY}px)`;
-    const contentHeight = `calc(100vh - ${mainY + 70}px)`;
+    const pageHeaderHeight = document
+      .querySelector(".page-header")
+      .getBoundingClientRect().height;
+    const main = document.querySelector(".main");
+    const pageContent = document.querySelector(".page-content");
+    const mainHeight = `calc(100vh - ${headerHeight + 10}px)`;
+    const contentHeight = `calc(100vh - ${headerHeight +
+      25 +
+      pageHeaderHeight}px)`;
     main.style.height = mainHeight;
-    main.style.marginTop = `${headerHeight + 10}px`;
+    main.style.marginTop = `${headerHeight + 5}px`;
     pageContent.style.height = contentHeight;
   }
 

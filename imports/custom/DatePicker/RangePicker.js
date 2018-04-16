@@ -8,6 +8,7 @@ import "react-dates/lib/css/_datepicker.css";
 
 export default class RangePicker extends React.Component {
   /*=========================================================================
+  >> props <<
   startDateId
   startDate
   startDatePlaceholderText
@@ -46,10 +47,10 @@ export default class RangePicker extends React.Component {
         small
         daySize={30}
         numberOfMonths={1}
-        verticalSpacing={0}
         displayFormat="YYYY-MM-DD"
         monthFormat="YYYY[년] MM[월]"
         hideKeyboardShortcutsPanel
+        customArrowIcon={<i className="fa fa-angle-right"></i>}
       />
     );
   }

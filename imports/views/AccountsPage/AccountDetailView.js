@@ -8,7 +8,7 @@ export default class AccountDetailView extends React.Component {
   /*=========================================================================
   >> props <<
   isOpen            : if modal is open
-  selectedID        : account ID to display
+  accountID         : account ID to display
   onDetailViewClose : function to execute on modal close
   ==========================================================================*/
   constructor(props) {
@@ -23,7 +23,7 @@ export default class AccountDetailView extends React.Component {
   }
 
   getAccountDetails() {
-    const account = AccountsData.findOne({ _id: this.props.selectedID });
+    const account = AccountsData.findOne({ _id: this.props.accountID });
     return Object.keys(account).map(key => {
       const value = account[key];
       let icon = '';

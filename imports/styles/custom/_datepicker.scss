@@ -1,17 +1,65 @@
-.DateInput input {
-  border: 1px solid $color-primary--100;
-  border-radius: $border-radius;
-  color: $color-primary--500;
-  outline: none;
-  margin: $space-xs;
-  padding: $space-xs;
+.SingleDatePicker {
+  display: flex;
+  justify-content: center;
 
-  &:focus {
-    border-color: $color-primary--500;
-    box-shadow: $box-shadow--1;
+  .SingleDatePickerInput {
+    .DateInput {
+      align-items: center;
+      border: 1px solid $color-primary--100;
+      border-radius: $border-radius;
+
+      &.changed {
+        border: 1px solid $color-secondary--900;
+
+        & .DateInput_input {
+          background: $color-secondary--50;
+          color: $color-secondary--900;
+        }
+      }
+    }
+
+    .DateInput_input {
+      background: white;
+      color: $color-primary--500;
+      outline: none;
+      padding: $space-xs;
+      text-align: center;
+
+      &:focus {
+        border-color: $color-primary--500;
+      }
+    }
+
+    .DateInput__disabled {
+      border: 1px solid $grey--300;
+    }
+
+    .DateInput_input__disabled {
+      background: $grey--100;
+      color: $grey--500;
+    }
   }
 }
 
-.form-element .DateInput input {
-  margin: 0;
+.DateRangePicker {
+  display: flex;
+  justify-content: center;
+  padding: $space-xs;
+
+  .DateRangePickerInput {
+    align-items: center;
+    border: 1px solid $color-primary--100;
+    border-radius: $border-radius;
+
+    .DateInput_input {
+      color: $color-primary--500;
+      outline: none;
+      padding: $space-xs;
+      text-align: center;
+
+      &:focus {
+        border-color: $color-primary--500;
+      }
+    }
+  }
 }

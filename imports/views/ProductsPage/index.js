@@ -75,9 +75,9 @@ export default class ProductsPage extends React.Component {
       .getBoundingClientRect().height;
     const main = document.querySelector(".main");
     const pageContent = document.querySelector(".page-content");
-    const mainHeight = `calc(100vh - ${headerHeight + 35}px)`;
+    const mainHeight = `calc(100vh - ${headerHeight + 10}px)`;
     const contentHeight = `calc(100vh - ${headerHeight +
-      35 +
+      25 +
       pageHeaderHeight}px)`;
     main.style.height = mainHeight;
     main.style.marginTop = `${headerHeight + 5}px`;

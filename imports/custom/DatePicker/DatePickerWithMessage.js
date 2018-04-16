@@ -1,6 +1,6 @@
 import React from "react";
 
-import DatePicker from './index';
+import DatePicker from './DatePicker';
 
 export default class DatePickerWithMessage extends React.Component {
   /*=========================================================================
@@ -10,8 +10,8 @@ export default class DatePickerWithMessage extends React.Component {
   placeholder
   date
   onDateChange
-  onFocusChange
   isOutsideRange : allows past days
+  disabled
   errorMessage
   ==========================================================================*/
   constructor(props) {
@@ -27,6 +27,7 @@ export default class DatePickerWithMessage extends React.Component {
           placehoder={this.props.placeholder}
           date={this.props.date}
           onDateChange={this.props.onDateChange}
+          disabled={this.props.disabled}
           isOutsideRange={this.props.isOutsideRange}
         />
         <span>{this.props.errorMessage}</span>

@@ -1,0 +1,54 @@
+.complete-order-modal {
+  width: 95%;
+  max-width: 420px;
+}
+
+.complete-order-modal__order-details-container {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+}
+.complete-order-modal__accountName,
+.complete-order-modal__productName,
+.complete-order-modal__productSize,
+.complete-order-modal__orderQuantity {
+  font-size: $font-size--lg;
+  margin: 0;
+  padding: $space-xs;
+  width: 100%;
+}
+
+.complete-order-modal__productName {
+  font-size: $font-size--xl;
+  font-weight: $font-weight--bold;
+}
+
+.complete-order-modal__productSize {
+  font-size: $font-size--md;
+  width: 40%;
+}
+
+.complete-order-modal__orderQuantity {
+  text-align: right;
+  width: 60%;
+}
+
+.complete-order-modal__form {
+  border-top: 1px solid $color-primary--500;
+  margin-top: $space-md;
+  padding-top: $space-md;
+}
+
+.complete-order-modal__input-container {
+  align-items: center;
+  display: flex;
+  padding: $space-xs;
+}
+
+.complete-order-modal__label {
+  width: 20%;
+}
+
+.complete-order-modal__input {
+  margin-right: $space-md;
+}

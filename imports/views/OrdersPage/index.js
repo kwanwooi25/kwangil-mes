@@ -1,13 +1,10 @@
-import React from "react";
-import moment from "moment";
+import React from 'react';
+import moment from 'moment';
 
-// import ProductModal from "./ProductModal";
-import OrderList from "./OrderList";
-// import ProductNewMultiModal from "./ProductNewMultiModal";
+import OrderList from './OrderList';
 
-// import { ProductsData } from "../../api/products";
-
-import RangePicker from "../../custom/DatePicker/RangePicker";
+import Checkbox from '../../custom/Checkbox';
+import RangePicker from '../../custom/DatePicker/RangePicker';
 
 export default class OrdersPage extends React.Component {
   constructor(props) {
@@ -16,29 +13,26 @@ export default class OrdersPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      isModalNewOpen: false,
-      isModalNewMultiOpen: false,
-      searchFrom: moment().subtract(2, "weeks"),
+      searchFrom: moment().subtract(2, 'weeks'),
       searchTo: moment(),
-      isPrintQuery: "both",
-      searchByAccountName: "",
-      searchByProductName: "",
+      isPrintQuery: 'both',
+      searchByAccountName: '',
+      searchByProductName: '',
+      showCompletedOrder: false,
       queryObj: {
         searchFrom: moment()
-          .subtract(2, "weeks")
-          .format("YYYY-MM-DD"),
-        searchTo: moment().format("YYYY-MM-DD"),
-        isPrintQuery: "both",
-        accountName: "",
-        productName: ""
+          .subtract(2, 'weeks')
+          .format('YYYY-MM-DD'),
+        searchTo: moment().format('YYYY-MM-DD'),
+        isPrintQuery: 'both',
+        accountName: '',
+        productName: '',
+        showCompletedOrder: false
       }
     };
 
-    // this.onInputSearchChange = this.onInputSearchChange.bind(this);
-    // this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
     this.onOrderSearchChange = this.onOrderSearchChange.bind(this);
     this.onOrderSearchReset = this.onOrderSearchReset.bind(this);
-    // this.onClickNewMulti = this.onClickNewMulti.bind(this);
     // this.onClickExportExcel = this.onClickExportExcel.bind(this);
     // this.onModalClose = this.onModalClose.bind(this);
   }
@@ -46,16 +40,9 @@ export default class OrdersPage extends React.Component {
   componentDidMount() {
     // dynamically adjust height
     this.setLayout();
-    window.addEventListener("resize", () => {
+    window.addEventListener('resize', () => {
       this.setLayout();
     });
-    // document
-    //   .getElementById("product-search-toggle")
-    //   .addEventListener("click", () => {
-    //     setTimeout(() => {
-    //       this.setLayout();
-    //     }, 0);
-    //   });
 
     // tracks if the user logged in is admin or manager
     this.authTracker = Tracker.autorun(() => {
@@ -75,104 +62,96 @@ export default class OrdersPage extends React.Component {
   // dynamically adjust height
   setLayout() {
     const headerHeight = document
-      .querySelector(".header")
+      .querySelector('.header')
       .getBoundingClientRect().height;
     const pageHeaderHeight = document
-      .querySelector(".page-header")
+      .querySelector('.page-header')
       .getBoundingClientRect().height;
-    const main = document.querySelector(".main");
-    const pageContent = document.querySelector(".page-content");
-    const mainHeight = `calc(100vh - ${headerHeight + 35}px)`;
+    const main = document.querySelector('.main');
+    const pageContent = document.querySelector('.page-content');
+    const mainHeight = `calc(100vh - ${headerHeight + 10}px)`;
     const contentHeight = `calc(100vh - ${headerHeight +
-      35 +
+      25 +
       pageHeaderHeight}px)`;
     main.style.height = mainHeight;
     main.style.marginTop = `${headerHeight + 5}px`;
     pageContent.style.height = contentHeight;
   }
 
-  // onInputSearchChange(e) {
-  //   if (e.target.value !== "") {
-  //     e.target.classList.add("hasValue");
-  //   } else {
-  //     e.target.classList.remove("hasValue");
-  //   }
-  //
-  //   const queryObj = {
-  //     accountName: "",
-  //     name: e.target.value.trim().toLowerCase(),
-  //     thick: "",
-  //     length: "",
-  //     width: "",
-  //     extColor: "",
-  //     printFrontColor: "",
-  //     printBackColor: ""
-  //   };
-  //   this.setState({ queryObj });
-  // }
-  //
-  // onSearchExpandClick(e) {
-  //   const productSearch = document.getElementById("product-search");
-  //   const productSearchExpand = document.getElementById(
-  //     "product-search-expand"
-  //   );
-  //   productSearch.classList.toggle("hidden");
-  //   productSearchExpand.classList.toggle("hidden");
-  // }
-  //
-
   onOrderSearchChange(e) {
-    if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") {
-      this.setState({ [e.target.name]: e.target.value }, () => {
-        this.refresh();
-      });
+    if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') {
+      if (e.target.type === 'checkbox') {
+        this.setState({ [e.target.name]: e.target.checked }, () => {
+          this.refresh();
+        });
+      } else {
+        this.setState({ [e.target.name]: e.target.value }, () => {
+          this.refresh();
+        });
+      }
     }
 
-    if (e.target.tagName === "BUTTON") {
+    if (e.target.tagName === 'BUTTON') {
       switch (e.target.name) {
-        case "order-range__2weeks":
-          this.setState({ searchFrom: moment().subtract(2, "weeks") }, () => {
-            this.refresh();
-          });
+        case 'order-range__2weeks':
+          this.setState(
+            { searchFrom: moment().subtract(2, 'weeks'), searchTo: moment() },
+            () => {
+              this.refresh();
+            }
+          );
           break;
-        case "order-range__1month":
-          this.setState({ searchFrom: moment().subtract(1, "months") }, () => {
-            this.refresh();
-          });
+        case 'order-range__1month':
+          this.setState(
+            { searchFrom: moment().subtract(1, 'months'), searchTo: moment() },
+            () => {
+              this.refresh();
+            }
+          );
           break;
-        case "order-range__3months":
-          this.setState({ searchFrom: moment().subtract(3, "months") }, () => {
-            this.refresh();
-          });
+        case 'order-range__3months':
+          this.setState(
+            { searchFrom: moment().subtract(3, 'months'), searchTo: moment() },
+            () => {
+              this.refresh();
+            }
+          );
           break;
-        case "order-range__6months":
-          this.setState({ searchFrom: moment().subtract(6, "months") }, () => {
-            this.refresh();
-          });
+        case 'order-range__6months':
+          this.setState(
+            { searchFrom: moment().subtract(6, 'months'), searchTo: moment() },
+            () => {
+              this.refresh();
+            }
+          );
           break;
       }
     }
   }
 
   refresh() {
-    const queryObj = {
-      searchFrom: this.state.searchFrom.format("YYYY-MM-DD"),
-      searchTo: this.state.searchTo.format("YYYY-MM-DD"),
-      isPrintQuery: this.state.isPrintQuery,
-      accountName: this.state.searchByAccountName,
-      productName: this.state.searchByProductName
-    };
+    if (this.state.searchFrom !== null && this.state.searchTo !== null) {
+      const queryObj = {
+        searchFrom: this.state.searchFrom.format('YYYY-MM-DD'),
+        searchTo: this.state.searchTo.format('YYYY-MM-DD'),
+        isPrintQuery: this.state.isPrintQuery,
+        accountName: this.state.searchByAccountName,
+        productName: this.state.searchByProductName,
+        showCompletedOrder: this.state.showCompletedOrder
+      };
 
-    this.setState({ queryObj });
+      this.setState({ queryObj });
+    }
   }
 
   onOrderSearchReset() {
     this.setState({
-      searchFrom: moment().subtract(2, "weeks"),
+      searchFrom: moment().subtract(2, 'weeks'),
       searchTo: moment(),
-      isPrintQuery: "both",
-      accountName: "",
-      productName: ""
+      isPrintQuery: 'both',
+      accountName: '',
+      productName: '',
+      showCompletedOrder: false
     });
   }
   //
@@ -301,7 +280,7 @@ export default class OrdersPage extends React.Component {
                 endDate={this.state.searchTo}
                 endDateId="searchTo"
                 endDatePlaceholderText="까지"
-                isOutsideRange={() => {
+                isOutsideRange={date => {
                   return false;
                 }}
                 onDatesChange={({ startDate, endDate }) => {
@@ -313,28 +292,6 @@ export default class OrdersPage extends React.Component {
                   );
                 }}
               />
-              {/* <DatePicker
-                id="searchFrom"
-                placeholder="부터"
-                date={this.state.searchFrom}
-                onDateChange={searchFrom => {
-                  this.setState({ searchFrom });
-                }}
-                isOutsideRange={() => {
-                  return false;
-                }}
-              />
-              <DatePicker
-                id="searchTo"
-                placeholder="까지"
-                date={this.state.searchTo}
-                onDateChange={searchTo => {
-                  this.setState({ searchTo });
-                }}
-                isOutsideRange={() => {
-                  return false;
-                }}
-              /> */}
               <button
                 name="order-range__2weeks"
                 className="button order-range-button"
@@ -395,6 +352,12 @@ export default class OrdersPage extends React.Component {
                 <option value="false">무지</option>
                 <option value="true">인쇄</option>
               </select>
+              <Checkbox
+                name="showCompletedOrder"
+                label="완료품목 표시"
+                checked={this.state.showCompletedOrder}
+                onInputChange={this.onOrderSearchChange}
+              />
             </div>
             <div className="order-search__button-container">
               <button
@@ -410,26 +373,6 @@ export default class OrdersPage extends React.Component {
         <div className="page-content">
           <OrderList queryObj={this.state.queryObj} />
         </div>
-
-        {/* {this.state.isModalNewOpen ? (
-          <ProductModal
-            isOpen={this.state.isModalNewOpen}
-            onModalClose={this.onModalClose}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
-          />
-          ) : (
-          undefined
-        )} */}
-
-        {/* {this.state.isModalNewMultiOpen ? (
-          <ProductNewMultiModal
-            isOpen={this.state.isModalNewMultiOpen}
-            onModalClose={this.onModalClose}
-          />
-          ) : (
-          undefined
-        )} */}
       </div>
     );
   }

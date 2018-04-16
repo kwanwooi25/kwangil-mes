@@ -18,7 +18,7 @@ export default class ProductModal extends React.Component {
   /*=========================================================================
   >> props <<
   isOpen       : if modal is open
-  selectedID   : product ID to display
+  productID   : product ID to display
   onModalClose : function to execute on modal close
   isAdmin
   isManager
@@ -26,9 +26,9 @@ export default class ProductModal extends React.Component {
   constructor(props) {
     super(props);
 
-    if (props.selectedID) {
+    if (props.productID) {
       // EDIT mode
-      const product = ProductsData.findOne({ _id: props.selectedID });
+      const product = ProductsData.findOne({ _id: props.productID });
       initialState = {
         mode: "EDIT",
         productID: product._id,

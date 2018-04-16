@@ -13,8 +13,8 @@ export default class DatePicker extends React.Component {
   placeholder
   date
   onDateChange
-  onFocusChange
   isOutsideRange : allows past days
+  disabled
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -25,12 +25,15 @@ export default class DatePicker extends React.Component {
     return (
       <SingleDatePicker
         id={this.props.id}
+        placeholder={this.props.placeholder || "날짜입력"}
         date={this.props.date} // momentPropTypes.momentObj or null
         onDateChange={this.props.onDateChange}
         focused={this.state.focused}
         onFocusChange={({ focused }) => {
           this.setState({ focused });
         }}
+        isOutsideRange={this.props.isOutsideRange}
+        disabled={this.props.disabled}
         noBorder
         numberOfMonths={1}
         verticalSpacing={0}
@@ -38,9 +41,7 @@ export default class DatePicker extends React.Component {
         hideKeyboardShortcutsPanel
         displayFormat="YYYY-MM-DD"
         small
-        placeholder={this.props.placeholder || "날짜입력"}
         monthFormat="YYYY[년] MM[월]"
-        isOutsideRange={this.props.isOutsideRange}
         isDayBlocked={date => {
           if (date.day() === 6 || date.day() === 0) {
             return true;

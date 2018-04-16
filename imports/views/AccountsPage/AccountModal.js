@@ -12,18 +12,18 @@ export default class AccountModal extends React.Component {
   /*=========================================================================
   >> props <<
   isOpen       : if modal is open
-  selectedID   : account ID to display
+  accountID    : account ID to display
   onModalClose : function to execute on modal close
   ==========================================================================*/
   constructor(props) {
     super(props);
 
-    if (props.selectedID) {
+    if (props.accountID) {
       // EDIT mode
-      const account = AccountsData.findOne({ _id: props.selectedID });
+      const account = AccountsData.findOne({ _id: props.accountID });
       initialState = {
         mode: 'EDIT',
-        accountID: props.selectedID,
+        accountID: props.accountID,
         name: account.name,
         phone_1: account.phone_1,
         phone_2: account.phone_2,

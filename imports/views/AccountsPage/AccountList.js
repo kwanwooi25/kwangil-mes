@@ -22,8 +22,8 @@ export default class AccountList extends React.Component {
       isAccountModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmModalOpen: false,
-      selectedID: '',
-      selectedName: ''
+      selectedAccountID: '',
+      selectedAccountName: ''
     };
 
     this.onNameClick = this.onNameClick.bind(this);
@@ -66,10 +66,10 @@ export default class AccountList extends React.Component {
 
   // show detail view modal
   onNameClick(e) {
-    const selectedID = e.target.parentNode.parentNode.parentNode.id;
+    const selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
     this.setState({
       isDetailViewOpen: true,
-      selectedID
+      selectedAccountID
     });
   }
 
@@ -79,16 +79,16 @@ export default class AccountList extends React.Component {
 
   // show account modal (EDIT mode)
   onEditClick(e) {
-    let selectedID = '';
+    let selectedAccountID = '';
     if (e.target.tagName === 'SPAN') {
-      selectedID = e.target.parentNode.parentNode.parentNode.id;
+      selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
     } else if (e.target.tagName === 'BUTTON') {
-      selectedID = e.target.parentNode.parentNode.id;
+      selectedAccountID = e.target.parentNode.parentNode.id;
     }
 
     this.setState({
       isAccountModalOpen: true,
-      selectedID
+      selectedAccountID
     });
   }
 
@@ -98,23 +98,23 @@ export default class AccountList extends React.Component {
 
   // show confirmation modal before delete
   onDeleteClick(e) {
-    let selectedID = '';
+    let selectedAccountID = '';
     if (e.target.tagName === 'SPAN') {
-      selectedID = e.target.parentNode.parentNode.parentNode.id;
-      selectedName = e.target.parentNode.parentNode.parentNode.querySelector(
+      selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
+      selectedAccountName = e.target.parentNode.parentNode.parentNode.querySelector(
         '.account-name'
       ).textContent;
     } else if (e.target.tagName === 'BUTTON') {
-      selectedID = e.target.parentNode.parentNode.id;
-      selectedName = e.target.parentNode.parentNode.querySelector(
+      selectedAccountID = e.target.parentNode.parentNode.id;
+      selectedAccountName = e.target.parentNode.parentNode.querySelector(
         '.account-name'
       ).textContent;
     }
 
     this.setState({
       isDeleteConfirmModalOpen: true,
-      selectedID,
-      selectedName
+      selectedAccountID,
+      selectedAccountName
     });
   }
 
@@ -122,7 +122,7 @@ export default class AccountList extends React.Component {
     this.setState({ isDeleteConfirmModalOpen: false });
 
     if (answer) {
-      Meteor.call('accounts.remove', this.state.selectedID);
+      Meteor.call('accounts.remove', this.state.selectedAccountID);
     }
   }
 
@@ -202,7 +202,7 @@ export default class AccountList extends React.Component {
         {this.state.isDetailViewOpen ? (
           <AccountDetailView
             isOpen={this.state.isDetailViewOpen}
-            selectedID={this.state.selectedID}
+            accountID={this.state.selectedAccountID}
             onDetailViewClose={this.onDetailViewClose}
           />
         ) : (
@@ -211,7 +211,7 @@ export default class AccountList extends React.Component {
         {this.state.isAccountModalOpen ? (
           <AccountModal
             isOpen={this.state.isAccountModalOpen}
-            selectedID={this.state.selectedID}
+            accountID={this.state.selectedAccountID}
             onModalClose={this.onAccountModalClose}
           />
         ) : (
@@ -222,7 +222,7 @@ export default class AccountList extends React.Component {
             isOpen={this.state.isDeleteConfirmModalOpen}
             title="거래처 삭제"
             description={`[${
-              this.state.selectedName
+              this.state.selectedAccountName
             }] 업체를 삭제하시겠습니까?`}
             onModalClose={this.onDeleteConfirmModalClose}
           />
