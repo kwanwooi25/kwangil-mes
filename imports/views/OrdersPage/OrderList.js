@@ -36,7 +36,9 @@ export default class OrderList extends React.Component {
       isDeleteConfirmModalOpen: false,
       selectedOrderID: '',
       selectedOrderDetail: '',
-      ordersCount: 0
+      ordersCount: 0,
+      isSelectedMulti: false,
+      selectedOrders: []
     };
 
     this.onInputChange = this.onInputChange.bind(this);
@@ -44,6 +46,7 @@ export default class OrderList extends React.Component {
     this.onProductNameClick = this.onProductNameClick.bind(this);
     this.onProductDetailViewClose = this.onProductDetailViewClose.bind(this);
     this.onPrintOrderClick = this.onPrintOrderClick.bind(this);
+    this.onPrintOrderMultiClick = this.onPrintOrderMultiClick.bind(this);
     this.onCompleteOrderClick = this.onCompleteOrderClick.bind(this);
     this.onCompleteOrderModalClose = this.onCompleteOrderModalClose.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
@@ -118,15 +121,34 @@ export default class OrderList extends React.Component {
   }
 
   onInputChange(e) {
+    let selectedOrders = this.state.selectedOrders;
     if (e.target.name === 'selectAll') {
+      selectedOrders = [];
       const checkboxes = document.querySelectorAll(
         '#order-list input[type="checkbox"]'
       );
 
       for (let i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = e.target.checked;
+        if (e.target.checked) {
+          selectedOrders.push(checkboxes[i].name);
+        }
+      }
+    } else {
+      selectedOrders = selectedOrders.filter(value => value !== e.target.name);
+      if (e.target.checked) {
+        selectedOrders.push(e.target.name);
       }
     }
+    selectedOrders = selectedOrders.filter(value => value !== 'selectAll');
+    if (selectedOrders.length >= 2) {
+      this.setState({ isSelectedMulti: true });
+    } else {
+      this.setState({ isSelectedMulti: false });
+    }
+    this.setState({ selectedOrders }, () => {
+      console.log(this.state.selectedOrders);
+    });
   }
 
   onStatusChange(e) {
@@ -157,7 +179,7 @@ export default class OrderList extends React.Component {
     this.setState({ isProductDetailViewOpen: false, selectedProductID: '' });
   }
 
-  // show print order modal
+  // for order print single
   onPrintOrderClick(e) {
     let selectedOrderID = '';
     if (e.target.tagName === 'SPAN') {
@@ -166,11 +188,69 @@ export default class OrderList extends React.Component {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.id;
     }
 
+    // get order and product to print
     const selectedOrder = OrdersData.findOne({ _id: selectedOrderID });
     const selectedProduct = ProductsData.findOne({
       _id: selectedOrder.data.productID
     });
+    const filename = `작업지시_${selectedOrderID}`;
 
+    this.getTextForDocContent(selectedOrder, selectedProduct).then(res => {
+      const docContent = this.getDocContent(res);
+
+      // generate PDF and open
+      const docDefinition = this.getDocDefinition(filename, docContent);
+      this.openPDF(docDefinition);
+    });
+  }
+
+  // for order print multiple
+  onPrintOrderMultiClick() {
+    let docContent = [];
+    let ordersCount = 0;
+    let filename = '작업지시';
+    this.state.selectedOrders.map(orderID => {
+
+      // add orderID for filename in incremental order
+      filename += `_${orderID}`;
+
+      // get order and product to print
+      const order = OrdersData.findOne({ _id: orderID });
+      const product = ProductsData.findOne({ _id: order.data.productID });
+
+      this.getTextForDocContent(order, product).then(res => {
+        let currentDocContent = this.getDocContent(res);
+        docContent.push(currentDocContent);
+        ordersCount++;
+
+        // on last docContent added
+        if (ordersCount === this.state.selectedOrders.length) {
+
+          // sort docContent by orderID
+          docContent.sort((a, b) => {
+            const a_orderID = a[0].table.body[0][0].text;
+            const b_orderID = b[0].table.body[0][0].text;
+            if (a_orderID > b_orderID)
+              return 1;
+            if (a_orderID < b_orderID)
+              return -1;
+            return 0;
+          });
+
+          // add pagebreak between each order except the last one
+          for (let i = 0; i < this.state.selectedOrders.length - 1; i++) {
+            docContent[i][3].pageBreak = 'after';
+          }
+
+          // generate PDF and open
+          const docDefinition = this.getDocDefinition(filename, docContent);
+          this.openPDF(docDefinition);
+        }
+      });
+    });
+  }
+
+  openPDF(docDefinition) {
     /*==========================================================
     to use custom fonts, follow the steps below
     1. create folder: pdfmake/examples/fonts
@@ -189,102 +269,116 @@ export default class OrderList extends React.Component {
       }
     };
 
-    const orderIDText = selectedOrderID.split('-').pop();
-    const orderedAtText = `발주일: ${selectedOrder.data.orderedAt}`;
-    const sizeText = `${selectedProduct.thick} x ${selectedProduct.length} x ${
-      selectedProduct.width
-    }`;
-    const orderQuantityText = `${this.comma(
-      selectedOrder.data.orderQuantity
-    )} 매`;
+    pdfMake.createPdf(docDefinition).open();
+  }
+
+  getTextForDocContent(order, product) {
+    const orderIDText = order._id.split('-').pop();
+    const orderedAtText = `발주일: ${order.data.orderedAt}`;
+    const sizeText = `${product.thick} x ${product.length} x ${product.width}`;
+    const orderQuantityText = `${this.comma(order.data.orderQuantity)} 매`;
     const orderQuantityInKG =
-      Number(selectedProduct.thick) *
-      (Number(selectedProduct.length) + 5) *
-      Number(selectedProduct.width) /
+      Number(product.thick) *
+      (Number(product.length) + 5) *
+      Number(product.width) /
       100 *
       0.0184 *
-      Number(selectedOrder.data.orderQuantity);
+      Number(order.data.orderQuantity);
     const orderQuantityWeightText = `(${this.comma(
       orderQuantityInKG.toFixed(0)
     )}kg)`;
-    let deliverBeforeArray = selectedOrder.data.deliverBefore.split('-');
+    const productName = product.name;
+    const accountName = product.accountName;
+    let deliverBeforeArray = order.data.deliverBefore.split('-');
     deliverBeforeArray.shift();
     const deliverBeforeText = deliverBeforeArray.join('/');
-    let extDetailsText = `${selectedProduct.extColor}원단`;
-    if (selectedProduct.extPretreat === 'single') {
+
+    let deliverRemarkText = '';
+    if (order.data.deliverDateStrict) {
+      if (order.data.deliverFast) {
+        deliverRemarkText = '납기엄수/지급';
+      } else {
+        deliverRemarkText = '납기엄수';
+      }
+    } else if (order.data.deliverFast) {
+      deliverRemarkText = '지급';
+    }
+
+    let extDetailsText = `${product.extColor}원단`;
+    if (product.extPretreat === 'single') {
       extDetailsText += '\n단면처리';
-    } else if (selectedProduct.extPretreat === 'both') {
+    } else if (product.extPretreat === 'both') {
       extDetailsText += '\n양면처리';
     }
-    if (selectedProduct.extAntistatic) {
+    if (product.extAntistatic) {
       extDetailsText += '\n대전방지';
     }
-    if (selectedProduct.extMemo) {
-      extDetailsText += '\n' + selectedProduct.extMemo;
+    if (product.extMemo) {
+      extDetailsText += '\n' + product.extMemo;
     }
 
     let printFrontText = '';
-    if (selectedProduct.printFrontColorCount) {
-      printFrontText = `${selectedProduct.printFrontColorCount}도`;
-      printFrontText += ` (${selectedProduct.printFrontColor})`;
-      if (selectedProduct.printFrontPosition) {
-        printFrontText += `\n위치: ${selectedProduct.printFrontPosition}`;
+    if (product.printFrontColorCount) {
+      printFrontText = `${product.printFrontColorCount}도`;
+      printFrontText += ` (${product.printFrontColor})`;
+      if (product.printFrontPosition) {
+        printFrontText += `\n위치: ${product.printFrontPosition}`;
       }
     }
 
     let printBackText = '';
-    if (selectedProduct.printBackColorCount) {
-      printBackText = `${selectedProduct.printBackColorCount}도`;
-      printBackText += ` (${selectedProduct.printBackColor})`;
-      if (selectedProduct.printBackPosition) {
-        printBackText += `\n위치: ${selectedProduct.printBackPosition}`;
+    if (product.printBackColorCount) {
+      printBackText = `${product.printBackColorCount}도`;
+      printBackText += ` (${product.printBackColor})`;
+      if (product.printBackPosition) {
+        printBackText += `\n위치: ${product.printBackPosition}`;
       }
     }
 
     let printMemoText = '';
-    if (selectedProduct.printMemo) {
-      printMemoText = '\n' + selectedProduct.printMemo;
+    if (product.printMemo) {
+      printMemoText = product.printMemo;
     }
 
     let cutDetailsText = '';
-    if (selectedProduct.cutPosition) {
-      cutDetailsText += `가공위치: ${selectedProduct.cutPosition}`;
+    if (product.cutPosition) {
+      cutDetailsText += `가공위치: ${product.cutPosition}`;
     }
-    if (selectedProduct.cutUltrasonic) {
+    if (product.cutUltrasonic) {
       cutDetailsText += '\n초음파가공';
     }
-    if (selectedProduct.cutPowderPack) {
+    if (product.cutPowderPack) {
       cutDetailsText += '\n가루포장';
     }
-    if (selectedProduct.cutPunches) {
-      cutDetailsText += `P${selectedProduct.cutPunchCount}`;
-      if (selectedProduct.cutPunchSize) {
-        cutDetailsText += `(${selectedProduct.cutPunchSize})`;
+    if (product.cutPunches) {
+      cutDetailsText += `\nP${product.cutPunchCount}`;
+      if (product.cutPunchSize) {
+        cutDetailsText += ` (${product.cutPunchSize})`;
       }
-      if (selectedProduct.cutPunchPosition) {
-        cutDetailsText += `위치: ${selectedProduct.cutPunchPosition}`;
+      if (product.cutPunchPosition) {
+        cutDetailsText += `\n위치: ${product.cutPunchPosition}`;
       }
     }
-    if (selectedProduct.cutMemo) {
-      cutDetailsText += '\n' + selectedProduct.cutMemo;
+    if (product.cutMemo) {
+      cutDetailsText += '\n' + product.cutMemo;
     }
 
     let packDetailsText = '';
-    if (selectedProduct.packMaterial) {
-      packDetailsText += `${selectedProduct.packMaterial} 포장`;
+    if (product.packMaterial) {
+      packDetailsText += `${product.packMaterial} 포장`;
     }
-    if (selectedProduct.packQuantity) {
-      packDetailsText += `\n(${this.comma(selectedProduct.packQuantity)}씩)`;
+    if (product.packQuantity) {
+      packDetailsText += `\n(${this.comma(product.packQuantity)}씩)`;
     }
-    if (selectedProduct.packDeliverAll) {
+    if (product.packDeliverAll) {
       packDetailsText += '\n전량납품';
     }
-    if (selectedProduct.packMemo) {
-      packDetailsText += '\n' + selectedProduct.packMemo;
+    if (product.packMemo) {
+      packDetailsText += '\n' + product.packMemo;
     }
 
     let plateStatusText = '';
-    switch (selectedOrder.data.plateStatus) {
+    switch (order.data.plateStatus) {
       case 'confirm':
         plateStatusText += '동판확인';
         break;
@@ -296,209 +390,54 @@ export default class OrderList extends React.Component {
         break;
     }
 
+    const workMemo = order.data.workMemo;
+    const deliverMemo = order.data.deliverMemo;
+
+    let urlToEncode = '';
     let productImage = '';
-    if (selectedProduct.printImageURL) {
-      Meteor.call(
-        'encodeAsBase64',
-        selectedProduct.printImageURL,
-        (err, res) => {
-          if (res) {
-            productImage = `data:image/png;base64,${res}`;
-            console.log(productImage);
-            this.openPDF(
-              orderIDText,
-              orderedAtText,
-              sizeText,
-              orderQuantityText,
-              selectedProduct,
-              deliverBeforeText,
-              orderQuantityWeightText,
-              extDetailsText,
-              printFrontText,
-              printBackText,
-              printMemoText,
-              cutDetailsText,
-              packDetailsText,
-              plateStatusText,
-              selectedOrder,
-              productImage
-            );
-          }
-        }
-      );
+    if (product.printImageURL) {
+      urlToEncode = product.printImageURL;
     } else {
-      productImage = noImage;
-      console.log(productImage);
-      this.openPDF(
-        orderIDText,
-        orderedAtText,
-        sizeText,
-        orderQuantityText,
-        selectedProduct,
-        deliverBeforeText,
-        orderQuantityWeightText,
-        extDetailsText,
-        printFrontText,
-        printBackText,
-        printMemoText,
-        cutDetailsText,
-        packDetailsText,
-        plateStatusText,
-        selectedOrder,
-        productImage
-      );
+      urlToEncode = noImage;
     }
 
-    // printImageFile: "",
-    // printImageFileName: "",
-    // printImageURL: "",
+    return new Promise((resolve, reject) => {
+      Meteor.call('encodeAsBase64', urlToEncode, (err, res) => {
+        if (res) {
+          productImage = `data:image/png;base64,${res}`;
+          resolve({
+            orderIDText,
+            orderedAtText,
+            sizeText,
+            orderQuantityText,
+            orderQuantityWeightText,
+            productName,
+            accountName,
+            deliverBeforeText,
+            deliverRemarkText,
+            extDetailsText,
+            printFrontText,
+            printBackText,
+            printMemoText,
+            cutDetailsText,
+            packDetailsText,
+            plateStatusText,
+            workMemo,
+            deliverMemo,
+            productImage
+          });
+        }
+      });
+    });
   }
 
-  openPDF(
-    orderIDText,
-    orderedAtText,
-    sizeText,
-    orderQuantityText,
-    selectedProduct,
-    deliverBeforeText,
-    orderQuantityWeightText,
-    extDetailsText,
-    printFrontText,
-    printBackText,
-    printMemoText,
-    cutDetailsText,
-    packDetailsText,
-    plateStatusText,
-    selectedOrder,
-    productImage
-  ) {
-    const docDefinition = {
-      content: [
-        { text: '작업지시서', style: 'title' },
-        {
-          columns: [
-            { text: orderIDText, style: 'orderNo' },
-            {
-              text: orderedAtText,
-              alignment: 'right'
-            }
-          ]
-        },
-        {
-          style: 'table',
-          table: {
-            widths: ['28%', '21%', '39%', '12%'],
-            body: [
-              [
-                { rowSpan: 2, text: sizeText, style: 'productSize' },
-                {
-                  text: orderQuantityText,
-                  style: 'orderQuantity',
-                  border: [true, true, true, false]
-                },
-                { text: selectedProduct.name, style: 'productName' },
-                { rowSpan: 2, text: deliverBeforeText, style: 'deliverBefore' }
-              ],
-              [
-                {},
-                {
-                  text: orderQuantityWeightText,
-                  style: 'orderQuantityWeight',
-                  border: [true, false, true, true]
-                },
-                { text: selectedProduct.accountName, style: 'accountName' },
-                {}
-              ]
-            ]
-          }
-        },
-        {
-          style: 'table',
-          table: {
-            widths: ['14%', '19%', '5%', '9%', '20%', '9%', '24%'],
-            heights: ['auto', 40, 40, 50, 20, 20, 20],
-            body: [
-              [
-                { colSpan: 2, text: '압출부', style: 'workOrderHeader' },
-                {},
-                { colSpan: 3, text: '인쇄부', style: 'workOrderHeader' },
-                {},
-                {},
-                { colSpan: 2, text: '가공부', style: 'workOrderHeader' },
-                {}
-              ],
-              [
-                {
-                  rowSpan: 4,
-                  colSpan: 2,
-                  text: extDetailsText,
-                  style: 'workOrderBody'
-                },
-                {},
-                { text: '전\n면', style: 'workOrderHeader' },
-                { colSpan: 2, text: printFrontText, style: 'workOrderBody' },
-                {},
-                {
-                  rowSpan: 2,
-                  colSpan: 2,
-                  text: cutDetailsText,
-                  style: 'workOrderBody'
-                },
-                {}
-              ],
-              [
-                {},
-                {},
-                { text: '후\n면', style: 'workOrderHeader' },
-                { colSpan: 2, text: printBackText, style: 'workOrderBody' },
-                {},
-                {},
-                {}
-              ],
-              [
-                {},
-                {},
-                { colSpan: 3, text: printMemoText, style: 'workOrderBody' },
-                {},
-                {},
-                { rowSpan: 2, text: '포장', style: 'workOrderHeader' },
-                { rowSpan: 2, text: packDetailsText, style: 'workOrderBody' }
-              ],
-              [
-                {},
-                {},
-                { colSpan: 2, text: plateStatusText, style: 'workOrderBody' },
-                {},
-                {
-                  /* plate location goes here */
-                },
-                {},
-                {}
-              ],
-              [
-                { text: '작업참고', style: 'workOrderHeader' },
-                {
-                  colSpan: 6,
-                  text: selectedOrder.data.workMemo,
-                  style: 'workOrderMemo'
-                }
-              ],
-              [
-                { text: '납품참고', style: 'workOrderHeader' },
-                {
-                  colSpan: 6,
-                  text: selectedOrder.data.deliverMemo,
-                  style: 'workOrderMemo'
-                }
-              ]
-            ]
-          }
-        },
-        {
-          image: productImage,
-          fit: [515, 400]
-        }
-      ],
+  getDocDefinition(filename, docContent) {
+    return {
+      info: {
+        title: filename
+      },
+      pageMargins: 25,
+      content: docContent,
 
       defaultStyle: {
         font: 'NanumGothic'
@@ -515,13 +454,26 @@ export default class OrderList extends React.Component {
         },
         orderNo: {
           fontSize: 30,
-          bold: true
+          bold: true,
+          margin: [10, 20, 0, 0]
+        },
+        deliverRemark: {
+          fontSize: 18,
+          bold: true,
+          background: '#555',
+          color: '#fff',
+          alignment: 'right',
+          margin: 5
+        },
+        orderedAt: {
+          alignment: 'right',
+          margin: 3
         },
         productSize: {
-          fontSize: 15,
+          fontSize: 17,
           bold: true,
           alignment: 'center',
-          margin: [3, 15]
+          margin: [2, 15]
         },
         orderQuantity: {
           fontSize: 16,
@@ -567,8 +519,180 @@ export default class OrderList extends React.Component {
         }
       }
     };
+  }
 
-    pdfMake.createPdf(docDefinition).open();
+  getDocContent(textObj) {
+    return [
+      {
+        layout: 'noBorders',
+        table: {
+          widths: ['23%', '*', '23%'],
+          body: [
+            [
+              { rowSpan: 2, text: textObj.orderIDText, style: 'orderNo' },
+              { text: '작업지시서', style: 'title' },
+              {
+                text: textObj.deliverRemarkText,
+                style: 'deliverRemark'
+              }
+            ],
+            [
+              {},
+              {
+                colSpan: 2,
+                text: textObj.orderedAtText,
+                style: 'orderedAt'
+              },
+              {}
+            ]
+          ]
+        }
+      },
+      {
+        style: 'table',
+        table: {
+          widths: ['28%', '21%', '39%', '12%'],
+          body: [
+            [
+              { rowSpan: 2, text: textObj.sizeText, style: 'productSize' },
+              {
+                text: textObj.orderQuantityText,
+                style: 'orderQuantity',
+                border: [true, true, true, false]
+              },
+              { text: textObj.productName, style: 'productName' },
+              {
+                rowSpan: 2,
+                text: textObj.deliverBeforeText,
+                style: 'deliverBefore'
+              }
+            ],
+            [
+              {},
+              {
+                text: textObj.orderQuantityWeightText,
+                style: 'orderQuantityWeight',
+                border: [true, false, true, true]
+              },
+              { text: textObj.accountName, style: 'accountName' },
+              {}
+            ]
+          ]
+        }
+      },
+      {
+        style: 'table',
+        table: {
+          widths: ['14%', '19%', '5%', '9%', '20%', '9%', '24%'],
+          heights: ['auto', 60, 60, 50, 20, 20, 20],
+          body: [
+            [
+              { colSpan: 2, text: '압출부', style: 'workOrderHeader' },
+              {},
+              { colSpan: 3, text: '인쇄부', style: 'workOrderHeader' },
+              {},
+              {},
+              { colSpan: 2, text: '가공부', style: 'workOrderHeader' },
+              {}
+            ],
+            [
+              {
+                rowSpan: 4,
+                colSpan: 2,
+                text: textObj.extDetailsText,
+                style: 'workOrderBody'
+              },
+              {},
+              { text: '전\n면', style: 'workOrderHeader', margin: [0, 15] },
+              {
+                colSpan: 2,
+                text: textObj.printFrontText,
+                style: 'workOrderBody'
+              },
+              {},
+              {
+                rowSpan: 2,
+                colSpan: 2,
+                text: textObj.cutDetailsText,
+                style: 'workOrderBody'
+              },
+              {}
+            ],
+            [
+              {},
+              {},
+              { text: '후\n면', style: 'workOrderHeader', margin: [0, 15] },
+              {
+                colSpan: 2,
+                text: textObj.printBackText,
+                style: 'workOrderBody'
+              },
+              {},
+              {},
+              {}
+            ],
+            [
+              {},
+              {},
+              {
+                colSpan: 3,
+                text: textObj.printMemoText,
+                style: 'workOrderBody'
+              },
+              {},
+              {},
+              {
+                rowSpan: 2,
+                text: '포장',
+                style: 'workOrderHeader',
+                margin: [0, 30]
+              },
+              {
+                rowSpan: 2,
+                text: textObj.packDetailsText,
+                style: 'workOrderBody'
+              }
+            ],
+            [
+              {},
+              {},
+              {
+                colSpan: 2,
+                text: textObj.plateStatusText,
+                style: 'workOrderBody'
+              },
+              {},
+              {
+                /* plate location goes here */
+              },
+              {},
+              {}
+            ],
+            [
+              { text: '작업참고', style: 'workOrderHeader' },
+              {
+                colSpan: 6,
+                text: textObj.workMemo,
+                style: 'workOrderMemo'
+              }
+            ],
+            [
+              { text: '납품참고', style: 'workOrderHeader' },
+              {
+                colSpan: 6,
+                text: textObj.deliverMemo,
+                style: 'workOrderMemo'
+              }
+            ]
+          ]
+        }
+      },
+      {
+        image: textObj.productImage,
+        fit: [515, 300],
+        alignment: 'center'
+      }
+    ];
   }
 
   // show order complete modal
@@ -737,7 +861,11 @@ export default class OrderList extends React.Component {
         return (
           <li className={listClassName} key={_id} id={_id}>
             <div className="order-checkbox-container">
-              <Checkbox name={_id} onInputChange={this.onInputChange} />
+              <Checkbox
+                name={_id}
+                onInputChange={this.onInputChange}
+                disabled={order.isCompleted}
+              />
             </div>
 
             <div className="order-container">
@@ -864,12 +992,38 @@ export default class OrderList extends React.Component {
       <ul id="order-list">
         {this.state.ordersCount &&
         (this.state.isAdmin || this.state.isManager) ? (
-          <div className="order-select-all">
+          <div className="order-list-header">
             <Checkbox
               name="selectAll"
               label="전체선택"
               onInputChange={this.onInputChange}
             />
+            <div className="order-buttons-container">
+              <button
+                className="button-circle order-button"
+                onClick={this.onPrintOrderMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-print fa-lg" />
+                <span>출력</span>
+              </button>
+              <button
+                className="button-circle order-button"
+                onClick={this.onCompleteOrderMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-check fa-lg" />
+                <span>완료</span>
+              </button>
+              <button
+                className="button-circle order-button"
+                onClick={this.onDeleteMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-trash fa-lg" />
+                <span>삭제</span>
+              </button>
+            </div>
           </div>
         ) : (
           undefined

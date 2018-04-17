@@ -28,11 +28,16 @@
   }
 }
 
-.order-select-all {
+.order-list-header {
+  align-items: center;
   border-bottom: 1.5px solid $color-primary--100;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   width: 100%;
+
+  .order-buttons-container {
+    width: auto;
+  }
 }
 
 .order-deliver-remark-container {
@@ -252,7 +257,7 @@
   }
 
   .order-product-details-container {
-    width: 63%;
+    width: 62%;
   }
 
   .order-names-container {
