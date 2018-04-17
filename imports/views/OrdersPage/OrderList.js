@@ -12,6 +12,7 @@ import ProductOrderModal from '../ProductsPage/ProductOrderModal';
 import ProductDetailView from '../ProductsPage/ProductDetailView';
 import CompleteOrderModal from './CompleteOrderModal';
 import ConfirmationModal from '../components/ConfirmationModal';
+import noImage from '../../assets/no-image.png';
 
 export default class OrderList extends React.Component {
   /*=========================================================================
@@ -166,7 +167,9 @@ export default class OrderList extends React.Component {
     }
 
     const selectedOrder = OrdersData.findOne({ _id: selectedOrderID });
-    const selectedProduct = ProductsData.findOne({ _id: selectedOrder.data.productID})
+    const selectedProduct = ProductsData.findOne({
+      _id: selectedOrder.data.productID
+    });
 
     /*==========================================================
     to use custom fonts, follow the steps below
@@ -186,15 +189,384 @@ export default class OrderList extends React.Component {
       }
     };
 
-    const docDefinition = {
-      content: [
-        { text: `making pdf file for order: ${selectedOrderID}` },
-        { text: `productName: ${selectedProduct.name}` }
-      ],
-      defaultStyle: {
-        font: 'NanumGothic'
+    const orderIDText = selectedOrderID.split('-').pop();
+    const orderedAtText = `발주일: ${selectedOrder.data.orderedAt}`;
+    const sizeText = `${selectedProduct.thick} x ${selectedProduct.length} x ${
+      selectedProduct.width
+    }`;
+    const orderQuantityText = `${this.comma(
+      selectedOrder.data.orderQuantity
+    )} 매`;
+    const orderQuantityInKG =
+      Number(selectedProduct.thick) *
+      (Number(selectedProduct.length) + 5) *
+      Number(selectedProduct.width) /
+      100 *
+      0.0184 *
+      Number(selectedOrder.data.orderQuantity);
+    const orderQuantityWeightText = `(${this.comma(
+      orderQuantityInKG.toFixed(0)
+    )}kg)`;
+    let deliverBeforeArray = selectedOrder.data.deliverBefore.split('-');
+    deliverBeforeArray.shift();
+    const deliverBeforeText = deliverBeforeArray.join('/');
+    let extDetailsText = `${selectedProduct.extColor}원단`;
+    if (selectedProduct.extPretreat === 'single') {
+      extDetailsText += '\n단면처리';
+    } else if (selectedProduct.extPretreat === 'both') {
+      extDetailsText += '\n양면처리';
+    }
+    if (selectedProduct.extAntistatic) {
+      extDetailsText += '\n대전방지';
+    }
+    if (selectedProduct.extMemo) {
+      extDetailsText += '\n' + selectedProduct.extMemo;
+    }
+
+    let printFrontText = '';
+    if (selectedProduct.printFrontColorCount) {
+      printFrontText = `${selectedProduct.printFrontColorCount}도`;
+      printFrontText += ` (${selectedProduct.printFrontColor})`;
+      if (selectedProduct.printFrontPosition) {
+        printFrontText += `\n위치: ${selectedProduct.printFrontPosition}`;
       }
     }
+
+    let printBackText = '';
+    if (selectedProduct.printBackColorCount) {
+      printBackText = `${selectedProduct.printBackColorCount}도`;
+      printBackText += ` (${selectedProduct.printBackColor})`;
+      if (selectedProduct.printBackPosition) {
+        printBackText += `\n위치: ${selectedProduct.printBackPosition}`;
+      }
+    }
+
+    let printMemoText = '';
+    if (selectedProduct.printMemo) {
+      printMemoText = '\n' + selectedProduct.printMemo;
+    }
+
+    let cutDetailsText = '';
+    if (selectedProduct.cutPosition) {
+      cutDetailsText += `가공위치: ${selectedProduct.cutPosition}`;
+    }
+    if (selectedProduct.cutUltrasonic) {
+      cutDetailsText += '\n초음파가공';
+    }
+    if (selectedProduct.cutPowderPack) {
+      cutDetailsText += '\n가루포장';
+    }
+    if (selectedProduct.cutPunches) {
+      cutDetailsText += `P${selectedProduct.cutPunchCount}`;
+      if (selectedProduct.cutPunchSize) {
+        cutDetailsText += `(${selectedProduct.cutPunchSize})`;
+      }
+      if (selectedProduct.cutPunchPosition) {
+        cutDetailsText += `위치: ${selectedProduct.cutPunchPosition}`;
+      }
+    }
+    if (selectedProduct.cutMemo) {
+      cutDetailsText += '\n' + selectedProduct.cutMemo;
+    }
+
+    let packDetailsText = '';
+    if (selectedProduct.packMaterial) {
+      packDetailsText += `${selectedProduct.packMaterial} 포장`;
+    }
+    if (selectedProduct.packQuantity) {
+      packDetailsText += `\n(${this.comma(selectedProduct.packQuantity)}씩)`;
+    }
+    if (selectedProduct.packDeliverAll) {
+      packDetailsText += '\n전량납품';
+    }
+    if (selectedProduct.packMemo) {
+      packDetailsText += '\n' + selectedProduct.packMemo;
+    }
+
+    let plateStatusText = '';
+    switch (selectedOrder.data.plateStatus) {
+      case 'confirm':
+        plateStatusText += '동판확인';
+        break;
+      case 'new':
+        plateStatusText += '동판신규';
+        break;
+      case 'edit':
+        plateStatusText += '동판수정';
+        break;
+    }
+
+    let productImage = '';
+    if (selectedProduct.printImageURL) {
+      Meteor.call(
+        'encodeAsBase64',
+        selectedProduct.printImageURL,
+        (err, res) => {
+          if (res) {
+            productImage = `data:image/png;base64,${res}`;
+            console.log(productImage);
+            this.openPDF(
+              orderIDText,
+              orderedAtText,
+              sizeText,
+              orderQuantityText,
+              selectedProduct,
+              deliverBeforeText,
+              orderQuantityWeightText,
+              extDetailsText,
+              printFrontText,
+              printBackText,
+              printMemoText,
+              cutDetailsText,
+              packDetailsText,
+              plateStatusText,
+              selectedOrder,
+              productImage
+            );
+          }
+        }
+      );
+    } else {
+      productImage = noImage;
+      console.log(productImage);
+      this.openPDF(
+        orderIDText,
+        orderedAtText,
+        sizeText,
+        orderQuantityText,
+        selectedProduct,
+        deliverBeforeText,
+        orderQuantityWeightText,
+        extDetailsText,
+        printFrontText,
+        printBackText,
+        printMemoText,
+        cutDetailsText,
+        packDetailsText,
+        plateStatusText,
+        selectedOrder,
+        productImage
+      );
+    }
+
+    // printImageFile: "",
+    // printImageFileName: "",
+    // printImageURL: "",
+  }
+
+  openPDF(
+    orderIDText,
+    orderedAtText,
+    sizeText,
+    orderQuantityText,
+    selectedProduct,
+    deliverBeforeText,
+    orderQuantityWeightText,
+    extDetailsText,
+    printFrontText,
+    printBackText,
+    printMemoText,
+    cutDetailsText,
+    packDetailsText,
+    plateStatusText,
+    selectedOrder,
+    productImage
+  ) {
+    const docDefinition = {
+      content: [
+        { text: '작업지시서', style: 'title' },
+        {
+          columns: [
+            { text: orderIDText, style: 'orderNo' },
+            {
+              text: orderedAtText,
+              alignment: 'right'
+            }
+          ]
+        },
+        {
+          style: 'table',
+          table: {
+            widths: ['28%', '21%', '39%', '12%'],
+            body: [
+              [
+                { rowSpan: 2, text: sizeText, style: 'productSize' },
+                {
+                  text: orderQuantityText,
+                  style: 'orderQuantity',
+                  border: [true, true, true, false]
+                },
+                { text: selectedProduct.name, style: 'productName' },
+                { rowSpan: 2, text: deliverBeforeText, style: 'deliverBefore' }
+              ],
+              [
+                {},
+                {
+                  text: orderQuantityWeightText,
+                  style: 'orderQuantityWeight',
+                  border: [true, false, true, true]
+                },
+                { text: selectedProduct.accountName, style: 'accountName' },
+                {}
+              ]
+            ]
+          }
+        },
+        {
+          style: 'table',
+          table: {
+            widths: ['14%', '19%', '5%', '9%', '20%', '9%', '24%'],
+            heights: ['auto', 40, 40, 50, 20, 20, 20],
+            body: [
+              [
+                { colSpan: 2, text: '압출부', style: 'workOrderHeader' },
+                {},
+                { colSpan: 3, text: '인쇄부', style: 'workOrderHeader' },
+                {},
+                {},
+                { colSpan: 2, text: '가공부', style: 'workOrderHeader' },
+                {}
+              ],
+              [
+                {
+                  rowSpan: 4,
+                  colSpan: 2,
+                  text: extDetailsText,
+                  style: 'workOrderBody'
+                },
+                {},
+                { text: '전\n면', style: 'workOrderHeader' },
+                { colSpan: 2, text: printFrontText, style: 'workOrderBody' },
+                {},
+                {
+                  rowSpan: 2,
+                  colSpan: 2,
+                  text: cutDetailsText,
+                  style: 'workOrderBody'
+                },
+                {}
+              ],
+              [
+                {},
+                {},
+                { text: '후\n면', style: 'workOrderHeader' },
+                { colSpan: 2, text: printBackText, style: 'workOrderBody' },
+                {},
+                {},
+                {}
+              ],
+              [
+                {},
+                {},
+                { colSpan: 3, text: printMemoText, style: 'workOrderBody' },
+                {},
+                {},
+                { rowSpan: 2, text: '포장', style: 'workOrderHeader' },
+                { rowSpan: 2, text: packDetailsText, style: 'workOrderBody' }
+              ],
+              [
+                {},
+                {},
+                { colSpan: 2, text: plateStatusText, style: 'workOrderBody' },
+                {},
+                {
+                  /* plate location goes here */
+                },
+                {},
+                {}
+              ],
+              [
+                { text: '작업참고', style: 'workOrderHeader' },
+                {
+                  colSpan: 6,
+                  text: selectedOrder.data.workMemo,
+                  style: 'workOrderMemo'
+                }
+              ],
+              [
+                { text: '납품참고', style: 'workOrderHeader' },
+                {
+                  colSpan: 6,
+                  text: selectedOrder.data.deliverMemo,
+                  style: 'workOrderMemo'
+                }
+              ]
+            ]
+          }
+        },
+        {
+          image: productImage,
+          fit: [515, 400]
+        }
+      ],
+
+      defaultStyle: {
+        font: 'NanumGothic'
+      },
+
+      styles: {
+        table: {
+          margin: [0, 0, 0, 10]
+        },
+        title: {
+          fontSize: 24,
+          bold: true,
+          alignment: 'center'
+        },
+        orderNo: {
+          fontSize: 30,
+          bold: true
+        },
+        productSize: {
+          fontSize: 16,
+          bold: true,
+          alignment: 'center',
+          margin: [10, 15]
+        },
+        orderQuantity: {
+          fontSize: 16,
+          bold: true,
+          alignment: 'center',
+          margin: [5, 5, 5, 0]
+        },
+        productName: {
+          fontSize: 17,
+          alignment: 'center',
+          margin: 3
+        },
+        deliverBefore: {
+          fontSize: 18,
+          bold: true,
+          alignment: 'center',
+          margin: [3, 15]
+        },
+        orderQuantityWeight: {
+          fontSize: 12,
+          alignment: 'center',
+          margin: [5, 0, 5, 5]
+        },
+        accountName: {
+          fontSize: 12,
+          alignment: 'center',
+          margin: 3
+        },
+        workOrderHeader: {
+          fontSize: 12,
+          bold: true,
+          alignment: 'center',
+          margin: 3
+        },
+        workOrderBody: {
+          fontSize: 12,
+          alignment: 'center',
+          margin: 3
+        },
+        workOrderRemark: {
+          fontSize: 12,
+          margin: 3
+        }
+      }
+    };
 
     pdfMake.createPdf(docDefinition).open();
   }
@@ -422,7 +794,7 @@ export default class OrderList extends React.Component {
                     {this.comma(order.orderQuantity) +
                       '매 (' +
                       this.comma(weight.toFixed(0)) +
-                    'kg)'}
+                      'kg)'}
                   </p>
                 </div>
               </div>
@@ -435,7 +807,9 @@ export default class OrderList extends React.Component {
                   disabled={order.isCompleted}
                 >
                   <option value="extruding">압출중</option>
-                  <option value="printing" disabled={!product.isPrint}>인쇄중</option>
+                  <option value="printing" disabled={!product.isPrint}>
+                    인쇄중
+                  </option>
                   <option value="cutting">가공중</option>
                 </select>
               </div>
@@ -447,7 +821,7 @@ export default class OrderList extends React.Component {
                     onClick={this.onPrintOrderClick}
                     disabled={order.isCompleted}
                   >
-                    <i className="fa fa-print fa-lg"></i>
+                    <i className="fa fa-print fa-lg" />
                     <span>출력</span>
                   </button>
                   <button

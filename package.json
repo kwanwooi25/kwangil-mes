@@ -9,6 +9,7 @@
     "aws-sdk": "^2.219.1",
     "meteor-node-stubs": "^0.3.2",
     "moment": "^2.22.0",
+    "node-base64-image": "^1.0.4",
     "node-s3-public-url": "^1.0.2",
     "npm": "^5.8.0",
     "pdfmake": "^0.1.36",
