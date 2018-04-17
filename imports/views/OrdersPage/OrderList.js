@@ -182,10 +182,10 @@ export default class OrderList extends React.Component {
 
     pdfMake.fonts = {
       NanumGothic: {
-        normal: 'NanumGothic-Regular.ttf',
-        bold: 'NanumGothic-Bold.ttf',
-        italics: 'NanumGothic-Regular.ttf',
-        bolditalics: 'NanumGothic-Bold.ttf'
+        normal: 'NanumGothic.ttf',
+        bold: 'NanumGothicBold.ttf',
+        italics: 'NanumGothic.ttf',
+        bolditalics: 'NanumGothicBold.ttf'
       }
     };
 
@@ -518,10 +518,10 @@ export default class OrderList extends React.Component {
           bold: true
         },
         productSize: {
-          fontSize: 16,
+          fontSize: 15,
           bold: true,
           alignment: 'center',
-          margin: [10, 15]
+          margin: [3, 15]
         },
         orderQuantity: {
           fontSize: 16,

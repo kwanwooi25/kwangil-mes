@@ -1,10 +1,10 @@
 // Font
-// @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
-$font-family: 'Noto Sans KR', sans-serif;
+@import url(https://fonts.googleapis.com/css?family=Nanum+Gothic);
+$font-family: 'Nanum Gothic', sans-serif;
 
-$font-weight--thin:   300;
-$font-weight--regular: 400;
-$font-weight--bold:   700;
+$font-weight--thin:   400;
+$font-weight--regular: 700;
+$font-weight--bold:   800;
 
 $font-size--xs: 0.75rem;
 $font-size--sm: 1rem;
