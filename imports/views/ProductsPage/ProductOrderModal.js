@@ -1,20 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import React from 'react';
-import Modal from 'react-modal';
-import moment from 'moment';
+import { Meteor } from "meteor/meteor";
+import React from "react";
+import Modal from "react-modal";
+import moment from "moment";
 
-import { ProductsData } from '../../api/products';
-import { OrdersData } from '../../api/orders';
+import { ProductsData } from "../../api/products";
+import { OrdersData } from "../../api/orders";
 
-import DatePickerWithMessage from '../../custom/DatePicker/DatePickerWithMessage';
-import TextInput from '../../custom/TextInput';
-import Textarea from '../../custom/Textarea';
-import RadioButton from '../../custom/RadioButton';
-import Checkbox from '../../custom/Checkbox';
-import Accordion from '../../custom/Accordion';
-import ConfirmationModal from '../components/ConfirmationModal';
+import DatePickerWithMessage from "../../custom/DatePicker/DatePickerWithMessage";
+import TextInput from "../../custom/TextInput";
+import Textarea from "../../custom/Textarea";
+import RadioButton from "../../custom/RadioButton";
+import Checkbox from "../../custom/Checkbox";
+import Accordion from "../../custom/Accordion";
+import ConfirmationModal from "../components/ConfirmationModal";
 
-import noImage from '../../assets/no-image.png';
+import noImage from "../../assets/no-image.png";
 
 export default class ProductOrderModal extends React.Component {
   /*=========================================================================
@@ -35,7 +35,7 @@ export default class ProductOrderModal extends React.Component {
       const product = ProductsData.findOne({ _id: order.data.productID });
 
       initialState = {
-        mode: 'EDIT',
+        mode: "EDIT",
         orderID: props.orderID,
         product,
         orderedAt: moment(order.data.orderedAt),
@@ -49,43 +49,43 @@ export default class ProductOrderModal extends React.Component {
         status: order.data.status, // 작업지시 직후: 압출중, --> 'printing' --> 'cutting'
         isCompleted: false,
         isDelivered: false,
-        completedQuantity: '',
-        completedAt: '',
-        deliveredAt: '',
+        completedQuantity: "",
+        completedAt: "",
+        deliveredAt: "",
         orderedAtEmpty: false,
         deliverBeforeEmpty: false,
         orderQuantityEmpty: false,
         isConfirmationModalOpen: false,
-        confirmationTitle: '',
-        confirmationDescription: ''
+        confirmationTitle: "",
+        confirmationDescription: []
       };
     } else {
       // ADDNEW mode
       const product = ProductsData.findOne({ _id: props.productID });
       initialState = {
-        mode: 'ADDNEW',
-        orderID: '',
+        mode: "ADDNEW",
+        orderID: "",
         product,
         orderedAt: moment(),
         deliverBefore: moment(),
-        orderQuantity: '',
+        orderQuantity: "",
         deliverDateStrict: false,
         deliverFast: false,
-        plateStatus: 'confirm', // "confirm" : 확인, "new" : 신규, "edit" : 수정
-        workMemo: '',
-        deliverMemo: '',
-        status: 'extruding',
+        plateStatus: "confirm", // "confirm" : 확인, "new" : 신규, "edit" : 수정
+        workMemo: "",
+        deliverMemo: "",
+        status: "extruding",
         isCompleted: false,
         isDelivered: false,
-        completedQuantity: '',
-        completedAt: '',
-        deliveredAt: '',
+        completedQuantity: "",
+        completedAt: "",
+        deliveredAt: "",
         orderedAtEmpty: false,
         deliverBeforeEmpty: false,
         orderQuantityEmpty: false,
         isConfirmationModalOpen: false,
-        confirmationTitle: '',
-        confirmationDescription: ''
+        confirmationTitle: "",
+        confirmationDescription: []
       };
     }
 
@@ -105,7 +105,7 @@ export default class ProductOrderModal extends React.Component {
     } else {
       leadtime = 7;
     }
-    const deliverBefore = this.avoidWeekend(moment().add(leadtime, 'days'));
+    const deliverBefore = this.avoidWeekend(moment().add(leadtime, "days"));
     this.setState({ deliverBefore });
   }
 
@@ -113,21 +113,21 @@ export default class ProductOrderModal extends React.Component {
   // passes moment() object
   avoidWeekend(date) {
     if (date.day() === 6) {
-      date = date.subtract(1, 'days');
+      date = date.subtract(1, "days");
     } else if (date.day() === 7) {
-      date = date.add(1, 'days');
+      date = date.add(1, "days");
     }
     return date;
   }
 
   comma(str) {
     str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
   }
 
   uncomma(str) {
     str = String(str);
-    return str.replace(/[^\d]+/g, '');
+    return str.replace(/[^\d]+/g, "");
   }
 
   getProductInfo() {
@@ -137,7 +137,7 @@ export default class ProductOrderModal extends React.Component {
     `;
 
     let extPrintText = `${product.extColor}원단`;
-    let printDetailText = '';
+    let printDetailText = "";
     if (product.isPrint) {
       extPrintText += ` / 인쇄 ${Number(product.printFrontColorCount) +
         Number(product.printBackColorCount)}도`;
@@ -149,23 +149,23 @@ export default class ProductOrderModal extends React.Component {
           product.printBackColor
         })`;
       } else {
-        printDetailText += ')';
+        printDetailText += ")";
       }
     } else {
       extPrintText += ` / 무지`;
     }
 
-    let cutDetailText = '';
+    let cutDetailText = "";
     if (product.cutUltrasonic) {
-      cutDetailText = '초음파가공';
+      cutDetailText = "초음파가공";
       if (product.cutPowderPack) {
-        cutDetailText += ' / 가루포장';
+        cutDetailText += " / 가루포장";
       }
       if (product.cutPunches) {
         cutDetailText += ` / 바람구멍 (${product.cutPunchCount}개)`;
       }
     } else if (product.cutPowderPack) {
-      cutDetailText = '가루포장';
+      cutDetailText = "가루포장";
       if (product.cutPunches) {
         cutDetailText += ` / 바람구멍 (${product.cutPunchCount}개)`;
       }
@@ -178,7 +178,7 @@ export default class ProductOrderModal extends React.Component {
       packDetailText += ` (${this.comma(product.packQuantity)}매씩)`;
     }
     if (product.packDeliverAll) {
-      packDetailText += ' / 전량납품';
+      packDetailText += " / 전량납품";
     }
 
     return (
@@ -219,19 +219,19 @@ export default class ProductOrderModal extends React.Component {
   onInputChange(e) {
     // add and remove class 'changed' on EDIT mode
     if (
-      this.state.mode === 'EDIT' &&
+      this.state.mode === "EDIT" &&
       initialState[e.target.name] !== e.target.value
     ) {
-      e.target.parentNode.classList.add('changed');
+      e.target.parentNode.classList.add("changed");
     } else {
-      e.target.parentNode.classList.remove('changed');
+      e.target.parentNode.classList.remove("changed");
     }
 
-    if (e.target.name === 'orderQuantity') {
+    if (e.target.name === "orderQuantity") {
       this.setState({
         [e.target.name]: this.comma(this.uncomma(e.target.value))
       });
-    } else if (e.target.type === 'checkbox') {
+    } else if (e.target.type === "checkbox") {
       this.setState({ [e.target.name]: e.target.checked });
     } else {
       this.setState({ [e.target.name]: e.target.value });
@@ -239,9 +239,9 @@ export default class ProductOrderModal extends React.Component {
 
     // check validation
     if (
-      e.target.type !== 'checkbox' &&
-      e.target.type !== 'radio' &&
-      e.target.type !== 'textarea'
+      e.target.type !== "checkbox" &&
+      e.target.type !== "radio" &&
+      e.target.type !== "textarea"
     ) {
       this.validate(e.target.name, e.target.value);
     }
@@ -251,13 +251,13 @@ export default class ProductOrderModal extends React.Component {
     const inputContainer = document.getElementById(name).parentNode;
 
     // check if the value empty
-    if (value === '' || value === null) {
+    if (value === "" || value === null) {
       this.setState({ [`${name}Empty`]: true });
-      inputContainer.classList.add('error');
+      inputContainer.classList.add("error");
       return false;
     } else {
       this.setState({ [`${name}Empty`]: false });
-      inputContainer.classList.remove('error');
+      inputContainer.classList.remove("error");
       return true;
     }
   }
@@ -266,38 +266,38 @@ export default class ProductOrderModal extends React.Component {
     e.preventDefault();
 
     // validation
-    if (!this.validate('orderedAt', this.state.orderedAt)) {
-      document.getElementById('orderedAt').focus();
-    } else if (!this.validate('deliverBefore', this.state.deliverBefore)) {
-      document.getElementById('deliverBefore').focus();
-    } else if (!this.validate('orderQuantity', this.state.orderQuantity)) {
-      document.getElementById('orderQuantity').focus();
+    if (!this.validate("orderedAt", this.state.orderedAt)) {
+      document.getElementById("orderedAt").focus();
+    } else if (!this.validate("deliverBefore", this.state.deliverBefore)) {
+      document.getElementById("deliverBefore").focus();
+    } else if (!this.validate("orderQuantity", this.state.orderQuantity)) {
+      document.getElementById("orderQuantity").focus();
     } else {
-      if (this.state.mode === 'ADDNEW') {
+      if (this.state.mode === "ADDNEW") {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: '신규 작업지시',
-          confirmationDescription: `
-            [ ${this.state.product.name} :
-            ${this.state.product.thick} x
-            ${this.state.product.length} x
-            ${this.state.product.width} =
-            ${this.comma(this.state.orderQuantity)}매 ]
-            작업지시 하시겠습니까?
-          `
+          confirmationTitle: "신규 작업지시",
+          confirmationDescription: [
+            this.state.product.name,
+            `  ${this.state.product.thick} x
+              ${this.state.product.length} x
+              ${this.state.product.width}`,
+            `= ${this.comma(this.state.orderQuantity)}매`,
+            "작업지시 하시겠습니까?"
+          ]
         });
-      } else if (this.state.mode === 'EDIT') {
+      } else if (this.state.mode === "EDIT") {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: '수정 작업지시',
-          confirmationDescription: `
-            [ ${this.state.product.name} :
-            ${this.state.product.thick} x
-            ${this.state.product.length} x
-            ${this.state.product.width} =
-            ${this.comma(this.state.orderQuantity)}매 ]
-            작업지시를 수정하시겠습니까?
-          `
+          confirmationTitle: "수정 작업지시",
+          confirmationDescription: [
+            this.state.product.name,
+            `  ${this.state.product.thick} x
+              ${this.state.product.length} x
+              ${this.state.product.width}`,
+            `= ${this.comma(this.state.orderQuantity)}매`,
+            "작업지시 수정하시겠습니까?"
+          ]
         });
       }
     }
@@ -306,39 +306,39 @@ export default class ProductOrderModal extends React.Component {
   onConfirmationModalClose(answer) {
     this.setState({ isConfirmationModalOpen: false });
 
-    if (answer && this.state.mode === 'ADDNEW') {
+    if (answer && this.state.mode === "ADDNEW") {
       const orderData = {
         productID: this.state.product._id,
-        orderedAt: this.state.orderedAt.format('YYYY-MM-DD'),
-        deliverBefore: this.state.deliverBefore.format('YYYY-MM-DD'),
+        orderedAt: this.state.orderedAt.format("YYYY-MM-DD"),
+        deliverBefore: this.state.deliverBefore.format("YYYY-MM-DD"),
         orderQuantity: this.uncomma(this.state.orderQuantity),
         deliverDateStrict: this.state.deliverDateStrict,
         deliverFast: this.state.deliverFast,
-        plateStatus: this.state.product.isPrint ? this.state.plateStatus : '',
+        plateStatus: this.state.product.isPrint ? this.state.plateStatus : "",
         workMemo: this.state.workMemo,
         deliverMemo: this.state.deliverMemo,
-        status: 'extruding', // 작업지시 직후: 압출중, --> 'printing' --> 'cutting'
+        status: "extruding", // 작업지시 직후: 압출중, --> 'printing' --> 'cutting'
         isCompleted: false,
         isDelivered: false,
-        completedQuantity: '',
-        completedAt: '',
-        deliveredAt: ''
+        completedQuantity: "",
+        completedAt: "",
+        deliveredAt: ""
       };
 
       const history = {};
 
-      Meteor.call('orders.insert', orderData, (err, res) => {
+      Meteor.call("orders.insert", orderData, (err, res) => {
         if (!err) {
           this.props.onModalClose();
         } else {
           this.setState({ error: err.error });
         }
       });
-    } else if (answer && this.state.mode === 'EDIT') {
+    } else if (answer && this.state.mode === "EDIT") {
       const orderData = {
         productID: this.state.product._id,
-        orderedAt: this.state.orderedAt.format('YYYY-MM-DD'),
-        deliverBefore: this.state.deliverBefore.format('YYYY-MM-DD'),
+        orderedAt: this.state.orderedAt.format("YYYY-MM-DD"),
+        deliverBefore: this.state.deliverBefore.format("YYYY-MM-DD"),
         orderQuantity: this.uncomma(this.state.orderQuantity),
         deliverDateStrict: this.state.deliverDateStrict,
         deliverFast: this.state.deliverFast,
@@ -348,13 +348,13 @@ export default class ProductOrderModal extends React.Component {
         status: this.state.status, // 작업지시 직후: 압출중, --> 'printing' --> 'cutting'
         isCompleted: false,
         isDelivered: false,
-        completedQuantity: '',
-        completedAt: '',
-        deliveredAt: ''
+        completedQuantity: "",
+        completedAt: "",
+        deliveredAt: ""
       };
 
       Meteor.call(
-        'orders.update',
+        "orders.update",
         this.state.orderID,
         orderData,
         (err, res) => {
@@ -378,7 +378,7 @@ export default class ProductOrderModal extends React.Component {
       <Modal
         isOpen={this.props.isOpen}
         onAfterOpen={() => {
-          document.getElementById('orderQuantity').focus();
+          document.getElementById("orderQuantity").focus();
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
@@ -387,9 +387,9 @@ export default class ProductOrderModal extends React.Component {
       >
         <div className="boxed-view__header">
           <h1>
-            {this.state.mode === 'ADDNEW'
-              ? '작업지시 작성'
-              : this.state.mode === 'EDIT' ? '작업지시 수정' : undefined}
+            {this.state.mode === "ADDNEW"
+              ? "작업지시 작성"
+              : this.state.mode === "EDIT" ? "작업지시 수정" : undefined}
           </h1>
         </div>
         <form className="boxed-view__content product-order-modal__content">
@@ -416,10 +416,10 @@ export default class ProductOrderModal extends React.Component {
                       isOutsideRange={() => {
                         return false;
                       }}
-                      disabled={this.state.mode === 'EDIT'}
+                      disabled={this.state.mode === "EDIT"}
                       errorMessage={
                         this.state.orderedAtEmpty
-                          ? '발주일을 입력하세요.'
+                          ? "발주일을 입력하세요."
                           : undefined
                       }
                     />
@@ -436,22 +436,22 @@ export default class ProductOrderModal extends React.Component {
                       onDateChange={deliverBefore => {
                         console.log(initialState.deliverBefore, deliverBefore);
                         if (
-                          initialState.deliverBefore.format('YYYY-MM-DD') !==
-                          deliverBefore.format('YYYY-MM-DD')
+                          initialState.deliverBefore.format("YYYY-MM-DD") !==
+                          deliverBefore.format("YYYY-MM-DD")
                         ) {
                           document
-                            .getElementById('deliverBefore')
-                            .parentNode.classList.add('changed');
+                            .getElementById("deliverBefore")
+                            .parentNode.classList.add("changed");
                         } else {
                           document
-                            .getElementById('deliverBefore')
-                            .parentNode.classList.remove('changed');
+                            .getElementById("deliverBefore")
+                            .parentNode.classList.remove("changed");
                         }
                         this.setState({ deliverBefore });
                       }}
                       errorMessage={
                         this.state.deliverBeforeEmpty
-                          ? '납기일을 입력하세요.'
+                          ? "납기일을 입력하세요."
                           : undefined
                       }
                     />
@@ -470,7 +470,7 @@ export default class ProductOrderModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.orderQuantityEmpty
-                          ? '발주수량을 입력하세요.'
+                          ? "발주수량을 입력하세요."
                           : undefined
                       }
                     />
@@ -509,7 +509,7 @@ export default class ProductOrderModal extends React.Component {
                         value="confirm"
                         disabled={!this.state.product.isPrint}
                         checked={
-                          this.state.plateStatus === 'confirm' ? true : false
+                          this.state.plateStatus === "confirm" ? true : false
                         }
                         onInputChange={this.onInputChange}
                       />
@@ -519,7 +519,7 @@ export default class ProductOrderModal extends React.Component {
                         value="new"
                         disabled={!this.state.product.isPrint}
                         checked={
-                          this.state.plateStatus === 'new' ? true : false
+                          this.state.plateStatus === "new" ? true : false
                         }
                         onInputChange={this.onInputChange}
                       />
@@ -529,7 +529,7 @@ export default class ProductOrderModal extends React.Component {
                         value="edit"
                         disabled={!this.state.product.isPrint}
                         checked={
-                          this.state.plateStatus === 'edit' ? true : false
+                          this.state.plateStatus === "edit" ? true : false
                         }
                         onInputChange={this.onInputChange}
                       />
@@ -573,9 +573,9 @@ export default class ProductOrderModal extends React.Component {
 
           <div className="product-modal__button-group">
             <button className="button" onClick={this.onClickOK}>
-              {this.state.mode === 'ADDNEW'
-                ? '발주'
-                : this.state.mode === 'EDIT' ? '수정' : undefined}
+              {this.state.mode === "ADDNEW"
+                ? "발주"
+                : this.state.mode === "EDIT" ? "수정" : undefined}
             </button>
             <button
               className="button button-cancel"
@@ -589,7 +589,7 @@ export default class ProductOrderModal extends React.Component {
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
-            description={this.state.confirmationDescription}
+            descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
         ) : (

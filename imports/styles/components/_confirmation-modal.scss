@@ -1,10 +1,17 @@
 .confirmation-modal__description {
   color: $color-primary--900;
-  font-size: $font-size--md;
+  font-size: $font-size--sm;
   text-align: center;
+  margin: 0;
+  padding-bottom: $space-sm;
+
+  &:first-child {
+    padding-top: $space-sm;
+  }
 }
 
 .confirmation-modal__button-group {
   display: flex;
   justify-content: center;
+  margin-top: $space-lg;
 }

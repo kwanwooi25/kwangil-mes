@@ -15,6 +15,7 @@ export default class DatePicker extends React.Component {
   onDateChange
   isOutsideRange : allows past days
   disabled
+  anchorDirection
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -34,6 +35,7 @@ export default class DatePicker extends React.Component {
         }}
         isOutsideRange={this.props.isOutsideRange}
         disabled={this.props.disabled}
+        anchorDirection={this.props.anchorDirection}
         noBorder
         numberOfMonths={1}
         verticalSpacing={0}

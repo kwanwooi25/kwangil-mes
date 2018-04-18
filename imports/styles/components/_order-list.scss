@@ -22,7 +22,7 @@
 
   &.completed {
     background: $grey--200;
-    & * {
+    * {
       color: $grey--500;
     }
   }

@@ -88,7 +88,7 @@ export default class ProductModal extends React.Component {
         priceError: false,
         isConfirmationModalOpen: false,
         confirmationTitle: "",
-        confirmationDescription: ""
+        confirmationDescription: []
       };
     } else {
       // ADDNEW mode
@@ -105,7 +105,7 @@ export default class ProductModal extends React.Component {
         isPrint: false,
         extColor: "",
         extAntistatic: false,
-        extPretreat: "",     // 'single': 단면, 'both': 양면
+        extPretreat: "", // 'single': 단면, 'both': 양면
         extMemo: "",
         printImageFile: "",
         printImageFileName: "",
@@ -124,7 +124,7 @@ export default class ProductModal extends React.Component {
         cutPunchCount: "",
         cutPunchSize: "",
         cutPunchPosition: "",
-        cutMemo: '',
+        cutMemo: "",
         packMaterial: "",
         packQuantity: "",
         packDeliverAll: false,
@@ -151,7 +151,7 @@ export default class ProductModal extends React.Component {
         priceError: false,
         isConfirmationModalOpen: false,
         confirmationTitle: "",
-        confirmationDescription: ""
+        confirmationDescription: []
       };
     }
 
@@ -401,13 +401,13 @@ export default class ProductModal extends React.Component {
         this.setState({
           isConfirmationModalOpen: true,
           confirmationTitle: "제품 신규 등록",
-          confirmationDescription: "신규 등록 하시겠습니까?"
+          confirmationDescription: ["신규 등록 하시겠습니까?"]
         });
       } else if (this.state.mode === "EDIT") {
         this.setState({
           isConfirmationModalOpen: true,
           confirmationTitle: "제품 정보 수정",
-          confirmationDescription: "수정하신 내용을 저장하시겠습니까?"
+          confirmationDescription: ["수정하신 내용을 저장하시겠습니까?"]
         });
       }
     }
@@ -1151,7 +1151,7 @@ export default class ProductModal extends React.Component {
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
-            description={this.state.confirmationDescription}
+            descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
         ) : (

@@ -1,13 +1,14 @@
-import React from 'react';
-import Modal from 'react-modal';
-import moment from 'moment';
+import React from "react";
+import Modal from "react-modal";
+import moment from "moment";
 
-import { OrdersData } from '../../api/orders';
-import { ProductsData } from '../../api/products';
+import { OrdersData } from "../../api/orders";
+import { ProductsData } from "../../api/products";
 
-import Checkbox from '../../custom/Checkbox';
-import TextInput from '../../custom/TextInput';
-import DatePicker from '../../custom/DatePicker/DatePicker';
+import Checkbox from "../../custom/Checkbox";
+import TextInput from "../../custom/TextInput";
+import DatePicker from "../../custom/DatePicker/DatePicker";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 export default class CompleteOrderMultiModal extends React.Component {
   /*=========================================================================
@@ -24,10 +25,11 @@ export default class CompleteOrderMultiModal extends React.Component {
     let completedQuantityArray = [];
     let isCompletedArray = [];
     let completedQuantityEmptyArray = [];
+    const ordersCount = props.selectedOrders.length;
 
-    for (let i = 0; i < props.selectedOrders.length; i++) {
+    for (let i = 0; i < ordersCount; i++) {
       completedAtArray.push(moment());
-      completedQuantityArray.push('');
+      completedQuantityArray.push("");
       isCompletedArray.push(false);
       completedQuantityEmptyArray.push(false);
     }
@@ -36,45 +38,59 @@ export default class CompleteOrderMultiModal extends React.Component {
       completedAtArray,
       completedQuantityArray,
       isCompletedArray,
-      completedQuantityEmptyArray
+      completedQuantityEmptyArray,
+      ordersCount,
+      isConfirmationModalOpen: false,
+      confirmationTitle: "",
+      confirmationDescription: ""
     };
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onClickOK = this.onClickOK.bind(this);
+    this.onConfirmationModalClose = this.onConfirmationModalClose.bind(this);
   }
 
   comma(str) {
     str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
   }
 
   uncomma(str) {
     str = String(str);
-    return str.replace(/[^\d]+/g, '');
+    return str.replace(/[^\d]+/g, "");
   }
 
   validate(name, value) {
-    // const inputContainer = document.getElementById(name).parentNode;
-    //
-    // if (!value) {
-    //   this.setState({ [`${name}Empty`]: true });
-    //   inputContainer.classList.add('error');
-    //   return false;
-    // } else {
-    //   this.setState({ [`${name}Empty`]: false });
-    //   inputContainer.classList.remove('error');
-    //   return true;
-    // }
+    const inputContainer = document.getElementById(name).parentNode;
+    const index = Number(
+      name
+        .split("[")
+        .pop()
+        .replace("]", "")
+    );
+    if (!value) {
+      let completedQuantityEmptyArray = this.state.completedQuantityEmptyArray;
+      completedQuantityEmptyArray[index] = true;
+      this.setState({ completedQuantityEmptyArray });
+      inputContainer.classList.add("error");
+      return false;
+    } else {
+      let completedQuantityEmptyArray = this.state.completedQuantityEmptyArray;
+      completedQuantityEmptyArray[index] = false;
+      this.setState({ completedQuantityEmptyArray });
+      inputContainer.classList.remove("error");
+      return true;
+    }
   }
 
   onInputChange(e) {
     const index = Number(
       e.target.name
-        .split('[')
+        .split("[")
         .pop()
-        .replace(']', '')
+        .replace("]", "")
     );
-    if (e.target.type === 'checkbox') {
+    if (e.target.type === "checkbox") {
       let isCompletedArray = this.state.isCompletedArray;
       isCompletedArray[index] = e.target.checked;
       this.setState({ isCompletedArray });
@@ -82,28 +98,52 @@ export default class CompleteOrderMultiModal extends React.Component {
       let completedQuantityArray = this.state.completedQuantityArray;
       completedQuantityArray[index] = this.comma(this.uncomma(e.target.value));
       this.setState({ completedQuantityArray });
-      // this.validate('completedQuantityArray', e.target.value);
+      this.validate(e.target.name, e.target.value);
     }
   }
 
-  onClickOK(e) {
-    // e.preventDefault();
-    // if (this.validate('completedQuantity', this.state.completedQuantity)) {
-    //   let order = OrdersData.findOne({ _id: this.props.orderID });
-    //   order.data.completedAt = this.state.completedAt.format('YYYY-MM-DD');
-    //   order.data.completedQuantity = this.uncomma(this.state.completedQuantity);
-    //   order.data.isCompleted = this.state.isCompleted;
-    //
-    //   Meteor.call('orders.update', order._id, order.data, (err, res) => {
-    //     if (!err) {
-    //       this.props.onModalClose();
-    //     } else {
-    //       this.setState({ error: err.error });
-    //     }
-    //   });
-    // } else {
-    //   document.getElementById('completedQuantity').focus();
-    // }
+  onClickOK() {
+    let isValidated = false;
+    for (let i = 0; i < this.state.ordersCount; i++) {
+      const targetName = `completedQuantityArray[${i}]`;
+      const value = this.state.completedQuantityArray[i];
+      isValidated = this.validate(targetName, value);
+    }
+
+    if (isValidated) {
+      this.setState({
+        isConfirmationModalOpen: true,
+        confirmationTitle: "작업 완료 등록",
+        confirmationDescription: `
+          [${this.state.ordersCount}개 주문] 작업 완료 하시겠습니까?
+          `
+      });
+    }
+  }
+
+  onConfirmationModalClose(answer) {
+    this.setState({
+      isConfirmationModalOpen: false,
+      confirmationTitle: "",
+      confirmationDescription: ""
+    });
+    if (answer) {
+      const lis = document.querySelectorAll(
+        "li.complete-order-multi-modal__list-item"
+      );
+      for (let i = 0; i < lis.length; i++) {
+        const order = OrdersData.findOne({ _id: lis[i].id });
+        order.data.completedQuantity = this.uncomma(
+          this.state.completedQuantityArray[i]
+        );
+        order.data.isCompleted = this.state.isCompletedArray[i];
+        Meteor.call("orders.update", order._id, order.data, (err, res) => {
+          if (!err) {
+            this.props.onModalClose();
+          }
+        });
+      }
+    }
   }
 
   getOrderList(selectedOrders) {
@@ -116,69 +156,79 @@ export default class CompleteOrderMultiModal extends React.Component {
         ${product.length} x
         ${product.width}
       `;
-
-      // console.log(index, order, product);
-
+      
       return (
-        <li id={orderID} key={orderID}>
-          <div className="complete-order-modal__order-details-container">
-            <p className="complete-order-modal__accountName">
+        <li
+          className="complete-order-multi-modal__list-item"
+          id={orderID}
+          key={orderID}
+        >
+          <div className="complete-order-multi-modal__order-details-container">
+            <p className="complete-order-multi-modal__accountName">
               {product.accountName}
             </p>
-            <p className="complete-order-modal__productName">{product.name}</p>
-            <p className="complete-order-modal__productSize">
+            <p className="complete-order-multi-modal__productName">
+              {product.name}
+            </p>
+            <p className="complete-order-multi-modal__productSize">
               {productSizeText}
             </p>
-            <p className="complete-order-modal__orderQuantity">
+            <p className="complete-order-multi-modal__orderQuantity">
               주문수량: {this.comma(order.data.orderQuantity)}매
             </p>
           </div>
-          <div className="complete-order-modal__input-container">
-            <label
-              className="complete-order-modal__label"
-              htmlFor={`completedAtArray[${index}]`}
-            >
-              완료일
-            </label>
-            <DatePicker
-              id={`completedAtArray[${index}]`}
-              date={this.state.completedAtArray[index]}
-              onDateChange={completedAt => {
-                if (completedAt === null) completedAt = moment();
-                let completedAtArray = this.state.completedAtArray;
-                completedAtArray[index] = completedAt;
-                this.setState({ completedAtArray });
-              }}
-              isOutsideRange={() => {
-                return false;
-              }}
-            />
-          </div>
-          <div className="complete-order-modal__input-container">
-            <label
-              className="complete-order-modal__label"
-              htmlFor={`completedQuantityArray[${index}]`}
-            >
-              완성수량
-            </label>
-            <TextInput
-              className="form-element complete-order-modal__input"
-              inputType="text"
-              id={`completedQuantityArray[${index}]`}
-              value={this.state.completedQuantityArray[index]}
-              onInputChange={this.onInputChange}
-              errorMessage={
-                this.state.completedQuantityEmptyArray[index]
-                  ? '완성수량을 입력하세요.'
-                  : undefined
-              }
-            />
-            <Checkbox
-              name={`isCompletedArray[${index}]`}
-              label="작업완료"
-              checked={this.state.isCompletedArray[index]}
-              onInputChange={this.onInputChange}
-            />
+          <div className="complete-order-multi-modal__inputs-container">
+            <div className="complete-order-multi-modal__input-container">
+              <label
+                className="complete-order-multi-modal__label"
+                htmlFor={`completedAtArray[${index}]`}
+              >
+                완료일
+              </label>
+              <DatePicker
+                id={`completedAtArray[${index}]`}
+                date={this.state.completedAtArray[index]}
+                onDateChange={completedAt => {
+                  if (completedAt === null) completedAt = moment();
+                  let completedAtArray = this.state.completedAtArray;
+                  completedAtArray[index] = completedAt;
+                  this.setState({ completedAtArray });
+                }}
+                isOutsideRange={() => {
+                  return false;
+                }}
+                anchorDirection="right"
+              />
+            </div>
+            <div className="complete-order-multi-modal__input-container">
+              <label
+                className="complete-order-multi-modal__label"
+                htmlFor={`completedQuantityArray[${index}]`}
+              >
+                완성수량
+              </label>
+              <TextInput
+                className="form-element complete-order-multi-modal__input"
+                inputType="text"
+                id={`completedQuantityArray[${index}]`}
+                value={this.state.completedQuantityArray[index]}
+                onInputChange={this.onInputChange}
+                errorMessage={
+                  this.state.completedQuantityEmptyArray[index]
+                    ? "완성수량을 입력하세요."
+                    : undefined
+                }
+              />
+            </div>
+            <div className="complete-order-multi-modal__input-container">
+              <label className="complete-order-multi-modal__label" />
+              <Checkbox
+                name={`isCompletedArray[${index}]`}
+                label="작업완료"
+                checked={this.state.isCompletedArray[index]}
+                onInputChange={this.onInputChange}
+              />
+            </div>
           </div>
         </li>
       );
@@ -189,6 +239,9 @@ export default class CompleteOrderMultiModal extends React.Component {
     return (
       <Modal
         isOpen={this.props.isOpen}
+        onAfterOpen={() => {
+          document.getElementById("completedQuantityArray[0]").focus();
+        }}
         onRequestClose={() => {
           this.props.onModalClose();
         }}
@@ -209,8 +262,7 @@ export default class CompleteOrderMultiModal extends React.Component {
             </button>
             <button
               className="button button-cancel"
-              onClick={e => {
-                e.preventDefault();
+              onClick={() => {
                 this.props.onModalClose();
               }}
             >
@@ -218,6 +270,16 @@ export default class CompleteOrderMultiModal extends React.Component {
             </button>
           </div>
         </div>
+        {this.state.isConfirmationModalOpen ? (
+          <ConfirmationModal
+            isOpen={this.state.isConfirmationModalOpen}
+            title={this.state.confirmationTitle}
+            description={this.state.confirmationDescription}
+            onModalClose={this.onConfirmationModalClose}
+          />
+        ) : (
+          undefined
+        )}
       </Modal>
     );
   }

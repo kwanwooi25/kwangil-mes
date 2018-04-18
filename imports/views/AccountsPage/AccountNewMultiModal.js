@@ -1,7 +1,7 @@
-import React from 'react';
-import Modal from 'react-modal';
+import React from "react";
+import Modal from "react-modal";
 
-import ConfirmationModal from '../components/ConfirmationModal';
+import ConfirmationModal from "../components/ConfirmationModal";
 
 export default class AccountNewMultiModal extends React.Component {
   /*=========================================================================
@@ -23,34 +23,34 @@ export default class AccountNewMultiModal extends React.Component {
   }
 
   onInputChange(e) {
-    if (e.target.id === 'accountsJSON') {
-      if (e.target.value === '') {
-        const message = document.getElementById('message');
-        message.textContent = '입력된 내용이 없습니다.';
-        message.classList.add('error');
-        this.refs.accountsJSON.classList.add('error');
+    if (e.target.id === "accountsJSON") {
+      if (e.target.value === "") {
+        const message = document.getElementById("message");
+        message.textContent = "입력된 내용이 없습니다.";
+        message.classList.add("error");
+        this.refs.accountsJSON.classList.add("error");
       } else {
-        const message = document.getElementById('message');
+        const message = document.getElementById("message");
         message.textContent =
-          '등록하고자 하는 업체 리스트를 JSON 형태로 입력합니다.';
-        message.classList.remove('error');
-        this.refs.accountsJSON.classList.remove('error');
+          "등록하고자 하는 업체 리스트를 JSON 형태로 입력합니다.";
+        message.classList.remove("error");
+        this.refs.accountsJSON.classList.remove("error");
       }
     }
   }
 
   onClickOK(e) {
-    if (this.refs.accountsJSON.value === '') {
-      const message = document.getElementById('message');
-      message.textContent = '입력된 내용이 없습니다.';
-      message.classList.add('error');
-      this.refs.accountsJSON.classList.add('error');
+    if (this.refs.accountsJSON.value === "") {
+      const message = document.getElementById("message");
+      message.textContent = "입력된 내용이 없습니다.";
+      message.classList.add("error");
+      this.refs.accountsJSON.classList.add("error");
     } else {
-      const message = document.getElementById('message');
+      const message = document.getElementById("message");
       message.textContent =
-        '등록하고자 하는 업체 리스트를 JSON 형태로 입력합니다.';
-      message.classList.remove('error');
-      this.refs.accountsJSON.classList.remove('error');
+        "등록하고자 하는 업체 리스트를 JSON 형태로 입력합니다.";
+      message.classList.remove("error");
+      this.refs.accountsJSON.classList.remove("error");
       this.setState({ isConfirmationModalOpen: true });
     }
   }
@@ -60,7 +60,7 @@ export default class AccountNewMultiModal extends React.Component {
     console.log(answer);
     if (answer) {
       const json = JSON.parse(this.refs.accountsJSON.value);
-      Meteor.call('accounts.insertmany', json, (err, res) => {
+      Meteor.call("accounts.insertmany", json, (err, res) => {
         if (!err) {
           this.props.onModalClose();
         }
@@ -112,7 +112,7 @@ export default class AccountNewMultiModal extends React.Component {
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title="거래처 대량등록"
-            description="계속 하시겠습니까?"
+            descriptionArray={["계속 하시겠습니까?"]}
             onModalClose={this.onConfirmationModalClose}
           />
         ) : (

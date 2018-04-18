@@ -1,19 +1,19 @@
-import React from 'react';
-import moment from 'moment';
-import 'pdfmake/build/pdfmake.js';
-import 'pdfmake/build/vfs_fonts.js';
+import React from "react";
+import moment from "moment";
+import "pdfmake/build/pdfmake.js";
+import "pdfmake/build/vfs_fonts.js";
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
-import { OrdersData } from '../../api/orders';
+import { AccountsData } from "../../api/accounts";
+import { ProductsData } from "../../api/products";
+import { OrdersData } from "../../api/orders";
 
-import Checkbox from '../../custom/Checkbox';
-import ProductOrderModal from '../ProductsPage/ProductOrderModal';
-import ProductDetailView from '../ProductsPage/ProductDetailView';
-import CompleteOrderModal from './CompleteOrderModal';
-import CompleteOrderMultiModal from './CompleteOrderMultiModal';
-import ConfirmationModal from '../components/ConfirmationModal';
-import noImage from '../../assets/no-image.png';
+import Checkbox from "../../custom/Checkbox";
+import ProductOrderModal from "../ProductsPage/ProductOrderModal";
+import ProductDetailView from "../ProductsPage/ProductDetailView";
+import CompleteOrderModal from "./CompleteOrderModal";
+import CompleteOrderMultiModal from "./CompleteOrderMultiModal";
+import ConfirmationModal from "../components/ConfirmationModal";
+import noImage from "../../assets/no-image.png";
 
 export default class OrderList extends React.Component {
   /*=========================================================================
@@ -35,12 +35,13 @@ export default class OrderList extends React.Component {
       isCompleteOrderMultiModalOpen: false,
       isProductOrderModalOpen: false,
       isProductDetailViewOpen: false,
-      isDeleteConfirmModalOpen: false,
-      selectedOrderID: '',
-      selectedOrderDetail: '',
+      isConfirmModalOpen: false,
+      selectedOrderID: "",
+      confirmationDescription: [],
       ordersCount: 0,
       isSelectedMulti: false,
-      selectedOrders: []
+      selectedOrders: [],
+      deleteMode: ""
     };
 
     this.onInputChange = this.onInputChange.bind(this);
@@ -52,11 +53,14 @@ export default class OrderList extends React.Component {
     this.onCompleteOrderClick = this.onCompleteOrderClick.bind(this);
     this.onCompleteOrderModalClose = this.onCompleteOrderModalClose.bind(this);
     this.onCompleteOrderMultiClick = this.onCompleteOrderMultiClick.bind(this);
-    this.onCompleteOrderMultiModalClose = this.onCompleteOrderMultiModalClose.bind(this);
+    this.onCompleteOrderMultiModalClose = this.onCompleteOrderMultiModalClose.bind(
+      this
+    );
     this.onEditClick = this.onEditClick.bind(this);
     this.onProductOrderModalClose = this.onProductOrderModalClose.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
-    this.onDeleteConfirmModalClose = this.onDeleteConfirmModalClose.bind(this);
+    this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
+    this.onConfirmationModalClose = this.onConfirmationModalClose.bind(this);
   }
 
   // set state on props change
@@ -67,9 +71,9 @@ export default class OrderList extends React.Component {
   componentDidMount() {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
-      Meteor.subscribe('orders');
+      Meteor.subscribe("accounts");
+      Meteor.subscribe("products");
+      Meteor.subscribe("orders");
       const accountList = AccountsData.find(
         {},
         { fields: { _id: 1, name: 1 } }
@@ -116,17 +120,17 @@ export default class OrderList extends React.Component {
 
   comma(str) {
     str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
   }
 
   uncomma(str) {
     str = String(str);
-    return str.replace(/[^\d]+/g, '');
+    return str.replace(/[^\d]+/g, "");
   }
 
   onInputChange(e) {
     let selectedOrders = this.state.selectedOrders;
-    if (e.target.name === 'selectAll') {
+    if (e.target.name === "selectAll") {
       selectedOrders = [];
       const checkboxes = document.querySelectorAll(
         '#order-list input[type="checkbox"]'
@@ -144,15 +148,13 @@ export default class OrderList extends React.Component {
         selectedOrders.push(e.target.name);
       }
     }
-    selectedOrders = selectedOrders.filter(value => value !== 'selectAll');
+    selectedOrders = selectedOrders.filter(value => value !== "selectAll");
     if (selectedOrders.length >= 2) {
       this.setState({ isSelectedMulti: true });
     } else {
       this.setState({ isSelectedMulti: false });
     }
-    this.setState({ selectedOrders }, () => {
-      console.log(this.state.selectedOrders);
-    });
+    this.setState({ selectedOrders });
   }
 
   onStatusChange(e) {
@@ -162,10 +164,8 @@ export default class OrderList extends React.Component {
     let data = order.data;
     data.status = statusValue;
 
-    Meteor.call('orders.update', targetID, data, (err, res) => {
-      if (!err) {
-        console.log('status updated');
-      } else {
+    Meteor.call("orders.update", targetID, data, (err, res) => {
+      if (err) {
         this.setState({ error: err.error });
       }
     });
@@ -180,15 +180,15 @@ export default class OrderList extends React.Component {
   }
 
   onProductDetailViewClose() {
-    this.setState({ isProductDetailViewOpen: false, selectedProductID: '' });
+    this.setState({ isProductDetailViewOpen: false, selectedProductID: "" });
   }
 
   // for order print single
   onPrintOrderClick(e) {
-    let selectedOrderID = '';
-    if (e.target.tagName === 'SPAN') {
+    let selectedOrderID = "";
+    if (e.target.tagName === "SPAN") {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'BUTTON') {
+    } else if (e.target.tagName === "BUTTON") {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.id;
     }
 
@@ -212,9 +212,8 @@ export default class OrderList extends React.Component {
   onPrintOrderMultiClick() {
     let docContent = [];
     let ordersCount = 0;
-    let filename = '작업지시';
+    let filename = "작업지시";
     this.state.selectedOrders.map(orderID => {
-
       // add orderID for filename in incremental order
       filename += `_${orderID}`;
 
@@ -229,21 +228,18 @@ export default class OrderList extends React.Component {
 
         // on last docContent added
         if (ordersCount === this.state.selectedOrders.length) {
-
           // sort docContent by orderID
           docContent.sort((a, b) => {
             const a_orderID = a[0].table.body[0][0].text;
             const b_orderID = b[0].table.body[0][0].text;
-            if (a_orderID > b_orderID)
-              return 1;
-            if (a_orderID < b_orderID)
-              return -1;
+            if (a_orderID > b_orderID) return 1;
+            if (a_orderID < b_orderID) return -1;
             return 0;
           });
 
           // add pagebreak between each order except the last one
           for (let i = 0; i < this.state.selectedOrders.length - 1; i++) {
-            docContent[i][3].pageBreak = 'after';
+            docContent[i][3].pageBreak = "after";
           }
 
           // generate PDF and open
@@ -266,10 +262,10 @@ export default class OrderList extends React.Component {
 
     pdfMake.fonts = {
       NanumGothic: {
-        normal: 'NanumGothic.ttf',
-        bold: 'NanumGothicBold.ttf',
-        italics: 'NanumGothic.ttf',
-        bolditalics: 'NanumGothicBold.ttf'
+        normal: "NanumGothic.ttf",
+        bold: "NanumGothicBold.ttf",
+        italics: "NanumGothic.ttf",
+        bolditalics: "NanumGothicBold.ttf"
       }
     };
 
@@ -277,7 +273,7 @@ export default class OrderList extends React.Component {
   }
 
   getTextForDocContent(order, product) {
-    const orderIDText = order._id.split('-').pop();
+    const orderIDText = order._id.split("-").pop();
     const orderedAtText = `발주일: ${order.data.orderedAt}`;
     const sizeText = `${product.thick} x ${product.length} x ${product.width}`;
     const orderQuantityText = `${this.comma(order.data.orderQuantity)} 매`;
@@ -293,35 +289,35 @@ export default class OrderList extends React.Component {
     )}kg)`;
     const productName = product.name;
     const accountName = product.accountName;
-    let deliverBeforeArray = order.data.deliverBefore.split('-');
+    let deliverBeforeArray = order.data.deliverBefore.split("-");
     deliverBeforeArray.shift();
-    const deliverBeforeText = deliverBeforeArray.join('/');
+    const deliverBeforeText = deliverBeforeArray.join("/");
 
-    let deliverRemarkText = '';
+    let deliverRemarkText = "";
     if (order.data.deliverDateStrict) {
       if (order.data.deliverFast) {
-        deliverRemarkText = '납기엄수/지급';
+        deliverRemarkText = "납기엄수/지급";
       } else {
-        deliverRemarkText = '납기엄수';
+        deliverRemarkText = "납기엄수";
       }
     } else if (order.data.deliverFast) {
-      deliverRemarkText = '지급';
+      deliverRemarkText = "지급";
     }
 
     let extDetailsText = `${product.extColor}원단`;
-    if (product.extPretreat === 'single') {
-      extDetailsText += '\n단면처리';
-    } else if (product.extPretreat === 'both') {
-      extDetailsText += '\n양면처리';
+    if (product.extPretreat === "single") {
+      extDetailsText += "\n단면처리";
+    } else if (product.extPretreat === "both") {
+      extDetailsText += "\n양면처리";
     }
     if (product.extAntistatic) {
-      extDetailsText += '\n대전방지';
+      extDetailsText += "\n대전방지";
     }
     if (product.extMemo) {
-      extDetailsText += '\n' + product.extMemo;
+      extDetailsText += "\n" + product.extMemo;
     }
 
-    let printFrontText = '';
+    let printFrontText = "";
     if (product.printFrontColorCount) {
       printFrontText = `${product.printFrontColorCount}도`;
       printFrontText += ` (${product.printFrontColor})`;
@@ -330,7 +326,7 @@ export default class OrderList extends React.Component {
       }
     }
 
-    let printBackText = '';
+    let printBackText = "";
     if (product.printBackColorCount) {
       printBackText = `${product.printBackColorCount}도`;
       printBackText += ` (${product.printBackColor})`;
@@ -339,20 +335,20 @@ export default class OrderList extends React.Component {
       }
     }
 
-    let printMemoText = '';
+    let printMemoText = "";
     if (product.printMemo) {
       printMemoText = product.printMemo;
     }
 
-    let cutDetailsText = '';
+    let cutDetailsText = "";
     if (product.cutPosition) {
       cutDetailsText += `가공위치: ${product.cutPosition}`;
     }
     if (product.cutUltrasonic) {
-      cutDetailsText += '\n초음파가공';
+      cutDetailsText += "\n초음파가공";
     }
     if (product.cutPowderPack) {
-      cutDetailsText += '\n가루포장';
+      cutDetailsText += "\n가루포장";
     }
     if (product.cutPunches) {
       cutDetailsText += `\nP${product.cutPunchCount}`;
@@ -364,10 +360,10 @@ export default class OrderList extends React.Component {
       }
     }
     if (product.cutMemo) {
-      cutDetailsText += '\n' + product.cutMemo;
+      cutDetailsText += "\n" + product.cutMemo;
     }
 
-    let packDetailsText = '';
+    let packDetailsText = "";
     if (product.packMaterial) {
       packDetailsText += `${product.packMaterial} 포장`;
     }
@@ -375,30 +371,30 @@ export default class OrderList extends React.Component {
       packDetailsText += `\n(${this.comma(product.packQuantity)}씩)`;
     }
     if (product.packDeliverAll) {
-      packDetailsText += '\n전량납품';
+      packDetailsText += "\n전량납품";
     }
     if (product.packMemo) {
-      packDetailsText += '\n' + product.packMemo;
+      packDetailsText += "\n" + product.packMemo;
     }
 
-    let plateStatusText = '';
+    let plateStatusText = "";
     switch (order.data.plateStatus) {
-      case 'confirm':
-        plateStatusText += '동판확인';
+      case "confirm":
+        plateStatusText += "동판확인";
         break;
-      case 'new':
-        plateStatusText += '동판신규';
+      case "new":
+        plateStatusText += "동판신규";
         break;
-      case 'edit':
-        plateStatusText += '동판수정';
+      case "edit":
+        plateStatusText += "동판수정";
         break;
     }
 
     const workMemo = order.data.workMemo;
     const deliverMemo = order.data.deliverMemo;
 
-    let urlToEncode = '';
-    let productImage = '';
+    let urlToEncode = "";
+    let productImage = "";
     if (product.printImageURL) {
       urlToEncode = product.printImageURL;
     } else {
@@ -406,7 +402,7 @@ export default class OrderList extends React.Component {
     }
 
     return new Promise((resolve, reject) => {
-      Meteor.call('encodeAsBase64', urlToEncode, (err, res) => {
+      Meteor.call("encodeAsBase64", urlToEncode, (err, res) => {
         if (res) {
           productImage = `data:image/png;base64,${res}`;
           resolve({
@@ -444,7 +440,7 @@ export default class OrderList extends React.Component {
       content: docContent,
 
       defaultStyle: {
-        font: 'NanumGothic'
+        font: "NanumGothic"
       },
 
       styles: {
@@ -454,7 +450,7 @@ export default class OrderList extends React.Component {
         title: {
           fontSize: 24,
           bold: true,
-          alignment: 'center'
+          alignment: "center"
         },
         orderNo: {
           fontSize: 30,
@@ -464,57 +460,57 @@ export default class OrderList extends React.Component {
         deliverRemark: {
           fontSize: 18,
           bold: true,
-          background: '#555',
-          color: '#fff',
-          alignment: 'right',
+          background: "#555",
+          color: "#fff",
+          alignment: "right",
           margin: 5
         },
         orderedAt: {
-          alignment: 'right',
+          alignment: "right",
           margin: 3
         },
         productSize: {
           fontSize: 17,
           bold: true,
-          alignment: 'center',
+          alignment: "center",
           margin: [2, 15]
         },
         orderQuantity: {
           fontSize: 16,
           bold: true,
-          alignment: 'center',
+          alignment: "center",
           margin: [5, 5, 5, 0]
         },
         productName: {
           fontSize: 17,
-          alignment: 'center',
+          alignment: "center",
           margin: 3
         },
         deliverBefore: {
           fontSize: 18,
           bold: true,
-          alignment: 'center',
+          alignment: "center",
           margin: [3, 15]
         },
         orderQuantityWeight: {
           fontSize: 12,
-          alignment: 'center',
+          alignment: "center",
           margin: [5, 0, 5, 5]
         },
         accountName: {
           fontSize: 12,
-          alignment: 'center',
+          alignment: "center",
           margin: 3
         },
         workOrderHeader: {
           fontSize: 12,
           bold: true,
-          alignment: 'center',
+          alignment: "center",
           margin: 3
         },
         workOrderBody: {
           fontSize: 12,
-          alignment: 'center',
+          alignment: "center",
           margin: 3
         },
         workOrderRemark: {
@@ -528,16 +524,16 @@ export default class OrderList extends React.Component {
   getDocContent(textObj) {
     return [
       {
-        layout: 'noBorders',
+        layout: "noBorders",
         table: {
-          widths: ['23%', '*', '23%'],
+          widths: ["23%", "*", "23%"],
           body: [
             [
-              { rowSpan: 2, text: textObj.orderIDText, style: 'orderNo' },
-              { text: '작업지시서', style: 'title' },
+              { rowSpan: 2, text: textObj.orderIDText, style: "orderNo" },
+              { text: "작업지시서", style: "title" },
               {
                 text: textObj.deliverRemarkText,
-                style: 'deliverRemark'
+                style: "deliverRemark"
               }
             ],
             [
@@ -545,7 +541,7 @@ export default class OrderList extends React.Component {
               {
                 colSpan: 2,
                 text: textObj.orderedAtText,
-                style: 'orderedAt'
+                style: "orderedAt"
               },
               {}
             ]
@@ -553,50 +549,50 @@ export default class OrderList extends React.Component {
         }
       },
       {
-        style: 'table',
+        style: "table",
         table: {
-          widths: ['28%', '21%', '39%', '12%'],
+          widths: ["28%", "21%", "39%", "12%"],
           body: [
             [
-              { rowSpan: 2, text: textObj.sizeText, style: 'productSize' },
+              { rowSpan: 2, text: textObj.sizeText, style: "productSize" },
               {
                 text: textObj.orderQuantityText,
-                style: 'orderQuantity',
+                style: "orderQuantity",
                 border: [true, true, true, false]
               },
-              { text: textObj.productName, style: 'productName' },
+              { text: textObj.productName, style: "productName" },
               {
                 rowSpan: 2,
                 text: textObj.deliverBeforeText,
-                style: 'deliverBefore'
+                style: "deliverBefore"
               }
             ],
             [
               {},
               {
                 text: textObj.orderQuantityWeightText,
-                style: 'orderQuantityWeight',
+                style: "orderQuantityWeight",
                 border: [true, false, true, true]
               },
-              { text: textObj.accountName, style: 'accountName' },
+              { text: textObj.accountName, style: "accountName" },
               {}
             ]
           ]
         }
       },
       {
-        style: 'table',
+        style: "table",
         table: {
-          widths: ['14%', '19%', '5%', '9%', '20%', '9%', '24%'],
-          heights: ['auto', 60, 60, 50, 20, 20, 20],
+          widths: ["14%", "19%", "5%", "9%", "20%", "9%", "24%"],
+          heights: ["auto", 60, 60, 50, 20, 20, 20],
           body: [
             [
-              { colSpan: 2, text: '압출부', style: 'workOrderHeader' },
+              { colSpan: 2, text: "압출부", style: "workOrderHeader" },
               {},
-              { colSpan: 3, text: '인쇄부', style: 'workOrderHeader' },
+              { colSpan: 3, text: "인쇄부", style: "workOrderHeader" },
               {},
               {},
-              { colSpan: 2, text: '가공부', style: 'workOrderHeader' },
+              { colSpan: 2, text: "가공부", style: "workOrderHeader" },
               {}
             ],
             [
@@ -604,32 +600,32 @@ export default class OrderList extends React.Component {
                 rowSpan: 4,
                 colSpan: 2,
                 text: textObj.extDetailsText,
-                style: 'workOrderBody'
+                style: "workOrderBody"
               },
               {},
-              { text: '전\n면', style: 'workOrderHeader', margin: [0, 15] },
+              { text: "전\n면", style: "workOrderHeader", margin: [0, 15] },
               {
                 colSpan: 2,
                 text: textObj.printFrontText,
-                style: 'workOrderBody'
+                style: "workOrderBody"
               },
               {},
               {
                 rowSpan: 2,
                 colSpan: 2,
                 text: textObj.cutDetailsText,
-                style: 'workOrderBody'
+                style: "workOrderBody"
               },
               {}
             ],
             [
               {},
               {},
-              { text: '후\n면', style: 'workOrderHeader', margin: [0, 15] },
+              { text: "후\n면", style: "workOrderHeader", margin: [0, 15] },
               {
                 colSpan: 2,
                 text: textObj.printBackText,
-                style: 'workOrderBody'
+                style: "workOrderBody"
               },
               {},
               {},
@@ -641,20 +637,20 @@ export default class OrderList extends React.Component {
               {
                 colSpan: 3,
                 text: textObj.printMemoText,
-                style: 'workOrderBody'
+                style: "workOrderBody"
               },
               {},
               {},
               {
                 rowSpan: 2,
-                text: '포장',
-                style: 'workOrderHeader',
+                text: "포장",
+                style: "workOrderHeader",
                 margin: [0, 30]
               },
               {
                 rowSpan: 2,
                 text: textObj.packDetailsText,
-                style: 'workOrderBody'
+                style: "workOrderBody"
               }
             ],
             [
@@ -663,7 +659,7 @@ export default class OrderList extends React.Component {
               {
                 colSpan: 2,
                 text: textObj.plateStatusText,
-                style: 'workOrderBody'
+                style: "workOrderBody"
               },
               {},
               {
@@ -673,19 +669,19 @@ export default class OrderList extends React.Component {
               {}
             ],
             [
-              { text: '작업참고', style: 'workOrderHeader' },
+              { text: "작업참고", style: "workOrderHeader" },
               {
                 colSpan: 6,
                 text: textObj.workMemo,
-                style: 'workOrderMemo'
+                style: "workOrderMemo"
               }
             ],
             [
-              { text: '납품참고', style: 'workOrderHeader' },
+              { text: "납품참고", style: "workOrderHeader" },
               {
                 colSpan: 6,
                 text: textObj.deliverMemo,
-                style: 'workOrderMemo'
+                style: "workOrderMemo"
               }
             ]
           ]
@@ -694,17 +690,17 @@ export default class OrderList extends React.Component {
       {
         image: textObj.productImage,
         fit: [515, 300],
-        alignment: 'center'
+        alignment: "center"
       }
     ];
   }
 
   // show order complete modal single
   onCompleteOrderClick(e) {
-    let selectedOrderID = '';
-    if (e.target.tagName === 'SPAN') {
+    let selectedOrderID = "";
+    if (e.target.tagName === "SPAN") {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'BUTTON') {
+    } else if (e.target.tagName === "BUTTON") {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.id;
     }
 
@@ -715,7 +711,7 @@ export default class OrderList extends React.Component {
   }
 
   onCompleteOrderModalClose() {
-    this.setState({ isCompleteOrderModalOpen: false, selectedOrderID: '' });
+    this.setState({ isCompleteOrderModalOpen: false, selectedOrderID: "" });
   }
 
   // show order complete modal multi
@@ -729,10 +725,10 @@ export default class OrderList extends React.Component {
 
   // show product order modal (EDIT mode)
   onEditClick(e) {
-    let selectedOrderID = '';
-    if (e.target.tagName === 'SPAN') {
+    let selectedOrderID = "";
+    if (e.target.tagName === "SPAN") {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'BUTTON') {
+    } else if (e.target.tagName === "BUTTON") {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.id;
     }
 
@@ -743,53 +739,80 @@ export default class OrderList extends React.Component {
   }
 
   onProductOrderModalClose() {
-    this.setState({ isProductOrderModalOpen: false, selectedOrderID: '' });
+    this.setState({ isProductOrderModalOpen: false, selectedOrderID: "" });
   }
 
   // show confirmation modal before delete
   onDeleteClick(e) {
-    let selectedOrderID = '';
-    let selectedOrderDetail = '';
-    let productID = '';
+    let selectedOrderID = "";
+    let confirmationDescription = [];
+    let productID = "";
     let orderData = {};
     let product = {};
-    if (e.target.tagName === 'SPAN') {
+    if (e.target.tagName === "SPAN") {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.parentNode.id;
       productID = e.target.parentNode.parentNode.parentNode.parentNode.querySelector(
-        '.order-product-details-container'
+        ".order-product-details-container"
       ).classList[0];
       orderData = OrdersData.findOne({ _id: selectedOrderID }).data;
       product = ProductsData.findOne({ _id: productID });
-    } else if (e.target.tagName === 'BUTTON') {
+    } else if (e.target.tagName === "BUTTON") {
       selectedOrderID = e.target.parentNode.parentNode.parentNode.id;
       productID = e.target.parentNode.parentNode.parentNode.querySelector(
-        '.order-product-details-container'
+        ".order-product-details-container"
       ).classList[0];
       orderData = OrdersData.findOne({ _id: selectedOrderID }).data;
       product = ProductsData.findOne({ _id: productID });
     }
 
-    selectedOrderDetail = `
-      [ ${product.name} :
-      ${product.thick} x
-      ${product.length} x
-      ${product.width} =
-      ${this.comma(orderData.orderQuantity)}매 ]
-      작업지시 취소하시겠습니까?
-    `;
+    confirmationDescription = [
+      product.name,
+      `  ${product.thick} x
+        ${product.length} x
+        ${product.width}`,
+      `= ${this.comma(orderData.orderQuantity)}매`,
+      "작업지시 취소하시겠습니까?"
+    ];
 
     this.setState({
-      isDeleteConfirmModalOpen: true,
+      isConfirmModalOpen: true,
       selectedOrderID,
-      selectedOrderDetail
+      confirmationDescription,
+      deleteMode: "single"
     });
   }
 
-  onDeleteConfirmModalClose(answer) {
-    this.setState({ isDeleteConfirmModalOpen: false });
+  // show confirmation modal before delete
+  onDeleteMultiClick() {
+    console.log(this.state.selectedOrders);
+    let confirmationDescription = [
+      `${this.state.selectedOrders.length}개 품목 작업 취소하시겠습니까?`
+    ];
+    for (let i = 0; i < this.state.selectedOrders.length; i++) {
+      const order = OrdersData.findOne({ _id: this.state.selectedOrders[i] });
+      const product = ProductsData.findOne({ _id: order.data.productID });
+      let orderInfoText = `
+        ${product.name}
+        (${product.thick}x${product.length}x${product.width})
+         = ${this.comma(order.data.orderQuantity)}매
+      `;
+      confirmationDescription.push(orderInfoText);
+    }
 
-    if (answer) {
-      Meteor.call('orders.remove', this.state.selectedOrderID);
+    this.setState({
+      isConfirmModalOpen: true,
+      confirmationDescription,
+      deleteMode: "multi"
+    });
+  }
+
+  onConfirmationModalClose(answer) {
+    this.setState({ isConfirmModalOpen: false });
+
+    if (answer && this.state.deleteMode === "single") {
+      Meteor.call("orders.remove", this.state.selectedOrderID);
+    } else if (answer && this.state.deleteMode === "multi") {
+      console.log("onConfirmationModalClose: ", this.state.selectedOrders);
     }
   }
 
@@ -803,23 +826,23 @@ export default class OrderList extends React.Component {
         account => account._id === product.accountID
       );
 
-      let listClassName = 'order';
+      let listClassName = "order";
       if (order.isCompleted) {
-        listClassName += ' completed';
+        listClassName += " completed";
       }
 
-      let isPrintText = '무지';
+      let isPrintText = "무지";
       if (product.isPrint) {
-        isPrintText = '인쇄';
+        isPrintText = "인쇄";
         switch (order.plateStatus) {
-          case 'confirm':
-            isPrintText += ' (동판확인)';
+          case "confirm":
+            isPrintText += " (동판확인)";
             break;
-          case 'new':
-            isPrintText += ' (동판신규)';
+          case "new":
+            isPrintText += " (동판신규)";
             break;
-          case 'edit':
-            isPrintText += ' (동판수정)';
+          case "edit":
+            isPrintText += " (동판수정)";
             break;
         }
       }
@@ -845,24 +868,24 @@ export default class OrderList extends React.Component {
         product.name.indexOf(queryObj.productName) > -1
       ) {
         if (!data.isCompleted) {
-          if (queryObj.isPrintQuery === 'both') {
+          if (queryObj.isPrintQuery === "both") {
             matchQuery = true;
           }
-          if (queryObj.isPrintQuery === 'false' && !product.isPrint) {
+          if (queryObj.isPrintQuery === "false" && !product.isPrint) {
             matchQuery = true;
           }
-          if (queryObj.isPrintQuery === 'true' && product.isPrint) {
+          if (queryObj.isPrintQuery === "true" && product.isPrint) {
             matchQuery = true;
           }
         } else {
           if (queryObj.showCompletedOrder) {
-            if (queryObj.isPrintQuery === 'both') {
+            if (queryObj.isPrintQuery === "both") {
               matchQuery = true;
             }
-            if (queryObj.isPrintQuery === 'false' && !product.isPrint) {
+            if (queryObj.isPrintQuery === "false" && !product.isPrint) {
               matchQuery = true;
             }
-            if (queryObj.isPrintQuery === 'true' && product.isPrint) {
+            if (queryObj.isPrintQuery === "true" && product.isPrint) {
               matchQuery = true;
             }
           }
@@ -910,7 +933,7 @@ export default class OrderList extends React.Component {
                 </p>
               </div>
 
-              <div className={product._id + ' order-product-details-container'}>
+              <div className={product._id + " order-product-details-container"}>
                 <div className="order-names-container">
                   <a className="order-list__subtitle">{account.name}</a>
                   <a
@@ -933,9 +956,9 @@ export default class OrderList extends React.Component {
                 <div className="order-orderQuantity-container">
                   <p className="order-list__text">
                     {this.comma(order.orderQuantity) +
-                      '매 (' +
+                      "매 (" +
                       this.comma(weight.toFixed(0)) +
-                    'kg)'}
+                      "kg)"}
                   </p>
                 </div>
               </div>
@@ -943,7 +966,7 @@ export default class OrderList extends React.Component {
               <div className="order-status-select-container">
                 <select
                   className="select order-list__select"
-                  value={order.isCompleted ? '완료' : order.status}
+                  value={order.isCompleted ? "완료" : order.status}
                   onChange={this.onStatusChange}
                   disabled={order.isCompleted}
                 >
@@ -1002,47 +1025,51 @@ export default class OrderList extends React.Component {
 
   render() {
     return (
-      <ul id="order-list">
+      <div className="list-container">
         {this.state.ordersCount &&
-          (this.state.isAdmin || this.state.isManager) ? (
-            <div className="order-list-header">
-              <Checkbox
-                name="selectAll"
-                label="전체선택"
-                onInputChange={this.onInputChange}
-              />
-              <div className="order-buttons-container">
-                <button
-                  className="button-circle order-button"
-                  onClick={this.onPrintOrderMultiClick}
-                  disabled={!this.state.isSelectedMulti}
-                >
-                  <i className="fa fa-print fa-lg" />
-                  <span>출력</span>
-                </button>
-                <button
-                  className="button-circle order-button"
-                  onClick={this.onCompleteOrderMultiClick}
-                  disabled={!this.state.isSelectedMulti}
-                >
-                  <i className="fa fa-check fa-lg" />
-                  <span>완료</span>
-                </button>
-                <button
-                  className="button-circle order-button"
-                  onClick={this.onDeleteMultiClick}
-                  disabled={!this.state.isSelectedMulti}
-                >
-                  <i className="fa fa-trash fa-lg" />
-                  <span>삭제</span>
-                </button>
-              </div>
+        (this.state.isAdmin || this.state.isManager) ? (
+          <div className="order-list-header">
+            <Checkbox
+              name="selectAll"
+              label="전체선택"
+              onInputChange={this.onInputChange}
+            />
+            <div className="order-buttons-container">
+              <button
+                className="button-circle order-button"
+                onClick={this.onPrintOrderMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-print fa-lg" />
+                <span>출력</span>
+              </button>
+              <button
+                className="button-circle order-button"
+                onClick={this.onCompleteOrderMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-check fa-lg" />
+                <span>완료</span>
+              </button>
+              <button
+                className="button-circle order-button"
+                onClick={this.onDeleteMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-trash fa-lg" />
+                <span>삭제</span>
+              </button>
             </div>
-          ) : (
-            undefined
-          )}
+          </div>
+        ) : (
+          undefined
+        )}
 
-        {this.getOrderList(this.state.queryObj)}
+        <ul id="order-list">
+          {this.getOrderList(this.state.queryObj)}
+        </ul>
+
+
         {this.state.isProductOrderModalOpen ? (
           <ProductOrderModal
             isOpen={this.state.isProductOrderModalOpen}
@@ -1081,17 +1108,18 @@ export default class OrderList extends React.Component {
         ) : (
           undefined
         )}
-        {this.state.isDeleteConfirmModalOpen ? (
+        {this.state.isConfirmModalOpen ? (
           <ConfirmationModal
-            isOpen={this.state.isDeleteConfirmModalOpen}
+            isOpen={this.state.isConfirmModalOpen}
             title="작업지시 취소"
-            description={this.state.selectedOrderDetail}
-            onModalClose={this.onDeleteConfirmModalClose}
+            descriptionArray={this.state.confirmationDescription}
+            onModalClose={this.onConfirmationModalClose}
           />
         ) : (
           undefined
         )}
-      </ul>
+      </div>
+
     );
   }
 }

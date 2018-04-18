@@ -29,6 +29,7 @@ export default class ProductList extends React.Component {
       isDeleteConfirmModalOpen: false,
       selectedProductID: '',
       selectedProductName: '',
+      selectedProductSize: '',
       productsCount: 0
     };
 
@@ -150,20 +151,21 @@ export default class ProductList extends React.Component {
     let selectedProductID = '';
     if (e.target.tagName === 'SPAN') {
       selectedProductID = e.target.parentNode.parentNode.parentNode.id;
-      selectedProductName = e.target.parentNode.parentNode.parentNode.querySelector(
-        '.product-name'
-      ).textContent;
     } else if (e.target.tagName === 'BUTTON') {
       selectedProductID = e.target.parentNode.parentNode.id;
-      selectedProductName = e.target.parentNode.parentNode.querySelector(
-        '.product-name'
-      ).textContent;
     }
-
+    const selectedProduct = ProductsData.findOne({ _id: selectedProductID });
+    const selectedProductName = selectedProduct.name;
+    const selectedProductSize = `
+      ${selectedProduct.thick} x
+      ${selectedProduct.length} x
+      ${selectedProduct.width}
+    `
     this.setState({
       isDeleteConfirmModalOpen: true,
       selectedProductID,
-      selectedProductName
+      selectedProductName,
+      selectedProductSize
     });
   }
 
@@ -338,9 +340,11 @@ export default class ProductList extends React.Component {
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmModalOpen}
             title="품목 삭제"
-            description={`[${
-              this.state.selectedProductName
-            }] 품목을 삭제하시겠습니까?`}
+            descriptionArray={[
+              '아래 품목을 삭제하시겠습니까?',
+              this.state.selectedProductName,
+              this.state.selectedProductSize
+            ]}
             onModalClose={this.onDeleteConfirmModalClose}
           />
         ) : (
