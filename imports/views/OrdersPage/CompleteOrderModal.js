@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import moment from 'moment';
 
-import { OrdersData } from '../../api/orders.js';
+import { OrdersData } from '../../api/orders';
 import { ProductsData } from '../../api/products';
 
 import Checkbox from '../../custom/Checkbox';
@@ -137,6 +137,9 @@ export default class CompleteOrderModal extends React.Component {
                 onDateChange={completedAt => {
                   if (completedAt === null) completedAt = moment();
                   this.setState({ completedAt });
+                }}
+                isOutsideRange={() => {
+                  return false;
                 }}
               />
             </div>

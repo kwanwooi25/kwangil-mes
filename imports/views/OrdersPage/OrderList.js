@@ -11,6 +11,7 @@ import Checkbox from '../../custom/Checkbox';
 import ProductOrderModal from '../ProductsPage/ProductOrderModal';
 import ProductDetailView from '../ProductsPage/ProductDetailView';
 import CompleteOrderModal from './CompleteOrderModal';
+import CompleteOrderMultiModal from './CompleteOrderMultiModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import noImage from '../../assets/no-image.png';
 
@@ -31,6 +32,7 @@ export default class OrderList extends React.Component {
       isManager: false,
       isPrintOrderModalOpen: false,
       isCompleteOrderModalOpen: false,
+      isCompleteOrderMultiModalOpen: false,
       isProductOrderModalOpen: false,
       isProductDetailViewOpen: false,
       isDeleteConfirmModalOpen: false,
@@ -49,6 +51,8 @@ export default class OrderList extends React.Component {
     this.onPrintOrderMultiClick = this.onPrintOrderMultiClick.bind(this);
     this.onCompleteOrderClick = this.onCompleteOrderClick.bind(this);
     this.onCompleteOrderModalClose = this.onCompleteOrderModalClose.bind(this);
+    this.onCompleteOrderMultiClick = this.onCompleteOrderMultiClick.bind(this);
+    this.onCompleteOrderMultiModalClose = this.onCompleteOrderMultiModalClose.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
     this.onProductOrderModalClose = this.onProductOrderModalClose.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
@@ -695,7 +699,7 @@ export default class OrderList extends React.Component {
     ];
   }
 
-  // show order complete modal
+  // show order complete modal single
   onCompleteOrderClick(e) {
     let selectedOrderID = '';
     if (e.target.tagName === 'SPAN') {
@@ -712,6 +716,15 @@ export default class OrderList extends React.Component {
 
   onCompleteOrderModalClose() {
     this.setState({ isCompleteOrderModalOpen: false, selectedOrderID: '' });
+  }
+
+  // show order complete modal multi
+  onCompleteOrderMultiClick() {
+    this.setState({ isCompleteOrderMultiModalOpen: true });
+  }
+
+  onCompleteOrderMultiModalClose() {
+    this.setState({ isCompleteOrderMultiModalOpen: false });
   }
 
   // show product order modal (EDIT mode)
@@ -922,7 +935,7 @@ export default class OrderList extends React.Component {
                     {this.comma(order.orderQuantity) +
                       '매 (' +
                       this.comma(weight.toFixed(0)) +
-                      'kg)'}
+                    'kg)'}
                   </p>
                 </div>
               </div>
@@ -991,43 +1004,43 @@ export default class OrderList extends React.Component {
     return (
       <ul id="order-list">
         {this.state.ordersCount &&
-        (this.state.isAdmin || this.state.isManager) ? (
-          <div className="order-list-header">
-            <Checkbox
-              name="selectAll"
-              label="전체선택"
-              onInputChange={this.onInputChange}
-            />
-            <div className="order-buttons-container">
-              <button
-                className="button-circle order-button"
-                onClick={this.onPrintOrderMultiClick}
-                disabled={!this.state.isSelectedMulti}
-              >
-                <i className="fa fa-print fa-lg" />
-                <span>출력</span>
-              </button>
-              <button
-                className="button-circle order-button"
-                onClick={this.onCompleteOrderMultiClick}
-                disabled={!this.state.isSelectedMulti}
-              >
-                <i className="fa fa-check fa-lg" />
-                <span>완료</span>
-              </button>
-              <button
-                className="button-circle order-button"
-                onClick={this.onDeleteMultiClick}
-                disabled={!this.state.isSelectedMulti}
-              >
-                <i className="fa fa-trash fa-lg" />
-                <span>삭제</span>
-              </button>
+          (this.state.isAdmin || this.state.isManager) ? (
+            <div className="order-list-header">
+              <Checkbox
+                name="selectAll"
+                label="전체선택"
+                onInputChange={this.onInputChange}
+              />
+              <div className="order-buttons-container">
+                <button
+                  className="button-circle order-button"
+                  onClick={this.onPrintOrderMultiClick}
+                  disabled={!this.state.isSelectedMulti}
+                >
+                  <i className="fa fa-print fa-lg" />
+                  <span>출력</span>
+                </button>
+                <button
+                  className="button-circle order-button"
+                  onClick={this.onCompleteOrderMultiClick}
+                  disabled={!this.state.isSelectedMulti}
+                >
+                  <i className="fa fa-check fa-lg" />
+                  <span>완료</span>
+                </button>
+                <button
+                  className="button-circle order-button"
+                  onClick={this.onDeleteMultiClick}
+                  disabled={!this.state.isSelectedMulti}
+                >
+                  <i className="fa fa-trash fa-lg" />
+                  <span>삭제</span>
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          undefined
-        )}
+          ) : (
+            undefined
+          )}
 
         {this.getOrderList(this.state.queryObj)}
         {this.state.isProductOrderModalOpen ? (
@@ -1055,6 +1068,15 @@ export default class OrderList extends React.Component {
             isOpen={this.state.isCompleteOrderModalOpen}
             orderID={this.state.selectedOrderID}
             onModalClose={this.onCompleteOrderModalClose}
+          />
+        ) : (
+          undefined
+        )}
+        {this.state.isCompleteOrderMultiModalOpen ? (
+          <CompleteOrderMultiModal
+            isOpen={this.state.isCompleteOrderMultiModalOpen}
+            selectedOrders={this.state.selectedOrders}
+            onModalClose={this.onCompleteOrderMultiModalClose}
           />
         ) : (
           undefined
