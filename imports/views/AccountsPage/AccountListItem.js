@@ -10,70 +10,58 @@ export default class AccountListItem extends React.Component {
   showEditAccountModal
   showDeleteConfirmationModal
   ==========================================================================*/
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isAdmin: props.isAdmin,
+      isManager: props.isManager
+    };
+
+    this.onNameClick = this.onNameClick.bind(this);
+    this.onEditClick = this.onEditClick.bind(this);
+    this.onDeleteClick = this.onDeleteClick.bind(this);
+  }
+
+  // set state on props change
+  componentWillReceiveProps(props) {
+    this.setState({
+      isAdmin: props.isAdmin,
+      isManager: props.isManager
+    });
+  }
 
   // show detail view modal
   onNameClick(e) {
     const selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
-    this.setState({
-      isDetailViewOpen: true,
-      selectedAccountID
-    });
-  }
 
-  onDetailViewClose() {
-    this.setState({ isDetailViewOpen: false });
+    this.props.showDetailViewModal(selectedAccountID);
   }
 
   // show account modal (EDIT mode)
   onEditClick(e) {
-    let selectedAccountID = "";
-    if (e.target.tagName === "SPAN") {
-      selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === "BUTTON") {
-      selectedAccountID = e.target.parentNode.parentNode.id;
-    }
+    const selectedAccountID = this.getAccountID(e);
 
-    this.setState({
-      isAccountModalOpen: true,
-      selectedAccountID
-    });
-  }
-
-  onAccountModalClose() {
-    this.setState({ isAccountModalOpen: false });
+    this.props.showEditAccountModal(selectedAccountID);
   }
 
   // show confirmation modal before delete
   onDeleteClick(e) {
-    let selectedAccountID = "";
-    if (e.target.tagName === "SPAN") {
-      selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
-      selectedAccountName = e.target.parentNode.parentNode.parentNode.querySelector(
-        ".account-name"
-      ).textContent;
-    } else if (e.target.tagName === "BUTTON") {
-      selectedAccountID = e.target.parentNode.parentNode.id;
-      selectedAccountName = e.target.parentNode.parentNode.querySelector(
-        ".account-name"
-      ).textContent;
-    }
+    const selectedAccountID = this.getAccountID(e);
 
-    this.setState({
-      isDeleteConfirmModalOpen: true,
-      selectedAccountID,
-      selectedAccountName
-    });
+    this.props.showDeleteConfirmationModal(selectedAccountID);
   }
 
-  onDeleteConfirmModalClose(answer) {
-    this.setState({ isDeleteConfirmModalOpen: false });
-
-    if (answer) {
-      Meteor.call("accounts.remove", this.state.selectedAccountID);
+  getAccountID(e) {
+    if (e.target.tagName === 'SPAN') {
+      return e.target.parentNode.parentNode.parentNode.id;
+    } else if (e.target.tagName === 'BUTTON') {
+      return e.target.parentNode.parentNode.id;
     }
   }
 
   render() {
+    const account = this.props.account;
     return (
       <li className="account" key={account._id} id={account._id}>
         <div className="account-details-container">
@@ -94,10 +82,7 @@ export default class AccountListItem extends React.Component {
               undefined
             )}
             {account.email_1 ? (
-              <a
-                className="account-email"
-                href={`mailto:${account.email_1}`}
-              >
+              <a className="account-email" href={`mailto:${account.email_1}`}>
                 <i className="fa fa-envelope" /> {account.email_1}
               </a>
             ) : (
@@ -127,6 +112,6 @@ export default class AccountListItem extends React.Component {
           undefined
         )}
       </li>
-    )
+    );
   }
 }

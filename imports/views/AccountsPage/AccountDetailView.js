@@ -9,7 +9,7 @@ export default class AccountDetailView extends React.Component {
   >> props <<
   isOpen            : if modal is open
   accountID         : account ID to display
-  onDetailViewClose : function to execute on modal close
+  onModalClose      : function to execute on modal close
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -19,7 +19,7 @@ export default class AccountDetailView extends React.Component {
 
   onClickOK(e) {
     e.preventDefault();
-    this.props.onDetailViewClose();
+    this.props.onModalClose();
   }
 
   getAccountDetails() {
@@ -71,7 +71,7 @@ export default class AccountDetailView extends React.Component {
     return (
       <Modal
         isOpen={this.props.isOpen}
-        onRequestClose={this.props.onDetailViewClose}
+        onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
         className="boxed-view__box account-modal"
         overlayClassName="react-modal__bg"

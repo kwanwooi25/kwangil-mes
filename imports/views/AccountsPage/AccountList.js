@@ -1,10 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import { AccountsData } from "../../api/accounts";
+import { AccountsData } from '../../api/accounts';
 
-import AccountDetailView from "./AccountDetailView";
-import AccountModal from "./AccountModal";
-import ConfirmationModal from "../components/ConfirmationModal";
+import AccountListItem from './AccountListItem';
+import AccountDetailView from './AccountDetailView';
+import AccountModal from './AccountModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class AccountList extends React.Component {
   /*=========================================================================
@@ -23,21 +24,21 @@ export default class AccountList extends React.Component {
       isManager: props.isManager,
       isAccountModalOpen: false,
       isDetailViewOpen: false,
-      isDeleteConfirmModalOpen: false,
-      selectedAccountID: "",
-      selectedAccountName: ""
+      isDeleteConfirmationModalOpen: false,
+      selectedAccountID: '',
+      selectedAccountName: ''
     };
 
-    // this.onNameClick = this.onNameClick.bind(this);
-    // this.onDetailViewClose = this.onDetailViewClose.bind(this);
-    // this.onEditClick = this.onEditClick.bind(this);
-    // this.onAccountModalClose = this.onAccountModalClose.bind(this);
-    // this.onDeleteClick = this.onDeleteClick.bind(this);
-    // this.onDeleteConfirmModalClose = this.onDeleteConfirmModalClose.bind(this);
-
     this.showDetailViewModal = this.showDetailViewModal.bind(this);
+    this.hideDetailViewModal = this.hideDetailViewModal.bind(this);
     this.showEditAccountModal = this.showEditAccountModal.bind(this);
-    this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(this);
+    this.hideEditAccountModal = this.hideEditAccountModal.bind(this);
+    this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
+      this
+    );
+    this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
+      this
+    );
   }
 
   // set state on props change
@@ -52,7 +53,7 @@ export default class AccountList extends React.Component {
   componentDidMount() {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe("accounts");
+      Meteor.subscribe('accounts');
       this.setState({
         data: AccountsData.find({}, { sort: { name: 1 } }).fetch()
       });
@@ -63,83 +64,52 @@ export default class AccountList extends React.Component {
     this.databaseTracker.stop();
   }
 
-  showDetailViewModal() {
-    
+  showDetailViewModal(selectedAccountID) {
+    this.setState({
+      isDetailViewOpen: true,
+      selectedAccountID
+    });
   }
-showEditAccountModal() {
 
-}
-showDeleteConfirmationModal() {
+  hideDetailViewModal() {
+    this.setState({ isDetailViewOpen: false });
+  }
 
-}
+  showEditAccountModal(selectedAccountID) {
+    this.setState({
+      isAccountModalOpen: true,
+      selectedAccountID
+    });
+  }
 
-  // // show detail view modal
-  // onNameClick(e) {
-  //   const selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
-  //   this.setState({
-  //     isDetailViewOpen: true,
-  //     selectedAccountID
-  //   });
-  // }
-  //
-  // onDetailViewClose() {
-  //   this.setState({ isDetailViewOpen: false });
-  // }
-  //
-  // // show account modal (EDIT mode)
-  // onEditClick(e) {
-  //   let selectedAccountID = "";
-  //   if (e.target.tagName === "SPAN") {
-  //     selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
-  //   } else if (e.target.tagName === "BUTTON") {
-  //     selectedAccountID = e.target.parentNode.parentNode.id;
-  //   }
-  //
-  //   this.setState({
-  //     isAccountModalOpen: true,
-  //     selectedAccountID
-  //   });
-  // }
-  //
-  // onAccountModalClose() {
-  //   this.setState({ isAccountModalOpen: false });
-  // }
-  //
-  // // show confirmation modal before delete
-  // onDeleteClick(e) {
-  //   let selectedAccountID = "";
-  //   if (e.target.tagName === "SPAN") {
-  //     selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
-  //     selectedAccountName = e.target.parentNode.parentNode.parentNode.querySelector(
-  //       ".account-name"
-  //     ).textContent;
-  //   } else if (e.target.tagName === "BUTTON") {
-  //     selectedAccountID = e.target.parentNode.parentNode.id;
-  //     selectedAccountName = e.target.parentNode.parentNode.querySelector(
-  //       ".account-name"
-  //     ).textContent;
-  //   }
-  //
-  //   this.setState({
-  //     isDeleteConfirmModalOpen: true,
-  //     selectedAccountID,
-  //     selectedAccountName
-  //   });
-  // }
-  //
-  // onDeleteConfirmModalClose(answer) {
-  //   this.setState({ isDeleteConfirmModalOpen: false });
-  //
-  //   if (answer) {
-  //     Meteor.call("accounts.remove", this.state.selectedAccountID);
-  //   }
-  // }
+  hideEditAccountModal() {
+    this.setState({ isAccountModalOpen: false });
+  }
+
+  showDeleteConfirmationModal(selectedAccountID) {
+    const account = AccountsData.findOne({ _id: selectedAccountID });
+    const selectedAccountName = account.name;
+
+    this.setState({
+      isDeleteConfirmationModalOpen: true,
+      selectedAccountID,
+      selectedAccountName
+    });
+  }
+
+  hideDeleteConfirmationModal(answer) {
+    this.setState({ isDeleteConfirmationModalOpen: false });
+
+    if (answer) {
+      Meteor.call('accounts.remove', this.state.selectedAccountID);
+    }
+  }
 
   getAccountList(query) {
     return this.state.data.map(account => {
       let matchQuery = false;
       for (let key in account) {
-        if (key !== "_id" && account[key].indexOf(query) > -1) {
+        if (key !== '_id' && account[key].indexOf(query) > -1) {
           matchQuery = true;
         }
       }
@@ -148,68 +118,15 @@ showDeleteConfirmationModal() {
       if (matchQuery) {
         return (
           <AccountListItem
+            key={account._id}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             account={account}
             showDetailViewModal={this.showDetailViewModal}
             showEditAccountModal={this.showEditAccountModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-        />
-      )
-        // return (
-        //   <li className="account" key={account._id} id={account._id}>
-        //     <div className="account-details-container">
-        //       <div className="account-name-container">
-        //         <a className="account-name" onClick={this.onNameClick}>
-        //           {account.name}
-        //         </a>
-        //       </div>
-        //       <div className="account-contact-container">
-        //         <a className="account-phone" href={`tel:${account.phone_1}`}>
-        //           <i className="fa fa-phone" /> {account.phone_1}
-        //         </a>
-        //         {account.fax ? (
-        //           <a className="account-fax">
-        //             <i className="fa fa-fax" /> {account.fax}
-        //           </a>
-        //         ) : (
-        //           undefined
-        //         )}
-        //         {account.email_1 ? (
-        //           <a
-        //             className="account-email"
-        //             href={`mailto:${account.email_1}`}
-        //           >
-        //             <i className="fa fa-envelope" /> {account.email_1}
-        //           </a>
-        //         ) : (
-        //           undefined
-        //         )}
-        //       </div>
-        //     </div>
-        //
-        //     {this.state.isAdmin || this.state.isManager ? (
-        //       <div className="account-buttons-container">
-        //         <button
-        //           className="button-circle account-button"
-        //           onClick={this.onEditClick}
-        //         >
-        //           <i className="fa fa-edit fa-lg" />
-        //           <span>수정</span>
-        //         </button>
-        //         <button
-        //           className="button-circle account-button"
-        //           onClick={this.onDeleteClick}
-        //         >
-        //           <i className="fa fa-trash fa-lg" />
-        //           <span>삭제</span>
-        //         </button>
-        //       </div>
-        //     ) : (
-        //       undefined
-        //     )}
-        //   </li>
-        // );
+          />
+        );
       }
     });
   }
@@ -222,7 +139,7 @@ showDeleteConfirmationModal() {
           <AccountDetailView
             isOpen={this.state.isDetailViewOpen}
             accountID={this.state.selectedAccountID}
-            onDetailViewClose={this.onDetailViewClose}
+            onModalClose={this.hideDetailViewModal}
           />
         ) : (
           undefined
@@ -231,20 +148,20 @@ showDeleteConfirmationModal() {
           <AccountModal
             isOpen={this.state.isAccountModalOpen}
             accountID={this.state.selectedAccountID}
-            onModalClose={this.onAccountModalClose}
+            onModalClose={this.hideEditAccountModal}
           />
         ) : (
           undefined
         )}
-        {this.state.isDeleteConfirmModalOpen ? (
+        {this.state.isDeleteConfirmationModalOpen ? (
           <ConfirmationModal
-            isOpen={this.state.isDeleteConfirmModalOpen}
+            isOpen={this.state.isDeleteConfirmationModalOpen}
             title="거래처 삭제"
             descriptionArray={[
-              "아래 업체를 삭제하시겠습니까?",
+              '아래 업체를 삭제하시겠습니까?',
               this.state.selectedAccountName
             ]}
-            onModalClose={this.onDeleteConfirmModalClose}
+            onModalClose={this.hideDeleteConfirmationModal}
           />
         ) : (
           undefined
