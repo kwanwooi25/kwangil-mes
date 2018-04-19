@@ -95,7 +95,7 @@ export default class AccountNewMultiModal extends React.Component {
           <p id="message" className="add-new-multi-modal__message">
             등록하고자 하는 업체 리스트를 JSON 형태로 입력합니다.
           </p>
-          <div className="add-new-multi-modal__button-group">
+          <div className="button-group">
             <button className="button" onClick={this.onClickOK}>
               등록
             </button>

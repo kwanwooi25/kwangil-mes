@@ -14,8 +14,9 @@ export default class OrderListItem extends React.Component {
   product
   order
   onCheckboxChange
-  ** TODO showAccountDetailView
+  showAccountDetailView
   showProductDetailView
+  showOrderDetailView
   updateOrderStatus
   showCompleteOrderModal
   showProductOrderModal
@@ -27,9 +28,11 @@ export default class OrderListItem extends React.Component {
     this.state = {
       isAdmin: props.isAdmin,
       isManager: props.isManager
-    }
+    };
 
+    this.onAccountNameClick = this.onAccountNameClick.bind(this);
     this.onProductNameClick = this.onProductNameClick.bind(this);
+    this.onOrderIDClick = this.onOrderIDClick.bind(this);
     this.onStatusChange = this.onStatusChange.bind(this);
     this.onPrintOrderClick = this.onPrintOrderClick.bind(this);
     this.onCompleteOrderClick = this.onCompleteOrderClick.bind(this);
@@ -45,15 +48,25 @@ export default class OrderListItem extends React.Component {
     });
   }
 
+  onAccountNameClick(e) {
+    const selectedAccountID = e.target.name;
+    this.props.showAccountDetailView(selectedAccountID);
+  }
+
   onProductNameClick(e) {
     const selectedProductID = e.target.name;
     this.props.showProductDetailView(selectedProductID);
   }
 
+  onOrderIDClick(e) {
+    const selectedOrderID = e.target.textContent;
+    this.props.showOrderDetailView(selectedOrderID);
+  }
+
   onStatusChange(e) {
     const orderID = e.target.parentNode.parentNode.parentNode.id;
     const statusValue = e.target.value;
-    this.props.updateOrderStatus(orderID, statusValue)
+    this.props.updateOrderStatus(orderID, statusValue);
   }
 
   onPrintOrderClick(e) {
@@ -73,13 +86,13 @@ export default class OrderListItem extends React.Component {
 
   onDeleteClick(e) {
     const selectedOrderID = this.getOrderID(e.target);
-    this.props.showDeleteConfirmationModal([selectedOrderID])
+    this.props.showDeleteConfirmationModal([selectedOrderID]);
   }
 
   getOrderID(target) {
-    if (target.tagName === "SPAN") {
+    if (target.tagName === 'SPAN') {
       return target.parentNode.parentNode.parentNode.parentNode.id;
-    } else if (target.tagName === "BUTTON") {
+    } else if (target.tagName === 'BUTTON') {
       return target.parentNode.parentNode.parentNode.id;
     }
   }
@@ -89,23 +102,23 @@ export default class OrderListItem extends React.Component {
     const product = this.props.product;
     const order = this.props.order;
 
-    let listClassName = "order";
+    let listClassName = 'order';
     if (order.data.isCompleted) {
-      listClassName += " completed";
+      listClassName += ' completed';
     }
 
-    let isPrintText = "무지";
+    let isPrintText = '무지';
     if (product.isPrint) {
-      isPrintText = "인쇄";
+      isPrintText = '인쇄';
       switch (order.data.plateStatus) {
-        case "confirm":
-          isPrintText += " (동판확인)";
+        case 'confirm':
+          isPrintText += ' (동판확인)';
           break;
-        case "new":
-          isPrintText += " (동판신규)";
+        case 'new':
+          isPrintText += ' (동판신규)';
           break;
-        case "edit":
-          isPrintText += " (동판수정)";
+        case 'edit':
+          isPrintText += ' (동판수정)';
           break;
       }
     }
@@ -147,7 +160,12 @@ export default class OrderListItem extends React.Component {
           </div>
 
           <div className="order-id-container">
-            <p className="order-list__text">{order._id}</p>
+            <a
+              className="order-list__text order-list__orderID"
+              onClick={this.onOrderIDClick}
+            >
+              {order._id}
+            </a>
           </div>
 
           <div className="order-dates-container">
@@ -157,9 +175,15 @@ export default class OrderListItem extends React.Component {
             </p>
           </div>
 
-          <div className={product._id + " order-product-details-container"}>
+          <div className={product._id + ' order-product-details-container'}>
             <div className="order-names-container">
-              <a className="order-list__subtitle">{account.name}</a>
+              <a
+                name={account._id}
+                className="order-list__subtitle"
+                onClick={this.onAccountNameClick}
+              >
+                {account.name}
+              </a>
               <a
                 name={product._id}
                 className="order-list__title"
@@ -181,9 +205,9 @@ export default class OrderListItem extends React.Component {
             <div className="order-orderQuantity-container">
               <p className="order-list__text">
                 {comma(order.data.orderQuantity) +
-                  "매 (" +
+                  '매 (' +
                   comma(weight.toFixed(0)) +
-                "kg)"}
+                  'kg)'}
               </p>
             </div>
           </div>
@@ -191,7 +215,7 @@ export default class OrderListItem extends React.Component {
           <div className="order-status-select-container">
             <select
               className="select order-list__select"
-              value={order.data.isCompleted ? "completed" : order.data.status}
+              value={order.data.isCompleted ? 'completed' : order.data.status}
               onChange={this.onStatusChange}
               disabled={order.data.isCompleted}
             >
@@ -200,7 +224,9 @@ export default class OrderListItem extends React.Component {
                 인쇄중
               </option>
               <option value="cutting">가공중</option>
-              <option value="completed hidden">완료</option>
+              <option value="completed" disabled={!order.data.isCompleted}>
+                완료
+              </option>
             </select>
           </div>
 
@@ -244,6 +270,6 @@ export default class OrderListItem extends React.Component {
           )}
         </div>
       </li>
-    )
+    );
   }
 }

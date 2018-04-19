@@ -79,12 +79,8 @@ export default class AccountDetailView extends React.Component {
         <div className="boxed-view__header">
           <h1>거래처 상세정보</h1>
         </div>
-        <div className="boxed-view__content">
-          <div className="account-detail__container">
-            {this.getAccountDetails()}
-          </div>
-        </div>
-        <div className="account-modal__button-group">
+        <div className="boxed-view__content">{this.getAccountDetails()}</div>
+        <div className="button-group">
           <button className="button" onClick={this.onClickOK}>
             확인
           </button>

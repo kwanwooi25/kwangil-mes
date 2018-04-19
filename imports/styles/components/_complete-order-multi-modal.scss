@@ -19,6 +19,7 @@
 
 .complete-order-multi-modal__order-details-container,
 .complete-order-multi-modal__inputs-container {
+  align-items: center;
   width: 50%;
 }
 
@@ -45,6 +46,7 @@
 }
 
 .complete-order-multi-modal__label {
+  font-size: $font-size--md;
   width: 40%;
 }
 

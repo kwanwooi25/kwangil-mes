@@ -180,7 +180,7 @@ export default class ProductDetailView extends React.Component {
           <h1>품목 상세정보</h1>
         </div>
         <div className="boxed-view__content">{this.getProductDetails()}</div>
-        <div className="product-modal__button-group">
+        <div className="button-group">
           <button className="button" onClick={this.onClickOK}>
             확인
           </button>

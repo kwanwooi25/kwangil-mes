@@ -4,10 +4,12 @@ import moment from 'moment';
 
 import { OrdersData } from '../../api/orders';
 import { ProductsData } from '../../api/products';
+import { comma, uncomma } from '../../api/comma';
 
 import Checkbox from '../../custom/Checkbox';
 import TextInput from '../../custom/TextInput';
 import DatePicker from '../../custom/DatePicker/DatePicker';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class CompleteOrderModal extends React.Component {
   /*=========================================================================
@@ -24,21 +26,14 @@ export default class CompleteOrderModal extends React.Component {
       completedAt: moment(),
       completedQuantity: '',
       isCompleted: false,
-      completedQuantityEmpty: false
+      completedQuantityEmpty: false,
+      isConfirmationModalOpen: false,
+      confirmationDescription: []
     };
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onClickOK = this.onClickOK.bind(this);
-  }
-
-  comma(str) {
-    str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
-  }
-
-  uncomma(str) {
-    str = String(str);
-    return str.replace(/[^\d]+/g, '');
+    this.hideConfirmationModal = this.hideConfirmationModal.bind(this);
   }
 
   validate(name, value) {
@@ -62,7 +57,7 @@ export default class CompleteOrderModal extends React.Component {
       });
     } else {
       this.setState({
-        [e.target.name]: this.comma(this.uncomma(e.target.value))
+        [e.target.name]: comma(uncomma(e.target.value))
       });
       this.validate(e.target.name, e.target.value);
     }
@@ -71,10 +66,34 @@ export default class CompleteOrderModal extends React.Component {
   onClickOK(e) {
     e.preventDefault();
     if (this.validate('completedQuantity', this.state.completedQuantity)) {
+      console.log('onClickOK')
+      const order = OrdersData.findOne({ _id: this.props.orderID });
+      const product = ProductsData.findOne({ _id: order.data.productID });
+      const completedQuantity = uncomma(this.state.completedQuantity);
+      const isCompleted = this.state.isCompleted;
+
+      let confirmationDescription = ['작업완료 하시겠습니까?'];
+      const orderInfoText = `
+        ${product.name} (${product.thick}x${product.length}x${product.width})
+        = ${comma(uncomma(completedQuantity))}매 ${isCompleted ? '(완료)' : ''}
+      `;
+      confirmationDescription.push(orderInfoText);
+
+      this.setState({ isConfirmationModalOpen: true, confirmationDescription });
+    } else {
+      document.getElementById('completedQuantity').focus();
+    }
+  }
+
+  hideConfirmationModal(answer) {
+    this.setState({ isConfirmationModalOpen: false });
+
+    if (answer) {
       let order = OrdersData.findOne({ _id: this.props.orderID });
       order.data.completedAt = this.state.completedAt.format('YYYY-MM-DD');
-      order.data.completedQuantity = this.uncomma(this.state.completedQuantity);
+      order.data.completedQuantity = uncomma(this.state.completedQuantity);
       order.data.isCompleted = this.state.isCompleted;
+      order.data.status = 'completed';
 
       Meteor.call('orders.update', order._id, order.data, (err, res) => {
         if (!err) {
@@ -83,8 +102,6 @@ export default class CompleteOrderModal extends React.Component {
           this.setState({ error: err.error });
         }
       });
-    } else {
-      document.getElementById('completedQuantity').focus();
     }
   }
 
@@ -100,6 +117,9 @@ export default class CompleteOrderModal extends React.Component {
     return (
       <Modal
         isOpen={this.props.isOpen}
+        onAfterOpen={() => {
+          document.getElementById('completedQuantity').focus();
+        }}
         onRequestClose={() => {
           this.props.onModalClose();
         }}
@@ -120,7 +140,7 @@ export default class CompleteOrderModal extends React.Component {
               {productSizeText}
             </p>
             <p className="complete-order-modal__orderQuantity">
-              주문수량: {this.comma(order.data.orderQuantity)}매
+              주문수량: {comma(order.data.orderQuantity)}매
             </p>
           </div>
           <form className="complete-order-modal__form">
@@ -185,6 +205,17 @@ export default class CompleteOrderModal extends React.Component {
             </div>
           </form>
         </div>
+
+        {this.state.isConfirmationModalOpen ? (
+          <ConfirmationModal
+            isOpen={this.state.isConfirmationModalOpen}
+            title="작업 완료"
+            descriptionArray={this.state.confirmationDescription}
+            onModalClose={this.hideConfirmationModal}
+          />
+        ) : (
+          undefined
+        )}
       </Modal>
     );
   }

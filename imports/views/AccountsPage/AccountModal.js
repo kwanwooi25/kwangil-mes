@@ -416,7 +416,7 @@ export default class AccountModal extends React.Component {
             undefined
           )}
 
-          <div className="account-modal__button-group">
+          <div className="button-group">
             <button className="button" onClick={this.onClickOK}>
               저장
             </button>

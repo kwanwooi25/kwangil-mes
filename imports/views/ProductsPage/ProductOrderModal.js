@@ -99,14 +99,15 @@ export default class ProductOrderModal extends React.Component {
   }
 
   componentDidMount() {
-    // set deliverBefore
-    let leadtime = 0;
+    this.setDeliverBefore(moment());
+  }
+
+  setDeliverBefore(orderedAt) {
+    let leadtime = 7;
     if (this.state.product.isPrint) {
       leadtime = 10;
-    } else {
-      leadtime = 7;
     }
-    const deliverBefore = this.avoidWeekend(moment().add(leadtime, 'days'));
+    const deliverBefore = this.avoidWeekend(orderedAt.add(leadtime, 'days'));
     this.setState({ deliverBefore });
   }
 
@@ -272,8 +273,9 @@ export default class ProductOrderModal extends React.Component {
             this.state.product.name,
             `  ${this.state.product.thick} x
               ${this.state.product.length} x
-              ${this.state.product.width}`,
-            `= ${comma(this.state.orderQuantity)}매`,
+              ${this.state.product.width} = ${comma(
+              this.state.orderQuantity
+            )}매`,
             '작업지시 하시겠습니까?'
           ]
         });
@@ -285,8 +287,9 @@ export default class ProductOrderModal extends React.Component {
             this.state.product.name,
             `  ${this.state.product.thick} x
               ${this.state.product.length} x
-              ${this.state.product.width}`,
-            `= ${comma(this.state.orderQuantity)}매`,
+              ${this.state.product.width} = ${comma(
+              this.state.orderQuantity
+            )}매`,
             '작업지시 수정하시겠습니까?'
           ]
         });
@@ -428,12 +431,12 @@ export default class ProductOrderModal extends React.Component {
                           deliverBefore.format('YYYY-MM-DD')
                         ) {
                           document
-                            .getElementById('deliverBefore')
-                            .parentNode.classList.add('changed');
+                          .getElementById('deliverBefore')
+                          .parentNode.classList.add('changed');
                         } else {
                           document
-                            .getElementById('deliverBefore')
-                            .parentNode.classList.remove('changed');
+                          .getElementById('deliverBefore')
+                          .parentNode.classList.remove('changed');
                         }
                         this.setState({ deliverBefore });
                       }}
@@ -559,7 +562,7 @@ export default class ProductOrderModal extends React.Component {
             </div>
           </div>
 
-          <div className="product-modal__button-group">
+          <div className="button-group">
             <button className="button" onClick={this.onClickOK}>
               {this.state.mode === 'ADDNEW'
                 ? '발주'

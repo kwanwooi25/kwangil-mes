@@ -1126,7 +1126,7 @@ export default class ProductModal extends React.Component {
             undefined
           )}
 
-          <div className="product-modal__button-group">
+          <div className="button-group">
             <button className="button" onClick={this.onClickOK}>
               저장
             </button>

@@ -1,16 +1,17 @@
-import React from "react";
-import Modal from "react-modal";
-import moment from "moment";
+import React from 'react';
+import Modal from 'react-modal';
+import moment from 'moment';
 
-import { OrdersData } from "../../api/orders";
-import { ProductsData } from "../../api/products";
+import { OrdersData } from '../../api/orders';
+import { ProductsData } from '../../api/products';
+import { comma, uncomma } from '../../api/comma';
 
-import Checkbox from "../../custom/Checkbox";
-import TextInput from "../../custom/TextInput";
-import DatePicker from "../../custom/DatePicker/DatePicker";
-import ConfirmationModal from "../components/ConfirmationModal";
+import Checkbox from '../../custom/Checkbox';
+import TextInput from '../../custom/TextInput';
+import DatePicker from '../../custom/DatePicker/DatePicker';
+import ConfirmationModal from '../components/ConfirmationModal';
 
-export default class CompleteOrderMultiModal extends React.Component {
+export default class CompleteMultiOrderModal extends React.Component {
   /*=========================================================================
   >> props <<
   isOpen       : if modal is open
@@ -29,7 +30,7 @@ export default class CompleteOrderMultiModal extends React.Component {
 
     for (let i = 0; i < ordersCount; i++) {
       completedAtArray.push(moment());
-      completedQuantityArray.push("");
+      completedQuantityArray.push('');
       isCompletedArray.push(false);
       completedQuantityEmptyArray.push(false);
     }
@@ -41,8 +42,8 @@ export default class CompleteOrderMultiModal extends React.Component {
       completedQuantityEmptyArray,
       ordersCount,
       isConfirmationModalOpen: false,
-      confirmationTitle: "",
-      confirmationDescription: ""
+      confirmationTitle: '',
+      confirmationDescription: []
     };
 
     this.onInputChange = this.onInputChange.bind(this);
@@ -50,35 +51,25 @@ export default class CompleteOrderMultiModal extends React.Component {
     this.onConfirmationModalClose = this.onConfirmationModalClose.bind(this);
   }
 
-  comma(str) {
-    str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
-  }
-
-  uncomma(str) {
-    str = String(str);
-    return str.replace(/[^\d]+/g, "");
-  }
-
   validate(name, value) {
     const inputContainer = document.getElementById(name).parentNode;
     const index = Number(
       name
-        .split("[")
+        .split('[')
         .pop()
-        .replace("]", "")
+        .replace(']', '')
     );
     if (!value) {
       let completedQuantityEmptyArray = this.state.completedQuantityEmptyArray;
       completedQuantityEmptyArray[index] = true;
       this.setState({ completedQuantityEmptyArray });
-      inputContainer.classList.add("error");
+      inputContainer.classList.add('error');
       return false;
     } else {
       let completedQuantityEmptyArray = this.state.completedQuantityEmptyArray;
       completedQuantityEmptyArray[index] = false;
       this.setState({ completedQuantityEmptyArray });
-      inputContainer.classList.remove("error");
+      inputContainer.classList.remove('error');
       return true;
     }
   }
@@ -86,17 +77,17 @@ export default class CompleteOrderMultiModal extends React.Component {
   onInputChange(e) {
     const index = Number(
       e.target.name
-        .split("[")
+        .split('[')
         .pop()
-        .replace("]", "")
+        .replace(']', '')
     );
-    if (e.target.type === "checkbox") {
+    if (e.target.type === 'checkbox') {
       let isCompletedArray = this.state.isCompletedArray;
       isCompletedArray[index] = e.target.checked;
       this.setState({ isCompletedArray });
     } else {
       let completedQuantityArray = this.state.completedQuantityArray;
-      completedQuantityArray[index] = this.comma(this.uncomma(e.target.value));
+      completedQuantityArray[index] = comma(uncomma(e.target.value));
       this.setState({ completedQuantityArray });
       this.validate(e.target.name, e.target.value);
     }
@@ -104,19 +95,31 @@ export default class CompleteOrderMultiModal extends React.Component {
 
   onClickOK() {
     let isValidated = false;
+    let confirmationDescription = [
+      `
+      주문 ${this.state.ordersCount}건 작업 완료 하시겠습니까?
+    `
+    ];
     for (let i = 0; i < this.state.ordersCount; i++) {
       const targetName = `completedQuantityArray[${i}]`;
       const value = this.state.completedQuantityArray[i];
       isValidated = this.validate(targetName, value);
+      const order = OrdersData.findOne({ _id: this.props.selectedOrders[i] });
+      const product = ProductsData.findOne({ _id: order.data.productID });
+      const orderInfoText = `
+        ${product.name} (${product.thick}x${product.length}x${product.width})
+        = ${comma(uncomma(this.state.completedQuantityArray[i]))}매 ${
+        this.state.isCompletedArray[i] ? '(완료)' : ''
+      }
+      `;
+      confirmationDescription.push(orderInfoText);
     }
 
     if (isValidated) {
       this.setState({
         isConfirmationModalOpen: true,
-        confirmationTitle: "작업 완료 등록",
-        confirmationDescription: `
-          [${this.state.ordersCount}개 주문] 작업 완료 하시겠습니까?
-          `
+        confirmationTitle: '작업 완료 등록',
+        confirmationDescription
       });
     }
   }
@@ -124,20 +127,20 @@ export default class CompleteOrderMultiModal extends React.Component {
   onConfirmationModalClose(answer) {
     this.setState({
       isConfirmationModalOpen: false,
-      confirmationTitle: "",
-      confirmationDescription: ""
+      confirmationTitle: '',
+      confirmationDescription: []
     });
     if (answer) {
       const lis = document.querySelectorAll(
-        "li.complete-order-multi-modal__list-item"
+        'li.complete-order-multi-modal__list-item'
       );
       for (let i = 0; i < lis.length; i++) {
         const order = OrdersData.findOne({ _id: lis[i].id });
-        order.data.completedQuantity = this.uncomma(
+        order.data.completedQuantity = uncomma(
           this.state.completedQuantityArray[i]
         );
         order.data.isCompleted = this.state.isCompletedArray[i];
-        Meteor.call("orders.update", order._id, order.data, (err, res) => {
+        Meteor.call('orders.update', order._id, order.data, (err, res) => {
           if (!err) {
             this.props.onModalClose();
           }
@@ -156,7 +159,7 @@ export default class CompleteOrderMultiModal extends React.Component {
         ${product.length} x
         ${product.width}
       `;
-      
+
       return (
         <li
           className="complete-order-multi-modal__list-item"
@@ -174,7 +177,7 @@ export default class CompleteOrderMultiModal extends React.Component {
               {productSizeText}
             </p>
             <p className="complete-order-multi-modal__orderQuantity">
-              주문수량: {this.comma(order.data.orderQuantity)}매
+              주문수량: {comma(order.data.orderQuantity)}매
             </p>
           </div>
           <div className="complete-order-multi-modal__inputs-container">
@@ -215,7 +218,7 @@ export default class CompleteOrderMultiModal extends React.Component {
                 onInputChange={this.onInputChange}
                 errorMessage={
                   this.state.completedQuantityEmptyArray[index]
-                    ? "완성수량을 입력하세요."
+                    ? '완성수량을 입력하세요.'
                     : undefined
                 }
               />
@@ -240,7 +243,7 @@ export default class CompleteOrderMultiModal extends React.Component {
       <Modal
         isOpen={this.props.isOpen}
         onAfterOpen={() => {
-          document.getElementById("completedQuantityArray[0]").focus();
+          document.getElementById('completedQuantityArray[0]').focus();
         }}
         onRequestClose={() => {
           this.props.onModalClose();
@@ -274,7 +277,7 @@ export default class CompleteOrderMultiModal extends React.Component {
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
-            description={this.state.confirmationDescription}
+            descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
         ) : (

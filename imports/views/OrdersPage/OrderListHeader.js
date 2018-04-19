@@ -10,22 +10,27 @@ export default class OrderListHeader extends React.Component {
   onCheckboxChange
   isSelectedMulti
   selectedOrders
-
-  ** TODO showAccountDetailView
-  showProductDetailView
-  updateOrderStatus
-  showCompleteOrderModal
-  showProductOrderModal
+  showCompleteMultiOrderModal
   showDeleteConfirmationModal
   ==========================================================================*/
   constructor(props) {
     super(props);
 
-    this.onPrintOrderMultiClick = this.onPrintOrderMultiClick.bind(this);
+    this.onPrintMultiOrderClick = this.onPrintMultiOrderClick.bind(this);
+    this.onCompleteMultiOrderClick = this.onCompleteMultiOrderClick.bind(this);
+    this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
   }
 
-  onPrintOrderMultiClick() {
+  onPrintMultiOrderClick() {
     printOrders(this.props.selectedOrders);
+  }
+
+  onCompleteMultiOrderClick() {
+    this.props.showCompleteMultiOrderModal();
+  }
+
+  onDeleteMultiClick() {
+    this.props.showDeleteConfirmationModal(this.props.selectedOrders);
   }
 
   render() {
@@ -39,7 +44,7 @@ export default class OrderListHeader extends React.Component {
         <div className="order-buttons-container">
           <button
             className="button button-with-icon-span order-button"
-            onClick={this.onPrintOrderMultiClick}
+            onClick={this.onPrintMultiOrderClick}
             disabled={!this.props.isSelectedMulti}
           >
             <i className="fa fa-print fa-lg" />
@@ -47,7 +52,7 @@ export default class OrderListHeader extends React.Component {
           </button>
           <button
             className="button button-with-icon-span order-button"
-            onClick={this.onCompleteOrderMultiClick}
+            onClick={this.onCompleteMultiOrderClick}
             disabled={!this.props.isSelectedMulti}
           >
             <i className="fa fa-check fa-lg" />

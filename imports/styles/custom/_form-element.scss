@@ -4,10 +4,10 @@
   width: 100%;
 
   @media (min-width: $break--md) {
-    align-items: flex-start;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
+    width: auto;
   }
 }
 

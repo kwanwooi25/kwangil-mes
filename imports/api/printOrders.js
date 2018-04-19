@@ -1,5 +1,5 @@
-import "pdfmake/build/pdfmake.js";
-import "pdfmake/build/vfs_fonts.js";
+import 'pdfmake/build/pdfmake.js';
+import 'pdfmake/build/vfs_fonts.js';
 
 import { OrdersData } from './orders';
 import { ProductsData } from './products';
@@ -8,21 +8,22 @@ import { comma } from './comma';
 import noImage from '../assets/no-image.png';
 
 export const printOrders = selectedOrders => {
-  console.log(selectedOrders);
-
   let docContent = [];
   let filename = '작업지시';
+  let ordersCount = 0;
   selectedOrders.map((orderID, index) => {
     filename += `_${orderID}`;
 
-    const order = OrdersData.findOne({_id: orderID});
-    const product = ProductsData.findOne({_id: order.data.productID});
+    const order = OrdersData.findOne({ _id: orderID });
+    const product = ProductsData.findOne({ _id: order.data.productID });
 
     getTextForDocContent(order, product).then(res => {
       docContent.push(getDocContent(res));
+      ordersCount++;
 
-      // on last docContent added
-      if (selectedOrders.length === index + 1) {
+      // when last order added to docContent
+      if (selectedOrders.length === ordersCount) {
+        // sort docContent by orderID
         docContent.sort((a, b) => {
           const a_orderID = a[0].table.body[0][0].text;
           const b_orderID = b[0].table.body[0][0].text;
@@ -30,20 +31,18 @@ export const printOrders = selectedOrders => {
           if (a_orderID < b_orderID) return -1;
           return 0;
         });
-      };
 
-      // add pagebreak between each order except the last one
-      for (let i = 0; i < selectedOrders.length - 1; i++) {
-        docContent[i][3].pageBreak = "after";
-      };
+        // add pagebreak between each order except the last one
+        for (let i = 0; i < selectedOrders.length - 1; i++) {
+          docContent[i][3].pageBreak = 'after';
+        }
 
-      // generate PDF and open
-      const docDefinition = getDocDefinition(filename, docContent);
-      openPDF(docDefinition);
-      console.log(docContent)
+        // generate PDF and open
+        const docDefinition = getDocDefinition(filename, docContent);
+        openPDF(docDefinition);
+      }
     });
   });
-
 };
 
 const openPDF = docDefinition => {
@@ -58,18 +57,18 @@ const openPDF = docDefinition => {
 
   pdfMake.fonts = {
     NanumGothic: {
-      normal: "NanumGothic.ttf",
-      bold: "NanumGothicBold.ttf",
-      italics: "NanumGothic.ttf",
-      bolditalics: "NanumGothicBold.ttf"
+      normal: 'NanumGothic.ttf',
+      bold: 'NanumGothicBold.ttf',
+      italics: 'NanumGothic.ttf',
+      bolditalics: 'NanumGothicBold.ttf'
     }
   };
 
   pdfMake.createPdf(docDefinition).open();
-}
+};
 
 const getTextForDocContent = (order, product) => {
-  const orderIDText = order._id.split("-").pop();
+  const orderIDText = order._id.split('-').pop();
   const orderedAtText = `발주일: ${order.data.orderedAt}`;
   const sizeText = `${product.thick} x ${product.length} x ${product.width}`;
   const orderQuantityText = `${comma(order.data.orderQuantity)} 매`;
@@ -83,35 +82,35 @@ const getTextForDocContent = (order, product) => {
   const orderQuantityWeightText = `(${comma(orderQuantityInKG.toFixed(0))}kg)`;
   const productName = product.name;
   const accountName = product.accountName;
-  let deliverBeforeArray = order.data.deliverBefore.split("-");
+  let deliverBeforeArray = order.data.deliverBefore.split('-');
   deliverBeforeArray.shift();
-  const deliverBeforeText = deliverBeforeArray.join("/");
+  const deliverBeforeText = deliverBeforeArray.join('/');
 
-  let deliverRemarkText = "";
+  let deliverRemarkText = '';
   if (order.data.deliverDateStrict) {
     if (order.data.deliverFast) {
-      deliverRemarkText = "납기엄수/지급";
+      deliverRemarkText = '납기엄수/지급';
     } else {
-      deliverRemarkText = "납기엄수";
+      deliverRemarkText = '납기엄수';
     }
   } else if (order.data.deliverFast) {
-    deliverRemarkText = "지급";
+    deliverRemarkText = '지급';
   }
 
   let extDetailsText = `${product.extColor}원단`;
-  if (product.extPretreat === "single") {
-    extDetailsText += "\n단면처리";
-  } else if (product.extPretreat === "both") {
-    extDetailsText += "\n양면처리";
+  if (product.extPretreat === 'single') {
+    extDetailsText += '\n단면처리';
+  } else if (product.extPretreat === 'both') {
+    extDetailsText += '\n양면처리';
   }
   if (product.extAntistatic) {
-    extDetailsText += "\n대전방지";
+    extDetailsText += '\n대전방지';
   }
   if (product.extMemo) {
-    extDetailsText += "\n" + product.extMemo;
+    extDetailsText += '\n' + product.extMemo;
   }
 
-  let printFrontText = "";
+  let printFrontText = '';
   if (product.printFrontColorCount) {
     printFrontText = `${product.printFrontColorCount}도`;
     printFrontText += ` (${product.printFrontColor})`;
@@ -120,7 +119,7 @@ const getTextForDocContent = (order, product) => {
     }
   }
 
-  let printBackText = "";
+  let printBackText = '';
   if (product.printBackColorCount) {
     printBackText = `${product.printBackColorCount}도`;
     printBackText += ` (${product.printBackColor})`;
@@ -129,20 +128,20 @@ const getTextForDocContent = (order, product) => {
     }
   }
 
-  let printMemoText = "";
+  let printMemoText = '';
   if (product.printMemo) {
     printMemoText = product.printMemo;
   }
 
-  let cutDetailsText = "";
+  let cutDetailsText = '';
   if (product.cutPosition) {
     cutDetailsText += `가공위치: ${product.cutPosition}`;
   }
   if (product.cutUltrasonic) {
-    cutDetailsText += "\n초음파가공";
+    cutDetailsText += '\n초음파가공';
   }
   if (product.cutPowderPack) {
-    cutDetailsText += "\n가루포장";
+    cutDetailsText += '\n가루포장';
   }
   if (product.cutPunches) {
     cutDetailsText += `\nP${product.cutPunchCount}`;
@@ -154,10 +153,10 @@ const getTextForDocContent = (order, product) => {
     }
   }
   if (product.cutMemo) {
-    cutDetailsText += "\n" + product.cutMemo;
+    cutDetailsText += '\n' + product.cutMemo;
   }
 
-  let packDetailsText = "";
+  let packDetailsText = '';
   if (product.packMaterial) {
     packDetailsText += `${product.packMaterial} 포장`;
   }
@@ -165,31 +164,30 @@ const getTextForDocContent = (order, product) => {
     packDetailsText += `\n(${comma(product.packQuantity)}씩)`;
   }
   if (product.packDeliverAll) {
-    packDetailsText += "\n전량납품";
+    packDetailsText += '\n전량납품';
   }
   if (product.packMemo) {
-    packDetailsText += "\n" + product.packMemo;
+    packDetailsText += '\n' + product.packMemo;
   }
 
-  let plateStatusText = "";
+  let plateStatusText = '';
   switch (order.data.plateStatus) {
-    case "confirm":
-      plateStatusText += "동판확인";
+    case 'confirm':
+      plateStatusText += '동판확인';
       break;
-    case "new":
-      plateStatusText += "동판신규";
+    case 'new':
+      plateStatusText += '동판신규';
       break;
-    case "edit":
-      plateStatusText += "동판수정";
+    case 'edit':
+      plateStatusText += '동판수정';
       break;
   }
 
   const workMemo = order.data.workMemo;
   const deliverMemo = order.data.deliverMemo;
 
-  let urlToEncode = "";
-  let productImage = "";
-  console.log(product.printImageURL)
+  let urlToEncode = '';
+  let productImage = '';
   if (product.printImageURL) {
     urlToEncode = product.printImageURL;
   } else {
@@ -197,9 +195,9 @@ const getTextForDocContent = (order, product) => {
   }
 
   return new Promise((resolve, reject) => {
-    Meteor.call("encodeAsBase64", urlToEncode, (err, res) => {
+    Meteor.call('encodeAsBase64', urlToEncode, (err, res) => {
       if (err) {
-        Meteor.call("encodeAsBase64", noImage, (err, res) => {
+        Meteor.call('encodeAsBase64', noImage, (err, res) => {
           productImage = `data:image/png;base64,${res}`;
           resolve({
             orderIDText,
@@ -222,7 +220,7 @@ const getTextForDocContent = (order, product) => {
             deliverMemo,
             productImage
           });
-        })
+        });
       }
       if (res) {
         productImage = `data:image/png;base64,${res}`;
@@ -250,21 +248,21 @@ const getTextForDocContent = (order, product) => {
       }
     });
   });
-}
+};
 
 const getDocContent = textObj => {
   return [
     {
-      layout: "noBorders",
+      layout: 'noBorders',
       table: {
-        widths: ["23%", "*", "23%"],
+        widths: ['23%', '*', '23%'],
         body: [
           [
-            { rowSpan: 2, text: textObj.orderIDText, style: "orderNo" },
-            { text: "작업지시서", style: "title" },
+            { rowSpan: 2, text: textObj.orderIDText, style: 'orderNo' },
+            { text: '작업지시서', style: 'title' },
             {
               text: textObj.deliverRemarkText,
-              style: "deliverRemark"
+              style: 'deliverRemark'
             }
           ],
           [
@@ -272,7 +270,7 @@ const getDocContent = textObj => {
             {
               colSpan: 2,
               text: textObj.orderedAtText,
-              style: "orderedAt"
+              style: 'orderedAt'
             },
             {}
           ]
@@ -280,50 +278,50 @@ const getDocContent = textObj => {
       }
     },
     {
-      style: "table",
+      style: 'table',
       table: {
-        widths: ["28%", "21%", "39%", "12%"],
+        widths: ['28%', '21%', '39%', '12%'],
         body: [
           [
-            { rowSpan: 2, text: textObj.sizeText, style: "productSize" },
+            { rowSpan: 2, text: textObj.sizeText, style: 'productSize' },
             {
               text: textObj.orderQuantityText,
-              style: "orderQuantity",
+              style: 'orderQuantity',
               border: [true, true, true, false]
             },
-            { text: textObj.productName, style: "productName" },
+            { text: textObj.productName, style: 'productName' },
             {
               rowSpan: 2,
               text: textObj.deliverBeforeText,
-              style: "deliverBefore"
+              style: 'deliverBefore'
             }
           ],
           [
             {},
             {
               text: textObj.orderQuantityWeightText,
-              style: "orderQuantityWeight",
+              style: 'orderQuantityWeight',
               border: [true, false, true, true]
             },
-            { text: textObj.accountName, style: "accountName" },
+            { text: textObj.accountName, style: 'accountName' },
             {}
           ]
         ]
       }
     },
     {
-      style: "table",
+      style: 'table',
       table: {
-        widths: ["14%", "19%", "5%", "9%", "20%", "9%", "24%"],
-        heights: ["auto", 60, 60, 50, 20, 20, 20],
+        widths: ['14%', '19%', '5%', '9%', '20%', '9%', '24%'],
+        heights: ['auto', 60, 60, 50, 20, 20, 20],
         body: [
           [
-            { colSpan: 2, text: "압출부", style: "workOrderHeader" },
+            { colSpan: 2, text: '압출부', style: 'workOrderHeader' },
             {},
-            { colSpan: 3, text: "인쇄부", style: "workOrderHeader" },
+            { colSpan: 3, text: '인쇄부', style: 'workOrderHeader' },
             {},
             {},
-            { colSpan: 2, text: "가공부", style: "workOrderHeader" },
+            { colSpan: 2, text: '가공부', style: 'workOrderHeader' },
             {}
           ],
           [
@@ -331,32 +329,32 @@ const getDocContent = textObj => {
               rowSpan: 4,
               colSpan: 2,
               text: textObj.extDetailsText,
-              style: "workOrderBody"
+              style: 'workOrderBody'
             },
             {},
-            { text: "전\n면", style: "workOrderHeader", margin: [0, 15] },
+            { text: '전\n면', style: 'workOrderHeader', margin: [0, 15] },
             {
               colSpan: 2,
               text: textObj.printFrontText,
-              style: "workOrderBody"
+              style: 'workOrderBody'
             },
             {},
             {
               rowSpan: 2,
               colSpan: 2,
               text: textObj.cutDetailsText,
-              style: "workOrderBody"
+              style: 'workOrderBody'
             },
             {}
           ],
           [
             {},
             {},
-            { text: "후\n면", style: "workOrderHeader", margin: [0, 15] },
+            { text: '후\n면', style: 'workOrderHeader', margin: [0, 15] },
             {
               colSpan: 2,
               text: textObj.printBackText,
-              style: "workOrderBody"
+              style: 'workOrderBody'
             },
             {},
             {},
@@ -368,20 +366,20 @@ const getDocContent = textObj => {
             {
               colSpan: 3,
               text: textObj.printMemoText,
-              style: "workOrderBody"
+              style: 'workOrderBody'
             },
             {},
             {},
             {
               rowSpan: 2,
-              text: "포장",
-              style: "workOrderHeader",
+              text: '포장',
+              style: 'workOrderHeader',
               margin: [0, 30]
             },
             {
               rowSpan: 2,
               text: textObj.packDetailsText,
-              style: "workOrderBody"
+              style: 'workOrderBody'
             }
           ],
           [
@@ -390,7 +388,7 @@ const getDocContent = textObj => {
             {
               colSpan: 2,
               text: textObj.plateStatusText,
-              style: "workOrderBody"
+              style: 'workOrderBody'
             },
             {},
             {
@@ -400,19 +398,19 @@ const getDocContent = textObj => {
             {}
           ],
           [
-            { text: "작업참고", style: "workOrderHeader" },
+            { text: '작업참고', style: 'workOrderHeader' },
             {
               colSpan: 6,
               text: textObj.workMemo,
-              style: "workOrderMemo"
+              style: 'workOrderMemo'
             }
           ],
           [
-            { text: "납품참고", style: "workOrderHeader" },
+            { text: '납품참고', style: 'workOrderHeader' },
             {
               colSpan: 6,
               text: textObj.deliverMemo,
-              style: "workOrderMemo"
+              style: 'workOrderMemo'
             }
           ]
         ]
@@ -421,10 +419,10 @@ const getDocContent = textObj => {
     {
       image: textObj.productImage,
       fit: [515, 300],
-      alignment: "center"
+      alignment: 'center'
     }
   ];
-}
+};
 
 const getDocDefinition = (filename, docContent) => {
   return {
@@ -435,7 +433,7 @@ const getDocDefinition = (filename, docContent) => {
     content: docContent,
 
     defaultStyle: {
-      font: "NanumGothic"
+      font: 'NanumGothic'
     },
 
     styles: {
@@ -445,7 +443,7 @@ const getDocDefinition = (filename, docContent) => {
       title: {
         fontSize: 24,
         bold: true,
-        alignment: "center"
+        alignment: 'center'
       },
       orderNo: {
         fontSize: 30,
@@ -455,57 +453,57 @@ const getDocDefinition = (filename, docContent) => {
       deliverRemark: {
         fontSize: 18,
         bold: true,
-        background: "#555",
-        color: "#fff",
-        alignment: "right",
+        background: '#555',
+        color: '#fff',
+        alignment: 'right',
         margin: 5
       },
       orderedAt: {
-        alignment: "right",
+        alignment: 'right',
         margin: 3
       },
       productSize: {
         fontSize: 16,
         bold: true,
-        alignment: "center",
+        alignment: 'center',
         margin: [2, 15]
       },
       orderQuantity: {
         fontSize: 16,
         bold: true,
-        alignment: "center",
+        alignment: 'center',
         margin: [5, 5, 5, 0]
       },
       productName: {
         fontSize: 17,
-        alignment: "center",
+        alignment: 'center',
         margin: 3
       },
       deliverBefore: {
         fontSize: 18,
         bold: true,
-        alignment: "center",
+        alignment: 'center',
         margin: [3, 15]
       },
       orderQuantityWeight: {
         fontSize: 12,
-        alignment: "center",
+        alignment: 'center',
         margin: [5, 0, 5, 5]
       },
       accountName: {
         fontSize: 12,
-        alignment: "center",
+        alignment: 'center',
         margin: 3
       },
       workOrderHeader: {
         fontSize: 12,
         bold: true,
-        alignment: "center",
+        alignment: 'center',
         margin: 3
       },
       workOrderBody: {
         fontSize: 12,
-        alignment: "center",
+        alignment: 'center',
         margin: 3
       },
       workOrderRemark: {
@@ -514,4 +512,4 @@ const getDocDefinition = (filename, docContent) => {
       }
     }
   };
-}
+};
