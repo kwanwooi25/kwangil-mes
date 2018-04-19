@@ -19,7 +19,6 @@ export default class ProductNewMultiModal extends React.Component {
     this.onInputChange = this.onInputChange.bind(this);
     this.onClickOK = this.onClickOK.bind(this);
     this.onConfirmationModalClose = this.onConfirmationModalClose.bind(this);
-    this.onClickCancel = this.onClickCancel.bind(this);
   }
 
   onInputChange(e) {
@@ -67,10 +66,6 @@ export default class ProductNewMultiModal extends React.Component {
     }
   }
 
-  onClickCancel(e) {
-    this.props.onModalClose();
-  }
-
   render() {
     return (
       <Modal
@@ -100,7 +95,9 @@ export default class ProductNewMultiModal extends React.Component {
             </button>
             <button
               className="button button-cancel"
-              onClick={this.onClickCancel}
+              onClick={() => {
+                this.props.onModalClose();
+              }}
             >
               취소
             </button>
@@ -111,7 +108,7 @@ export default class ProductNewMultiModal extends React.Component {
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title="품목 대량등록"
-            descriptionArray={["계속 하시겠습니까?"]}
+            descriptionArray={['계속 하시겠습니까?']}
             onModalClose={this.onConfirmationModalClose}
           />
         ) : (

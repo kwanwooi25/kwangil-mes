@@ -33,49 +33,49 @@
 }
 
 .product-search__input-container .search-by-account-name {
-  width: 37%;
+  width: 39%;
 
   @media (min-width: $break--sm) {
-    width: 39%;
+    width: 40%;
   }
 
   @media (min-width: $break--lg) {
-    width: 15%;
+    width: 16%;
   }
 }
 
 .product-search__input-container .search-by-product-name {
-  width: 50%;
+  width: 55%;
 
   @media (min-width: $break--sm) {
-    width: 52%;
+    width: 56%;
   }
 
   @media (min-width: $break--lg) {
-    width: 22%;
+    width: 25%;
   }
 }
 
 .product-search__input-container .search-by-size {
-  width: 27%;
+  width: 30%;
 
   @media (min-width: $break--sm) {
-    width: 10%;
+    width: 13%;
   }
 
   @media (min-width: $break--lg) {
-    width: 6%;
+    width: 8%;
   }
 }
 
 .product-search__input-container .search-by-color {
-  width: 43%;
+  width: 47%;
 
   @media (min-width: $break--sm) {
-    width: 23%;
+    width: 25.5%;
   }
 
   @media (min-width: $break--lg) {
-    width: 13%;
+    width: 13.5%;
   }
 }

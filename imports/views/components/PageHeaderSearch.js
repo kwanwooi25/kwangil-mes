@@ -1,8 +1,9 @@
 import React from "react";
 
-export default class AccountSearch extends React.Component {
+export default class PageHeaderSearch extends React.Component {
   /*=========================================================================
   >> props <<
+  id
   onInputSearchChange
   ==========================================================================*/
   constructor(props) {
@@ -10,6 +11,7 @@ export default class AccountSearch extends React.Component {
 
     this.onChange = this.onChange.bind(this);
   }
+
   onChange(e) {
     if (e.target.value !== "") {
       e.target.classList.add("hasValue");
@@ -24,6 +26,7 @@ export default class AccountSearch extends React.Component {
   render() {
     return (
       <input
+        id={this.props.id}
         className="page-header__search"
         type="text"
         placeholder="&#xf002;"

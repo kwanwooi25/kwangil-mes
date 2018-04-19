@@ -13,14 +13,20 @@ export default class Header extends React.Component {
   onNavToggle(e) {
     if (e.target.checked) {
       document.querySelector('.nav').classList.add('open');
+      document.querySelector('.toggle i').classList.remove('fa-bars');
+      document.querySelector('.toggle i').classList.add('fa-times');
     } else {
       document.querySelector('.nav').classList.remove('open');
+      document.querySelector('.toggle i').classList.remove('fa-times');
+      document.querySelector('.toggle i').classList.add('fa-bars');
     }
   }
 
   closeNav() {
     document.getElementById('nav-toggle').checked = false;
     document.querySelector('.nav').classList.remove('open');
+    document.querySelector('.toggle i').classList.remove('fa-times');
+    document.querySelector('.toggle i').classList.add('fa-bars');
   }
 
   render() {

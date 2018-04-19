@@ -10,8 +10,13 @@
   margin-bottom: $space-xs;
   width: 100%;
 
+  &:first-child {
+    margin-top: $space-md;
+  }
+
   &:last-child {
     border: none;
+    margin-bottom: $space-lg;
   }
 
   i,

@@ -29,8 +29,8 @@ export default class AccountList extends React.Component {
       selectedAccountName: ''
     };
 
-    this.showDetailViewModal = this.showDetailViewModal.bind(this);
-    this.hideDetailViewModal = this.hideDetailViewModal.bind(this);
+    this.showAccountDetailViewModal = this.showAccountDetailViewModal.bind(this);
+    this.hideAccountDetailViewModal = this.hideAccountDetailViewModal.bind(this);
     this.showEditAccountModal = this.showEditAccountModal.bind(this);
     this.hideEditAccountModal = this.hideEditAccountModal.bind(this);
     this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
@@ -64,14 +64,14 @@ export default class AccountList extends React.Component {
     this.databaseTracker.stop();
   }
 
-  showDetailViewModal(selectedAccountID) {
+  showAccountDetailViewModal(selectedAccountID) {
     this.setState({
       isDetailViewOpen: true,
       selectedAccountID
     });
   }
 
-  hideDetailViewModal() {
+  hideAccountDetailViewModal() {
     this.setState({ isDetailViewOpen: false });
   }
 
@@ -122,7 +122,7 @@ export default class AccountList extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             account={account}
-            showDetailViewModal={this.showDetailViewModal}
+            showAccountDetailViewModal={this.showAccountDetailViewModal}
             showEditAccountModal={this.showEditAccountModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
@@ -139,7 +139,7 @@ export default class AccountList extends React.Component {
           <AccountDetailView
             isOpen={this.state.isDetailViewOpen}
             accountID={this.state.selectedAccountID}
-            onModalClose={this.hideDetailViewModal}
+            onModalClose={this.hideAccountDetailViewModal}
           />
         ) : (
           undefined

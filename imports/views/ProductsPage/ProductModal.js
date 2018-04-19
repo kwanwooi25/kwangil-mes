@@ -1,18 +1,19 @@
-import { Meteor } from "meteor/meteor";
-import { Slingshot } from "meteor/edgee:slingshot";
-import React from "react";
-import Modal from "react-modal";
+import { Meteor } from 'meteor/meteor';
+import { Slingshot } from 'meteor/edgee:slingshot';
+import React from 'react';
+import Modal from 'react-modal';
 
-import { AccountsData } from "../../api/accounts";
-import { ProductsData } from "../../api/products";
-import { uploadToS3 } from "../../api/s3";
+import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
+import { uploadToS3 } from '../../api/s3';
+import { comma, uncomma } from '../../api/comma';
 
-import TextInput from "../../custom/TextInput";
-import Textarea from "../../custom/Textarea";
-import RadioButton from "../../custom/RadioButton";
-import Checkbox from "../../custom/Checkbox";
-import Accordion from "../../custom/Accordion";
-import ConfirmationModal from "../components/ConfirmationModal";
+import TextInput from '../../custom/TextInput';
+import Textarea from '../../custom/Textarea';
+import RadioButton from '../../custom/RadioButton';
+import Checkbox from '../../custom/Checkbox';
+import Accordion from '../../custom/Accordion';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class ProductModal extends React.Component {
   /*=========================================================================
@@ -30,7 +31,7 @@ export default class ProductModal extends React.Component {
       // EDIT mode
       const product = ProductsData.findOne({ _id: props.productID });
       initialState = {
-        mode: "EDIT",
+        mode: 'EDIT',
         productID: product._id,
         accountList: [],
         accountID: product.accountID,
@@ -44,7 +45,7 @@ export default class ProductModal extends React.Component {
         extAntistatic: product.extAntistatic,
         extPretreat: product.extPretreat,
         extMemo: product.extMemo,
-        printImageFile: "",
+        printImageFile: '',
         printImagaFileName: product.printImageFileName,
         printImageURL: product.printImageURL,
         printFrontColorCount: product.printFrontColorCount,
@@ -87,52 +88,52 @@ export default class ProductModal extends React.Component {
         stockQuantityError: false,
         priceError: false,
         isConfirmationModalOpen: false,
-        confirmationTitle: "",
+        confirmationTitle: '',
         confirmationDescription: []
       };
     } else {
       // ADDNEW mode
       initialState = {
-        mode: "ADDNEW",
-        productID: "",
+        mode: 'ADDNEW',
+        productID: '',
         accountList: [],
-        accountID: "",
-        accountName: "",
-        name: "",
-        thick: "",
-        length: "",
-        width: "",
+        accountID: '',
+        accountName: '',
+        name: '',
+        thick: '',
+        length: '',
+        width: '',
         isPrint: false,
-        extColor: "",
+        extColor: '',
         extAntistatic: false,
-        extPretreat: "", // 'single': 단면, 'both': 양면
-        extMemo: "",
-        printImageFile: "",
-        printImageFileName: "",
-        printImageURL: "",
-        printFrontColorCount: "",
-        printFrontColor: "",
-        printFrontPosition: "",
-        printBackColorCount: "",
-        printBackColor: "",
-        printBackPosition: "",
-        printMemo: "",
-        cutPosition: "",
+        extPretreat: '', // 'single': 단면, 'both': 양면
+        extMemo: '',
+        printImageFile: '',
+        printImageFileName: '',
+        printImageURL: '',
+        printFrontColorCount: '',
+        printFrontColor: '',
+        printFrontPosition: '',
+        printBackColorCount: '',
+        printBackColor: '',
+        printBackPosition: '',
+        printMemo: '',
+        cutPosition: '',
         cutUltrasonic: false,
         cutPowderPack: false,
         cutPunches: false,
-        cutPunchCount: "",
-        cutPunchSize: "",
-        cutPunchPosition: "",
-        cutMemo: "",
-        packMaterial: "",
-        packQuantity: "",
+        cutPunchCount: '',
+        cutPunchSize: '',
+        cutPunchPosition: '',
+        cutMemo: '',
+        packMaterial: '',
+        packQuantity: '',
         packDeliverAll: false,
-        packMemo: "",
-        stockQuantity: "",
-        price: "",
-        history: "",
-        memo: "",
+        packMemo: '',
+        stockQuantity: '',
+        price: '',
+        history: '',
+        memo: '',
         accountNameEmpty: false,
         accountNameError: false,
         nameEmpty: false,
@@ -150,7 +151,7 @@ export default class ProductModal extends React.Component {
         stockQuantityError: false,
         priceError: false,
         isConfirmationModalOpen: false,
-        confirmationTitle: "",
+        confirmationTitle: '',
         confirmationDescription: []
       };
     }
@@ -166,7 +167,7 @@ export default class ProductModal extends React.Component {
   componentDidMount() {
     // get account list
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe("accounts");
+      Meteor.subscribe('accounts');
       const accountList = AccountsData.find({}, { fields: { _id: 1, name: 1 } })
         .fetch()
         .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
@@ -186,81 +187,71 @@ export default class ProductModal extends React.Component {
     });
   }
 
-  comma(str) {
-    str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
-  }
-
-  uncomma(str) {
-    str = String(str);
-    return str.replace(/[^\d]+/g, "");
-  }
-
   onInputChange(e) {
     // add and remove class 'changed' on EDIT mode
     if (
-      this.state.mode === "EDIT" &&
+      this.state.mode === 'EDIT' &&
       initialState[e.target.name] !== e.target.value
     ) {
-      e.target.parentNode.classList.add("changed");
+      e.target.parentNode.classList.add('changed');
     } else {
-      e.target.parentNode.classList.remove("changed");
+      e.target.parentNode.classList.remove('changed');
     }
 
     // setState as input value changes
-    if (e.target.type === "radio") {
+    if (e.target.type === 'radio') {
       switch (e.target.name) {
-        case "isPrint":
-          const value = e.target.value === "isPrintTrue" ? true : false;
+        case 'isPrint':
+          const value = e.target.value === 'isPrintTrue' ? true : false;
           this.setState({ [e.target.name]: value });
           if (value) {
-            if (this.state.extPretreat === "")
-              this.setState({ extPretreat: "single" });
+            if (this.state.extPretreat === '')
+              this.setState({ extPretreat: 'single' });
           } else {
             this.setState({
-              extPretreat: "",
-              printImageFile: "",
-              printFrontColorCount: "",
-              printFrontColor: "",
-              printFrontPosition: "",
-              printBackColorCount: "",
-              printBackColor: "",
-              printBackPosition: "",
-              printMemo: ""
+              extPretreat: '',
+              printImageFile: '',
+              printFrontColorCount: '',
+              printFrontColor: '',
+              printFrontPosition: '',
+              printBackColorCount: '',
+              printBackColor: '',
+              printBackPosition: '',
+              printMemo: ''
             });
           }
           break;
 
-        case "extPretreat":
-          if (e.target.value === "single") {
+        case 'extPretreat':
+          if (e.target.value === 'single') {
             this.setState({
               extPretreat: e.target.value,
-              printBackColorCount: "",
-              printBackColor: "",
-              printBackPosition: ""
+              printBackColorCount: '',
+              printBackColor: '',
+              printBackPosition: ''
             });
-          } else if (e.target.value === "both") {
+          } else if (e.target.value === 'both') {
             this.setState({ extPretreat: e.target.value });
           }
           break;
       }
-    } else if (e.target.type === "checkbox") {
+    } else if (e.target.type === 'checkbox') {
       this.setState({ [e.target.name]: e.target.checked });
 
       // reset punch details if cutPunches unchecked
-      if (e.target.name === "cutPunches") {
+      if (e.target.name === 'cutPunches') {
         if (!e.target.checked) {
           this.setState({
-            cutPunchCount: "",
-            cutPunchSize: "",
-            cutPunchPosition: ""
+            cutPunchCount: '',
+            cutPunchSize: '',
+            cutPunchPosition: ''
           });
         }
       }
-    } else if (e.target.type === "file") {
+    } else if (e.target.type === 'file') {
       if (e.target.files[0]) {
         const file = e.target.files[0];
-        const printImageFileName = e.target.value.replace(/^.*[\\\/]/, "");
+        const printImageFileName = e.target.value.replace(/^.*[\\\/]/, '');
         const reader = new FileReader();
 
         reader.onload = e => {
@@ -271,18 +262,18 @@ export default class ProductModal extends React.Component {
         };
         reader.readAsDataURL(file);
       } else {
-        this.setState({ printImageFile: "", printImageFileName: "" });
+        this.setState({ printImageFile: '', printImageFileName: '' });
       }
-    } else if (e.target.name === "packQuantity") {
+    } else if (e.target.name === 'packQuantity') {
       this.setState({
-        [e.target.name]: this.comma(this.uncomma(e.target.value))
+        [e.target.name]: comma(uncomma(e.target.value))
       });
     } else {
       this.setState({ [e.target.name]: e.target.value });
     }
 
     // check validation
-    if (e.target.type !== "checkbox" && e.target.type !== "radio") {
+    if (e.target.type !== 'checkbox' && e.target.type !== 'radio') {
       this.validate(e.target.name, e.target.value);
     }
   }
@@ -290,19 +281,19 @@ export default class ProductModal extends React.Component {
   validate(name, value) {
     const inputContainer = document.getElementById(name).parentNode;
     // validate accountName
-    if (name === "accountName") {
+    if (name === 'accountName') {
       const selectedAccount = this.state.accountList.find(
         account => account.name === value
       );
 
       // check if accountName is empty
-      if (value === "") {
+      if (value === '') {
         this.setState({
           accountNameEmpty: true,
           accountNameError: false,
-          accountID: ""
+          accountID: ''
         });
-        inputContainer.classList.add("error");
+        inputContainer.classList.add('error');
         return false;
 
         // check if accountName exist
@@ -310,9 +301,9 @@ export default class ProductModal extends React.Component {
         this.setState({
           accountNameEmpty: false,
           accountNameError: true,
-          accountID: ""
+          accountID: ''
         });
-        inputContainer.classList.add("error");
+        inputContainer.classList.add('error');
         return false;
       } else {
         this.setState({
@@ -320,63 +311,63 @@ export default class ProductModal extends React.Component {
           accountNameError: false,
           accountID: selectedAccount._id
         });
-        inputContainer.classList.remove("error");
+        inputContainer.classList.remove('error');
         return true;
       }
     }
 
     // validate name
     // validate extColor
-    if (name === "name" || name === "extColor") {
-      if (value === "") {
+    if (name === 'name' || name === 'extColor') {
+      if (value === '') {
         this.setState({ [`${name}Empty`]: true });
-        inputContainer.classList.add("error");
+        inputContainer.classList.add('error');
         return false;
       } else {
         this.setState({ [`${name}Empty`]: false });
-        inputContainer.classList.remove("error");
+        inputContainer.classList.remove('error');
         return true;
       }
     }
 
     // validate size
-    if (name === "thick" || name === "length" || name === "width") {
-      if (value === "") {
+    if (name === 'thick' || name === 'length' || name === 'width') {
+      if (value === '') {
         this.setState({ [`${name}Empty`]: true, [`${name}Error`]: false });
-        inputContainer.classList.add("error");
+        inputContainer.classList.add('error');
         return false;
       } else if (isNaN(value)) {
         this.setState({ [`${name}Empty`]: false, [`${name}Error`]: true });
-        inputContainer.classList.add("error");
+        inputContainer.classList.add('error');
         return false;
       } else {
         this.setState({ [`${name}Empty`]: false, [`${name}Error`]: false });
-        inputContainer.classList.remove("error");
+        inputContainer.classList.remove('error');
         return true;
       }
     }
 
     // validate number inputs
     if (
-      name === "printFrontColorCount" ||
-      name === "printBackColorCount" ||
-      name === "cutPunchCount" ||
-      name === "packQuantity" ||
-      name === "stockQuantity" ||
-      name === "price"
+      name === 'printFrontColorCount' ||
+      name === 'printBackColorCount' ||
+      name === 'cutPunchCount' ||
+      name === 'packQuantity' ||
+      name === 'stockQuantity' ||
+      name === 'price'
     ) {
-      if (isNaN(this.uncomma(value))) {
+      if (isNaN(uncomma(value))) {
         this.setState({ [`${name}Error`]: true });
-        inputContainer.classList.add("error");
+        inputContainer.classList.add('error');
       } else {
         this.setState({ [`${name}Error`]: false });
-        inputContainer.classList.remove("error");
+        inputContainer.classList.remove('error');
       }
     }
   }
 
   uploadImage(file) {
-    const uploader = new Slingshot.Upload("upload-product-image");
+    const uploader = new Slingshot.Upload('upload-product-image');
     return uploadToS3(file, uploader);
   }
 
@@ -384,30 +375,30 @@ export default class ProductModal extends React.Component {
     e.preventDefault();
 
     // validation
-    if (!this.validate("accountName", this.state.accountName)) {
-      this.refs.accountName.focus();
-    } else if (!this.validate("name", this.state.name)) {
-      this.refs.name.focus();
-    } else if (!this.validate("thick", this.state.thick)) {
-      this.refs.thick.focus();
-    } else if (!this.validate("length", this.state.length)) {
-      this.refs.length.focus();
-    } else if (!this.validate("width", this.state.width)) {
-      this.refs.width.focus();
-    } else if (!this.validate("extColor", this.state.extColor)) {
-      this.refs.extColor.focus();
+    if (!this.validate('accountName', this.state.accountName)) {
+      document.getElementById('accountName').focus();
+    } else if (!this.validate('name', this.state.name)) {
+      document.getElementById('name').focus();
+    } else if (!this.validate('thick', this.state.thick)) {
+      document.getElementById('thick').focus();
+    } else if (!this.validate('length', this.state.length)) {
+      document.getElementById('length').focus();
+    } else if (!this.validate('width', this.state.width)) {
+      document.getElementById('width').focus();
+    } else if (!this.validate('extColor', this.state.extColor)) {
+      document.getElementById('extColor').focus();
     } else {
-      if (this.state.mode === "ADDNEW") {
+      if (this.state.mode === 'ADDNEW') {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: "제품 신규 등록",
-          confirmationDescription: ["신규 등록 하시겠습니까?"]
+          confirmationTitle: '제품 신규 등록',
+          confirmationDescription: ['신규 등록 하시겠습니까?']
         });
-      } else if (this.state.mode === "EDIT") {
+      } else if (this.state.mode === 'EDIT') {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: "제품 정보 수정",
-          confirmationDescription: ["수정하신 내용을 저장하시겠습니까?"]
+          confirmationTitle: '제품 정보 수정',
+          confirmationDescription: ['수정하신 내용을 저장하시겠습니까?']
         });
       }
     }
@@ -444,7 +435,7 @@ export default class ProductModal extends React.Component {
       cutPunchPosition: this.state.cutPunchPosition,
       cutMemo: this.state.cutMemo,
       packMaterial: this.state.packMaterial,
-      packQuantity: this.uncomma(this.state.packQuantity),
+      packQuantity: uncomma(this.state.packQuantity),
       packDeliverAll: this.state.packDeliverAll,
       packMemo: this.state.packMemo,
       stockQuantity: this.state.stockQuantity,
@@ -458,13 +449,13 @@ export default class ProductModal extends React.Component {
     this.setState({ isConfirmationModalOpen: false });
 
     // ADDNEW mode
-    if (this.state.mode === "ADDNEW" && answer) {
+    if (this.state.mode === 'ADDNEW' && answer) {
       if (this.refs.printImageFile && this.refs.printImageFile.files[0]) {
         this.uploadImage(this.refs.printImageFile.files[0]).then(
           convertedURL => {
             this.setState({ printImageURL: convertedURL }, () => {
               const data = this.getDataToSave();
-              Meteor.call("products.insert", data, (err, res) => {
+              Meteor.call('products.insert', data, (err, res) => {
                 if (!err) {
                   this.props.onModalClose();
                 } else {
@@ -476,7 +467,7 @@ export default class ProductModal extends React.Component {
         );
       } else {
         const data = this.getDataToSave();
-        Meteor.call("products.insert", data, (err, res) => {
+        Meteor.call('products.insert', data, (err, res) => {
           if (!err) {
             this.props.onModalClose();
           } else {
@@ -486,7 +477,7 @@ export default class ProductModal extends React.Component {
       }
 
       // EDIT mode
-    } else if (this.state.mode === "EDIT" && answer) {
+    } else if (this.state.mode === 'EDIT' && answer) {
       if (
         initialState.printImageFileName !== this.state.printImageFileName &&
         this.refs.printImageFile.files[0]
@@ -496,7 +487,7 @@ export default class ProductModal extends React.Component {
             this.setState({ printImageURL: convertedURL }, () => {
               const data = this.getDataToSave();
               Meteor.call(
-                "products.update",
+                'products.update',
                 this.state.productID,
                 data,
                 (err, res) => {
@@ -513,7 +504,7 @@ export default class ProductModal extends React.Component {
       } else {
         const data = this.getDataToSave();
         Meteor.call(
-          "products.update",
+          'products.update',
           this.state.productID,
           data,
           (err, res) => {
@@ -538,7 +529,7 @@ export default class ProductModal extends React.Component {
       <Modal
         isOpen={this.props.isOpen}
         onAfterOpen={() => {
-          document.getElementById("accountName").focus();
+          document.getElementById('accountName').focus();
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
@@ -547,8 +538,8 @@ export default class ProductModal extends React.Component {
       >
         <div className="boxed-view__header">
           <h1>
-            {this.state.mode === "ADDNEW" ? "제품 등록" : undefined}
-            {this.state.mode === "EDIT" ? "제품 정보수정" : undefined}
+            {this.state.mode === 'ADDNEW' ? '제품 등록' : undefined}
+            {this.state.mode === 'EDIT' ? '제품 정보수정' : undefined}
           </h1>
         </div>
         <form className="boxed-view__content product-modal__content">
@@ -570,9 +561,9 @@ export default class ProductModal extends React.Component {
                       listID="accountNameList"
                       errorMessage={
                         this.state.accountNameEmpty
-                          ? "업체명을 입력하세요."
+                          ? '업체명을 입력하세요.'
                           : this.state.accountNameError
-                            ? "존재하지 않는 업체입니다."
+                            ? '존재하지 않는 업체입니다.'
                             : undefined
                       }
                     />
@@ -594,7 +585,7 @@ export default class ProductModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.nameEmpty
-                          ? "제품명을 입력하세요."
+                          ? '제품명을 입력하세요.'
                           : undefined
                       }
                     />
@@ -616,9 +607,9 @@ export default class ProductModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.thickEmpty
-                          ? "두께를 입력하세요."
+                          ? '두께를 입력하세요.'
                           : this.state.thickError
-                            ? "숫자만 입력 가능합니다."
+                            ? '숫자만 입력 가능합니다.'
                             : undefined
                       }
                     />
@@ -631,9 +622,9 @@ export default class ProductModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.lengthEmpty
-                          ? "길이(원단)를 입력하세요."
+                          ? '길이(원단)를 입력하세요.'
                           : this.state.lengthError
-                            ? "숫자만 입력 가능합니다."
+                            ? '숫자만 입력 가능합니다.'
                             : undefined
                       }
                     />
@@ -646,9 +637,9 @@ export default class ProductModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.widthEmpty
-                          ? "너비(가공)를 입력하세요."
+                          ? '너비(가공)를 입력하세요.'
                           : this.state.widthError
-                            ? "숫자만 입력 가능합니다."
+                            ? '숫자만 입력 가능합니다.'
                             : undefined
                       }
                     />
@@ -694,7 +685,7 @@ export default class ProductModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.extColorEmpty
-                          ? "원단색상을 입력하세요."
+                          ? '원단색상을 입력하세요.'
                           : undefined
                       }
                     />
@@ -708,7 +699,7 @@ export default class ProductModal extends React.Component {
                       value="single"
                       disabled={!this.state.isPrint}
                       checked={
-                        this.state.extPretreat === "single" ? true : false
+                        this.state.extPretreat === 'single' ? true : false
                       }
                       onInputChange={this.onInputChange}
                     />
@@ -717,7 +708,7 @@ export default class ProductModal extends React.Component {
                       label="인쇄양면"
                       value="both"
                       disabled={!this.state.isPrint}
-                      checked={this.state.extPretreat === "both" ? true : false}
+                      checked={this.state.extPretreat === 'both' ? true : false}
                       onInputChange={this.onInputChange}
                     />
                     <Checkbox
@@ -784,7 +775,7 @@ export default class ProductModal extends React.Component {
                         onInputChange={this.onInputChange}
                         errorMessage={
                           this.state.printFrontColorCountError
-                            ? "숫자로 입력하세요."
+                            ? '숫자로 입력하세요.'
                             : undefined
                         }
                       />
@@ -808,7 +799,7 @@ export default class ProductModal extends React.Component {
                     </div>
                   </div>
 
-                  {this.state.extPretreat === "both" ? (
+                  {this.state.extPretreat === 'both' ? (
                     <div className="form-element-container">
                       <div className="form-element__label">
                         <label>후면</label>
@@ -822,7 +813,7 @@ export default class ProductModal extends React.Component {
                           onInputChange={this.onInputChange}
                           errorMessage={
                             this.state.printBackColorCountError
-                              ? "숫자로 입력하세요."
+                              ? '숫자로 입력하세요.'
                               : undefined
                           }
                         />
@@ -913,7 +904,7 @@ export default class ProductModal extends React.Component {
                         onInputChange={this.onInputChange}
                         errorMessage={
                           this.state.cutPunchCountError
-                            ? "숫자로 입력하세요."
+                            ? '숫자로 입력하세요.'
                             : undefined
                         }
                       />
@@ -1003,7 +994,7 @@ export default class ProductModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.packQuantityError
-                          ? "숫자로 입력하세요."
+                          ? '숫자로 입력하세요.'
                           : undefined
                       }
                     />
@@ -1057,14 +1048,14 @@ export default class ProductModal extends React.Component {
                         onInputChange={this.onInputChange}
                         errorMessage={
                           this.state.priceError
-                            ? "숫자로 입력하세요."
+                            ? '숫자로 입력하세요.'
                             : undefined
                         }
                       />
                     </div>
                   </div>
 
-                  {this.state.mode === "EDIT" ? (
+                  {this.state.mode === 'EDIT' ? (
                     <div className="form-element-container lg50">
                       <div className="form-element__label">
                         <label htmlFor="stockQuantity">재고수량</label>
@@ -1078,7 +1069,7 @@ export default class ProductModal extends React.Component {
                           onInputChange={this.onInputChange}
                           errorMessage={
                             this.state.stockQuantityError
-                              ? "숫자로 입력하세요."
+                              ? '숫자로 입력하세요.'
                               : undefined
                           }
                         />
@@ -1090,7 +1081,7 @@ export default class ProductModal extends React.Component {
                 </div>
 
                 <div className="form-element-group sm60 lg40">
-                  {this.state.mode === "EDIT" ? (
+                  {this.state.mode === 'EDIT' ? (
                     <div className="form-element-container">
                       <div className="form-element__label">
                         <label htmlFor="history">작업이력</label>

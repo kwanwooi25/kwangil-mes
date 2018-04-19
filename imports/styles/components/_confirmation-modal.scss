@@ -1,11 +1,13 @@
 .confirmation-modal__description {
   color: $color-primary--900;
-  font-size: $font-size--sm;
+  font-size: $font-size--md;
   text-align: center;
   margin: 0;
   padding-bottom: $space-sm;
 
   &:first-child {
+    font-size: $font-size--lg;
+    font-weight: $font-weight--bold;
     padding-top: $space-sm;
   }
 }

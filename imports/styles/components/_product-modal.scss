@@ -159,7 +159,7 @@
 
   .product-modal__color-count{
     margin-bottom: $space-xs;
-    width: 21%;
+    width: 10%;
     & + label {
       width: 10%;
     }
@@ -167,7 +167,7 @@
 
   .product-modal__color {
     margin-bottom: $space-xs;
-    width: 40%;
+    width: 51%;
   }
 
   .product-modal__print-position {
@@ -198,5 +198,28 @@
   .product-modal__deliverAll {
     margin-left: 0;
     justify-content: center;
+  }
+
+  .product-modal__print-detail-container {
+    label {
+      margin-bottom: 0;
+    }
+  }
+
+  .product-modal__color-count{
+    margin-bottom: 0;
+    width: 5%;
+    & + label {
+      width: 5%;
+    }
+  }
+
+  .product-modal__color {
+    margin-bottom: 0;
+    width: 20%;
+  }
+
+  .product-modal__print-position {
+    width: 35%;
   }
 }

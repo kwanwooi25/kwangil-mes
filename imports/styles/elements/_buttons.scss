@@ -13,6 +13,13 @@
     color: $color-primary--900;
     cursor: pointer;
   }
+
+  &:disabled {
+    background: $grey--700;
+    border: $grey--700;
+    color: $grey--50;
+    cursor: default;
+  }
 }
 
 .button-cancel {
@@ -22,20 +29,16 @@
 
 .button-circle {
   background: $color-primary--500;
-  border: none;
   border-radius: 50%;
-  color: white;
-  outline: none;
+}
 
+.button-with-icon-span {
   span {
     display: none;
-    font-size: $font-size--xs;
+    font-size: $font-size--sm;
   }
 
   &:hover {
-    background: $color-primary--400;
-    cursor: pointer;
-
     i {
       display: none;
     }
@@ -46,16 +49,11 @@
   }
 
   &:disabled {
-    background: $grey--700;
-    cursor: default;
-
-    &:hover {
-      i {
-        display: inline-block;
-      }
-      span {
-        display: none;
-      }
+    i {
+      display: inline-block;
+    }
+    span{
+      display: none;
     }
   }
 }

@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
-import AccountSearch from "./AccountSearch";
-import AccountPageHeaderButtons from "./AccountPageHeaderButtons";
-import AccountList from "./AccountList";
+import PageHeaderSearch from '../components/PageHeaderSearch';
+import AccountPageHeaderButtons from './AccountPageHeaderButtons';
+import AccountList from './AccountList';
 
 export default class AccountsPage extends React.Component {
   constructor(props) {
@@ -11,7 +11,7 @@ export default class AccountsPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      query: ""
+      query: ''
     };
 
     this.onInputSearchChange = this.onInputSearchChange.bind(this);
@@ -20,7 +20,7 @@ export default class AccountsPage extends React.Component {
   componentDidMount() {
     // dynamically adjust height
     this.setLayout();
-    window.addEventListener("resize", () => {
+    window.addEventListener('resize', () => {
       this.setLayout();
     });
 
@@ -42,13 +42,13 @@ export default class AccountsPage extends React.Component {
   // dynamically adjust height
   setLayout() {
     const headerHeight = document
-      .querySelector(".header")
+      .querySelector('.header')
       .getBoundingClientRect().height;
     const pageHeaderHeight = document
-      .querySelector(".page-header")
+      .querySelector('.page-header')
       .getBoundingClientRect().height;
-    const main = document.querySelector(".main");
-    const pageContent = document.querySelector(".page-content");
+    const main = document.querySelector('.main');
+    const pageContent = document.querySelector('.page-content');
     const mainHeight = `calc(100vh - ${headerHeight + 10}px)`;
     const contentHeight = `calc(100vh - ${headerHeight +
       25 +
@@ -69,7 +69,7 @@ export default class AccountsPage extends React.Component {
           <div className="page-header__row">
             <h1 className="page-header__title">거래처목록</h1>
 
-            <AccountSearch onInputSearchChange={this.onInputSearchChange} />
+            <PageHeaderSearch onInputSearchChange={this.onInputSearchChange} />
 
             <AccountPageHeaderButtons
               isAdmin={this.state.isAdmin}

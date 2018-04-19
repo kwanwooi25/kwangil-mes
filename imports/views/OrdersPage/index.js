@@ -263,7 +263,7 @@ export default class OrdersPage extends React.Component {
 
             <div className="page-header__buttons">
               <button
-                className="button-circle page-header__button"
+                className="button button-with-icon-span page-header__button"
                 // onClick={this.onClickExportExcel}
               >
                 <i className="fa fa-table fa-lg" />

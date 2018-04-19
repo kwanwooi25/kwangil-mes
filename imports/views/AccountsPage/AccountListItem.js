@@ -6,7 +6,7 @@ export default class AccountListItem extends React.Component {
   isAdmin
   isManager
   account
-  showDetailViewModal
+  showAccountDetailViewModal
   showEditAccountModal
   showDeleteConfirmationModal
   ==========================================================================*/
@@ -35,28 +35,28 @@ export default class AccountListItem extends React.Component {
   onNameClick(e) {
     const selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
 
-    this.props.showDetailViewModal(selectedAccountID);
+    this.props.showAccountDetailViewModal(selectedAccountID);
   }
 
   // show account modal (EDIT mode)
   onEditClick(e) {
-    const selectedAccountID = this.getAccountID(e);
+    const selectedAccountID = this.getAccountID(e.target);
 
     this.props.showEditAccountModal(selectedAccountID);
   }
 
   // show confirmation modal before delete
   onDeleteClick(e) {
-    const selectedAccountID = this.getAccountID(e);
+    const selectedAccountID = this.getAccountID(e.target);
 
     this.props.showDeleteConfirmationModal(selectedAccountID);
   }
 
-  getAccountID(e) {
-    if (e.target.tagName === 'SPAN') {
-      return e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'BUTTON') {
-      return e.target.parentNode.parentNode.id;
+  getAccountID(target) {
+    if (target.tagName === 'SPAN') {
+      return target.parentNode.parentNode.parentNode.id;
+    } else if (target.tagName === 'BUTTON') {
+      return target.parentNode.parentNode.id;
     }
   }
 
@@ -94,14 +94,14 @@ export default class AccountListItem extends React.Component {
         {this.state.isAdmin || this.state.isManager ? (
           <div className="account-buttons-container">
             <button
-              className="button-circle account-button"
+              className="button button-with-icon-span account-button"
               onClick={this.onEditClick}
             >
               <i className="fa fa-edit fa-lg" />
               <span>수정</span>
             </button>
             <button
-              className="button-circle account-button"
+              className="button button-with-icon-span account-button"
               onClick={this.onDeleteClick}
             >
               <i className="fa fa-trash fa-lg" />

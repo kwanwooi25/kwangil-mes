@@ -4,6 +4,8 @@ import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
 
 import Checkbox from '../../custom/Checkbox';
+import ProductListItem from './ProductListItem';
+import AccountDetailView from '../AccountsPage/AccountDetailView';
 import ProductDetailView from './ProductDetailView';
 import ProductOrderModal from './ProductOrderModal';
 import ProductModal from './ProductModal';
@@ -12,41 +14,57 @@ import ConfirmationModal from '../components/ConfirmationModal';
 export default class ProductList extends React.Component {
   /*=========================================================================
   >> props <<
-  query : query object to filter product list
+  queryObj : query object to filter product list
+  isAdmin
+  isManager
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
       accountList: [],
-      data: [],
+      productsData: [],
       queryObj: props.queryObj,
-      isAdmin: false,
-      isManager: false,
+      isAdmin: props.isAdmin,
+      isManager: props.isManager,
+      isAccountDetailViewOpen: false,
       isProductOrderModalOpen: false,
       isProductModalOpen: false,
-      isDetailViewOpen: false,
-      isDeleteConfirmModalOpen: false,
+      isProductDetailViewOpen: false,
+      isDeleteConfirmationModalOpen: false,
       selectedProductID: '',
-      selectedProductName: '',
-      selectedProductSize: '',
-      productsCount: 0
+      confirmationDescription: [],
+      productsCount: 0,
+      isSelectedMulti: false,
+      selectedProducts: [],
+      deleteMode: ''
     };
 
-    this.onInputChange = this.onInputChange.bind(this);
-    this.onNameClick = this.onNameClick.bind(this);
-    this.onDetailViewClose = this.onDetailViewClose.bind(this);
-    this.onProductOrderClick = this.onProductOrderClick.bind(this);
-    this.onProductOrderModalClose = this.onProductOrderModalClose.bind(this);
-    this.onEditClick = this.onEditClick.bind(this);
-    this.onProductModalClose = this.onProductModalClose.bind(this);
-    this.onDeleteClick = this.onDeleteClick.bind(this);
-    this.onDeleteConfirmModalClose = this.onDeleteConfirmModalClose.bind(this);
+    this.onCheckboxChange = this.onCheckboxChange.bind(this);
+    this.showAccountDetailView = this.showAccountDetailView.bind(this);
+    this.hideAccountDetailView = this.hideAccountDetailView.bind(this);
+    this.showProductDetailView = this.showProductDetailView.bind(this);
+    this.hideProductDetailView = this.hideProductDetailView.bind(this);
+    this.showProductOrderModal = this.showProductOrderModal.bind(this);
+    this.hideProductOrderModal = this.hideProductOrderModal.bind(this);
+    this.showProductModal = this.showProductModal.bind(this);
+    this.hideProductModal = this.hideProductModal.bind(this);
+    this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
+      this
+    );
+    this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
+      this
+    );
+    this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
   }
 
   // set state on props change
   componentWillReceiveProps(props) {
-    this.setState({ queryObj: props.queryObj });
+    this.setState({
+      queryObj: props.queryObj,
+      isAdmin: props.isAdmin,
+      isManager: props.isManager
+    });
   }
 
   componentDidMount() {
@@ -62,136 +80,139 @@ export default class ProductList extends React.Component {
 
       this.setState({
         accountList,
-        data: productList,
+        productsData: productList,
         productsCount: productList.length
       });
-    });
-
-    // tracks if the user logged in is admin or manager
-    this.authTracker = Tracker.autorun(() => {
-      if (Meteor.user()) {
-        this.setState({
-          isAdmin: Meteor.user().profile.isAdmin,
-          isManager: Meteor.user().profile.isManager
-        });
-      }
     });
   }
 
   componentWillUnmount() {
     this.databaseTracker.stop();
-    this.authTracker.stop();
   }
 
-  onInputChange(e) {
+  onCheckboxChange(e) {
+    let selectedProducts = this.state.selectedProducts;
     if (e.target.name === 'selectAll') {
+      selectedProducts = [];
       const checkboxes = document.querySelectorAll(
         '#product-list input[type="checkbox"]'
       );
 
       for (let i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = e.target.checked;
+        if (e.target.checked) {
+          selectedProducts.push(checkboxes[i].name);
+        }
+      }
+    } else {
+      selectedProducts = selectedProducts.filter(
+        value => value !== e.target.name
+      );
+      if (e.target.checked) {
+        selectedProducts.push(e.target.name);
       }
     }
+    selectedProducts = selectedProducts.filter(value => value !== 'selectAll');
+    if (selectedProducts.length >= 2) {
+      this.setState({ isSelectedMulti: true });
+    } else {
+      this.setState({ isSelectedMulti: false });
+    }
+    this.setState({ selectedProducts });
   }
 
-  // show detail view modal
-  onNameClick(e) {
-    const selectedProductID = e.target.parentNode.parentNode.parentNode.id;
+  showAccountDetailView(selectedAccountID) {
     this.setState({
-      isDetailViewOpen: true,
+      isAccountDetailViewOpen: true,
+      selectedAccountID
+    });
+  }
+
+  hideAccountDetailView() {
+    this.setState({ isAccountDetailViewOpen: false });
+  }
+
+  showProductDetailView(selectedProductID) {
+    this.setState({
+      isProductDetailViewOpen: true,
       selectedProductID
     });
   }
 
-  onDetailViewClose() {
-    this.setState({ isDetailViewOpen: false });
+  hideProductDetailView() {
+    this.setState({ isProductDetailViewOpen: false });
   }
 
   // show product order modal
-  onProductOrderClick(e) {
-    let selectedProductID = '';
-    if (e.target.tagName === 'SPAN') {
-      selectedProductID = e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'BUTTON') {
-      selectedProductID = e.target.parentNode.parentNode.id;
-    }
-
+  showProductOrderModal(selectedProductID) {
     this.setState({
       isProductOrderModalOpen: true,
       selectedProductID
     });
   }
 
-  onProductOrderModalClose() {
+  hideProductOrderModal() {
     this.setState({ isProductOrderModalOpen: false });
   }
 
   // show account modal (EDIT mode)
-  onEditClick(e) {
-    let selectedProductID = '';
-    if (e.target.tagName === 'SPAN') {
-      selectedProductID = e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'BUTTON') {
-      selectedProductID = e.target.parentNode.parentNode.id;
-    }
-
+  showProductModal(selectedProductID) {
     this.setState({
       isProductModalOpen: true,
       selectedProductID
     });
   }
 
-  onProductModalClose() {
+  hideProductModal() {
     this.setState({ isProductModalOpen: false });
   }
 
   // show confirmation modal before delete
-  onDeleteClick(e) {
-    let selectedProductID = '';
-    if (e.target.tagName === 'SPAN') {
-      selectedProductID = e.target.parentNode.parentNode.parentNode.id;
-    } else if (e.target.tagName === 'BUTTON') {
-      selectedProductID = e.target.parentNode.parentNode.id;
+  showDeleteConfirmationModal(selectedProducts) {
+    let confirmationDescription = [];
+
+    if (selectedProducts.length === 1) {
+      confirmationDescription = ['품목을 삭제하시겠습니까?'];
+    } else {
+      confirmationDescription = [
+        `${selectedProducts.length}개 품목 삭제하시겠습니까?`
+      ];
     }
-    const selectedProduct = ProductsData.findOne({ _id: selectedProductID });
-    const selectedProductName = selectedProduct.name;
-    const selectedProductSize = `
-      ${selectedProduct.thick} x
-      ${selectedProduct.length} x
-      ${selectedProduct.width}
-    `
+
+    selectedProducts.map(productID => {
+      const product = ProductsData.findOne({ _id: productID });
+      let productInfoText = `
+          ${product.name} (${product.thick}x${product.length}x${product.width})
+        `;
+      confirmationDescription.push(productInfoText);
+    });
+
     this.setState({
-      isDeleteConfirmModalOpen: true,
-      selectedProductID,
-      selectedProductName,
-      selectedProductSize
+      isDeleteConfirmationModalOpen: true,
+      selectedProducts,
+      confirmationDescription
     });
   }
 
-  onDeleteConfirmModalClose(answer) {
-    this.setState({ isDeleteConfirmModalOpen: false });
+  hideDeleteConfirmationModal(answer) {
+    this.setState({ isDeleteConfirmationModalOpen: false });
 
     if (answer) {
-      Meteor.call('products.remove', this.state.selectedProductID);
+      this.state.selectedProducts.map(productID => {
+        Meteor.call('products.remove', productID);
+      });
     }
   }
 
+  onDeleteMultiClick() {
+    this.showDeleteConfirmationModal(this.state.selectedProducts);
+  }
+
   getProductList(queryObj) {
-    return this.state.data.map(product => {
+    return this.state.productsData.map(product => {
       const account = this.state.accountList.find(
         account => account._id === product.accountID
       );
-      let print = '';
-      if (product.printFrontColorCount) {
-        if (product.printBackColorCount) {
-          print = `(전면 ${product.printFrontColorCount}도, 후면 ${
-            product.printBackColorCount
-          }도)`;
-        } else {
-          print = `(전면 ${product.printFrontColorCount}도)`;
-        }
-      }
 
       let matchQuery = false;
 
@@ -228,61 +249,19 @@ export default class ProductList extends React.Component {
       // only show product that has matching query text
       if (matchQuery) {
         return (
-          <li className="product" key={product._id} id={product._id}>
-            <div className="product-checkbox-container">
-              <Checkbox name={product._id} onInputChange={this.onInputChange} />
-            </div>
-            <div className="product-container">
-              <div className="product-name-container">
-                <span className="product-accountName">{account.name}</span>
-                <a className="product-name" onClick={this.onNameClick}>
-                  {product.name}
-                </a>
-              </div>
-              <div className="product-details-container">
-                <div className="product-size-container">
-                  <span className="product-size__thick">{product.thick}</span>
-                  <i className="fa fa-times" />
-                  <span className="product-size__length">{product.length}</span>
-                  <i className="fa fa-times" />
-                  <span className="product-size__width">{product.width}</span>
-                </div>
-                <div className="product-isPrint-container">
-                  <span className="product-isPrint">
-                    {product.isPrint ? `인쇄 ${print}` : '무지'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {this.state.isAdmin || this.state.isManager ? (
-              <div className="product-buttons-container">
-                <button
-                  className="button-circle product-button"
-                  onClick={this.onProductOrderClick}
-                >
-                  <i className="fa fa-industry fa-lg" />
-                  <span>작업지시</span>
-                </button>
-                <button
-                  className="button-circle product-button"
-                  onClick={this.onEditClick}
-                >
-                  <i className="fa fa-edit fa-lg" />
-                  <span>수정</span>
-                </button>
-                <button
-                  className="button-circle product-button"
-                  onClick={this.onDeleteClick}
-                >
-                  <i className="fa fa-trash fa-lg" />
-                  <span>삭제</span>
-                </button>
-              </div>
-            ) : (
-              undefined
-            )}
-          </li>
+          <ProductListItem
+            key={product._id}
+            isAdmin={this.state.isAdmin}
+            isManager={this.state.isManager}
+            account={account}
+            product={product}
+            onCheckboxChange={this.onCheckboxChange}
+            showAccountDetailView={this.showAccountDetailView}
+            showProductDetailView={this.showProductDetailView}
+            showProductOrderModal={this.showProductOrderModal}
+            showProductModal={this.showProductModal}
+            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+          />
         );
       }
     });
@@ -293,59 +272,79 @@ export default class ProductList extends React.Component {
       <ul id="product-list">
         {this.state.productsCount &&
           (this.state.isAdmin || this.state.isManager) ? (
-            <div className="product-select-all">
+            <div className="product-list-header">
               <Checkbox
                 name="selectAll"
                 label="전체선택"
-                onInputChange={this.onInputChange}
+                onInputChange={this.onCheckboxChange}
               />
+              <div className="product-buttons-container">
+                <button
+                  className="button button-with-icon-span product-button"
+                onClick={this.onDeleteMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-trash fa-lg" />
+                <span>삭제</span>
+              </button>
             </div>
-          ) : (
-            undefined
-          )}
+          </div>
+        ) : (
+          undefined
+        )}
 
         {this.getProductList(this.state.queryObj)}
-        {this.state.isDetailViewOpen ? (
-          <ProductDetailView
-            isOpen={this.state.isDetailViewOpen}
-            productID={this.state.selectedProductID}
-            onDetailViewClose={this.onDetailViewClose}
+
+        {this.state.isAccountDetailViewOpen ? (
+          <AccountDetailView
+            isOpen={this.state.isAccountDetailViewOpen}
+            accountID={this.state.selectedAccountID}
+            onModalClose={this.hideAccountDetailView}
           />
         ) : (
           undefined
         )}
+
+        {this.state.isProductDetailViewOpen ? (
+          <ProductDetailView
+            isOpen={this.state.isProductDetailViewOpen}
+            productID={this.state.selectedProductID}
+            onModalClose={this.hideProductDetailView}
+          />
+        ) : (
+          undefined
+        )}
+
         {this.state.isProductOrderModalOpen ? (
           <ProductOrderModal
             isOpen={this.state.isProductOrderModalOpen}
             productID={this.state.selectedProductID}
-            onModalClose={this.onProductOrderModalClose}
+            onModalClose={this.hideProductOrderModal}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
         ) : (
           undefined
         )}
+
         {this.state.isProductModalOpen ? (
           <ProductModal
             isOpen={this.state.isProductModalOpen}
             productID={this.state.selectedProductID}
-            onModalClose={this.onProductModalClose}
+            onModalClose={this.hideProductModal}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
         ) : (
           undefined
         )}
-        {this.state.isDeleteConfirmModalOpen ? (
+
+        {this.state.isDeleteConfirmationModalOpen ? (
           <ConfirmationModal
-            isOpen={this.state.isDeleteConfirmModalOpen}
+            isOpen={this.state.isDeleteConfirmationModalOpen}
             title="품목 삭제"
-            descriptionArray={[
-              '아래 품목을 삭제하시겠습니까?',
-              this.state.selectedProductName,
-              this.state.selectedProductSize
-            ]}
-            onModalClose={this.onDeleteConfirmModalClose}
+            descriptionArray={this.state.confirmationDescription}
+            onModalClose={this.hideDeleteConfirmationModal}
           />
         ) : (
           undefined

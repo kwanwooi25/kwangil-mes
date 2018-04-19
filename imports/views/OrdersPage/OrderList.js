@@ -769,8 +769,7 @@ export default class OrderList extends React.Component {
       product.name,
       `  ${product.thick} x
         ${product.length} x
-        ${product.width}`,
-      `= ${this.comma(orderData.orderQuantity)}매`,
+        ${product.width} = ${this.comma(orderData.orderQuantity)}매`,
       "작업지시 취소하시겠습니까?"
     ];
 
@@ -958,7 +957,7 @@ export default class OrderList extends React.Component {
                     {this.comma(order.orderQuantity) +
                       "매 (" +
                       this.comma(weight.toFixed(0)) +
-                      "kg)"}
+                    "kg)"}
                   </p>
                 </div>
               </div>
@@ -981,7 +980,7 @@ export default class OrderList extends React.Component {
               {this.state.isAdmin || this.state.isManager ? (
                 <div className="order-buttons-container">
                   <button
-                    className="button-circle order-button"
+                    className="button button-with-icon-span order-button"
                     onClick={this.onPrintOrderClick}
                     disabled={order.isCompleted}
                   >
@@ -989,7 +988,7 @@ export default class OrderList extends React.Component {
                     <span>출력</span>
                   </button>
                   <button
-                    className="button-circle order-button"
+                    className="button button-with-icon-span order-button"
                     onClick={this.onCompleteOrderClick}
                     disabled={order.isCompleted}
                   >
@@ -997,7 +996,7 @@ export default class OrderList extends React.Component {
                     <span>완료</span>
                   </button>
                   <button
-                    className="button-circle order-button"
+                    className="button button-with-icon-span order-button"
                     onClick={this.onEditClick}
                     disabled={order.isCompleted}
                   >
@@ -1005,7 +1004,7 @@ export default class OrderList extends React.Component {
                     <span>수정</span>
                   </button>
                   <button
-                    className="button-circle order-button"
+                    className="button button-with-icon-span order-button"
                     onClick={this.onDeleteClick}
                     disabled={order.isCompleted}
                   >
@@ -1027,43 +1026,43 @@ export default class OrderList extends React.Component {
     return (
       <div className="list-container">
         {this.state.ordersCount &&
-        (this.state.isAdmin || this.state.isManager) ? (
-          <div className="order-list-header">
-            <Checkbox
-              name="selectAll"
-              label="전체선택"
-              onInputChange={this.onInputChange}
-            />
-            <div className="order-buttons-container">
-              <button
-                className="button-circle order-button"
-                onClick={this.onPrintOrderMultiClick}
-                disabled={!this.state.isSelectedMulti}
-              >
-                <i className="fa fa-print fa-lg" />
-                <span>출력</span>
-              </button>
-              <button
-                className="button-circle order-button"
-                onClick={this.onCompleteOrderMultiClick}
-                disabled={!this.state.isSelectedMulti}
-              >
-                <i className="fa fa-check fa-lg" />
-                <span>완료</span>
-              </button>
-              <button
-                className="button-circle order-button"
-                onClick={this.onDeleteMultiClick}
-                disabled={!this.state.isSelectedMulti}
-              >
-                <i className="fa fa-trash fa-lg" />
-                <span>삭제</span>
-              </button>
+          (this.state.isAdmin || this.state.isManager) ? (
+            <div className="order-list-header">
+              <Checkbox
+                name="selectAll"
+                label="전체선택"
+                onInputChange={this.onInputChange}
+              />
+              <div className="order-buttons-container">
+                <button
+                  className="button button-with-icon-span order-button"
+                  onClick={this.onPrintOrderMultiClick}
+                  disabled={!this.state.isSelectedMulti}
+                >
+                  <i className="fa fa-print fa-lg" />
+                  <span>출력</span>
+                </button>
+                <button
+                  className="button button-with-icon-span order-button"
+                  onClick={this.onCompleteOrderMultiClick}
+                  disabled={!this.state.isSelectedMulti}
+                >
+                  <i className="fa fa-check fa-lg" />
+                  <span>완료</span>
+                </button>
+                <button
+                  className="button button-with-icon-span order-button"
+                  onClick={this.onDeleteMultiClick}
+                  disabled={!this.state.isSelectedMulti}
+                >
+                  <i className="fa fa-trash fa-lg" />
+                  <span>삭제</span>
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          undefined
-        )}
+          ) : (
+            undefined
+          )}
 
         <ul id="order-list">
           {this.getOrderList(this.state.queryObj)}
@@ -1085,7 +1084,7 @@ export default class OrderList extends React.Component {
           <ProductDetailView
             isOpen={this.state.isProductDetailViewOpen}
             productID={this.state.selectedProductID}
-            onDetailViewClose={this.onProductDetailViewClose}
+            onModalClose={this.onProductDetailViewClose}
           />
         ) : (
           undefined

@@ -4,8 +4,10 @@
   width: 100%;
 
   @media (min-width: $break--md) {
+    align-items: flex-start;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: flex-start;
   }
 }
 
@@ -19,6 +21,7 @@
 
 .form-element__label {
   color: $color-primary--500;
+  font-size: $font-size--md;
   width: 6rem;
 }
 
@@ -41,6 +44,7 @@
   border: 1px solid $color-primary--100;
   border-radius: $border-radius;
   color: $color-primary--500;
+  font-size: $font-size--md;
   outline: none;
   padding: $space-xs;
 

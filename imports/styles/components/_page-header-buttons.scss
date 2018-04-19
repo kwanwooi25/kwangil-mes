@@ -1,0 +1,13 @@
+.page-header__buttons {
+  display: flex;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.page-header__button {
+  height: 2.3rem;
+  width: 2.8rem;
+  margin-left: $space-xs;
+  padding: $space-xs $space-sm;
+}

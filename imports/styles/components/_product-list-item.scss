@@ -1,0 +1,132 @@
+.product {
+  align-items: center;
+  border-bottom: 1px solid $color-primary--100;
+  display: flex;
+
+  &:hover {
+    background: $color-primary--50;
+  }
+
+  &:last-child {
+    border-bottom: 1.8px solid $color-primary--100;
+  }
+}
+
+.product-container {
+  align-items: center;
+  display: flex;
+  color: $grey--900;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  padding: $space-sm 0;
+}
+
+.product-name-container,
+.product-details-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.product-size-container,
+.product-isPrint-container {
+  align-items: center;
+  display: flex;
+  width: 100%;
+}
+
+.product-size-container,
+.product-isPrint-container {
+  color: $grey--600;
+
+  i {
+    font-size: $font-size--xs;
+  }
+}
+
+.product-accountName,
+.product-name,
+.product-size__thick,
+.product-size__length,
+.product-size__width,
+.product-isPrint {
+  font-size: $font-size--sm;
+  margin: 0;
+  padding: $space-xs;
+}
+
+.product-name {
+  font-size: $font-size--md;
+  font-weight: $font-weight--bold;
+}
+
+.product-accountName:hover,
+.product-name:hover {
+  color: $color-primary--500;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.product-buttons-container {
+  align-items: flex-end;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.product-button {
+  height: 2.3rem;
+  width: 2.8rem;
+  margin: $space-xs;
+  padding: $space-xs $space-sm;
+}
+
+@media (min-width: $break--md) {
+  .product-container {
+    flex-direction: row;
+  }
+
+  .product-name-container {
+    width: 65%;
+  }
+
+  .product-details-container {
+    width: 35%;
+  }
+
+  .product-button {
+    height: 2rem;
+    width: 2.5rem;
+
+    span {
+      font-size: $font-size--xs;
+    }
+  }
+}
+
+@media (min-width: $break--lg) {
+  .product-name-container {
+    flex-direction: row;
+    width: 55%;
+  }
+
+  .product-details-container {
+    flex-direction: row;
+    width: 45%;
+  }
+
+  .product-accountName {
+    width: 40%;
+  }
+
+  .product-name {
+    width: 60%;
+  }
+
+  .product-size__thick,
+  .product-size__length,
+  .product-size__width {
+    font-size: $font-size--md;
+  }
+}

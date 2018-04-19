@@ -4,13 +4,14 @@ import Modal from "react-modal";
 
 import { AccountsData } from "../../api/accounts";
 import { ProductsData } from "../../api/products";
+import { comma, uncomma } from '../../api/comma';
 
 export default class ProductDetailView extends React.Component {
   /*=========================================================================
   >> props <<
-  isOpen            : if modal is open
+  isOpen
   productID
-  onDetailViewClose : function to execute on modal close
+  onModalClose
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -20,12 +21,7 @@ export default class ProductDetailView extends React.Component {
 
   onClickOK(e) {
     e.preventDefault();
-    this.props.onDetailViewClose();
-  }
-
-  comma(str) {
-    str = String(str);
-    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
+    this.props.onModalClose();
   }
 
   getProductDetails() {
@@ -104,7 +100,7 @@ export default class ProductDetailView extends React.Component {
 
     packDetailText = `${product.packMaterial} 포장`;
     if (product.packQuantity) {
-      packDetailText += ` (${this.comma(product.packQuantity)}매씩)`;
+      packDetailText += ` (${comma(product.packQuantity)}매씩)`;
     }
     if (product.packDeliverAll) {
       packDetailText += " / 전량납품";
@@ -175,7 +171,7 @@ export default class ProductDetailView extends React.Component {
     return (
       <Modal
         isOpen={this.props.isOpen}
-        onRequestClose={this.props.onDetailViewClose}
+        onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
         className="boxed-view__box product-detail-modal"
         overlayClassName="react-modal__bg"

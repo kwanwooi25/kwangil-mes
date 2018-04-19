@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
 
-import AccountModal from './AccountModal';
-import AccountNewMultiModal from './AccountNewMultiModal';
+import ProductModal from './ProductModal';
+import ProductNewMultiModal from './ProductNewMultiModal';
 
-export default class AccountPageHeaderButtons extends React.Component {
+export default class ProductPageHeaderButtons extends React.Component {
   /*=========================================================================
   >> props <<
   isAdmin
@@ -21,10 +21,11 @@ export default class AccountPageHeaderButtons extends React.Component {
       isModalNewMultiOpen: false
     };
 
-    this.onClickExportExcel = this.onClickExportExcel.bind(this);
-    this.onClickNewMulti = this.onClickNewMulti.bind(this);
+    this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
+    this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
+    this.onClickExportExcel = this.onClickExportExcel.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -32,6 +33,15 @@ export default class AccountPageHeaderButtons extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager
     });
+  }
+
+  onSearchExpandClick() {
+    const productSearch = document.getElementById('product-search');
+    const productSearchExpand = document.getElementById(
+      'product-search-expand'
+    );
+    productSearch.classList.toggle('hidden');
+    productSearchExpand.classList.toggle('hidden');
   }
 
   onClickNew() {
@@ -47,41 +57,72 @@ export default class AccountPageHeaderButtons extends React.Component {
   }
 
   onClickExportExcel() {
-    const list = document.getElementById('account-list');
-    const filename = '광일거래처.csv';
+    const list = document.getElementById('product-list');
+    const filename = '광일지퍼백.csv';
     const slice = Array.prototype.slice;
 
     // get account list
     const lis = list.querySelectorAll('li');
-    const accounts = [];
+    const products = [];
     const keys = [
+      'accountID',
+      'accountName',
       '_id',
       'name',
-      'phone_1',
-      'phone_2',
-      'fax',
-      'email_1',
-      'email_2',
-      'address',
-      'memo'
+      'thick',
+      'length',
+      'width',
+      'isPrint',
+      'extColor',
+      'extAntistatic',
+      'extPretreat',
+      'extMemo',
+      'printImageURL',
+      'printFrontColorCount',
+      'printFrontColor',
+      'printFrontPosition',
+      'printBackColorCount',
+      'printBackColor',
+      'printBackPosition',
+      'printMemo',
+      'cutPosition',
+      'utUltrasonic',
+      'cutPowderPack',
+      'cutPunches',
+      'cutPunchCount',
+      'cutPunchSize',
+      'cutPunchPosition',
+      'cutMemo',
+      'packMaterial',
+      'packQuantity',
+      'packDeliverAll',
+      'packMemo',
+      'stockQuantity'
     ];
 
     for (let i = 0; i < lis.length; i++) {
-      accounts.push(AccountsData.findOne({ _id: lis[i].id }));
+      products.push(ProductsData.findOne({ _id: lis[i].id }));
     }
 
     // generate header csv
-    const headerCSV =
-      '거래처ID,거래처명,전화번호,전화번호,팩스,이메일,이메일,주소,메모';
+    let headerCSV =
+      '업체ID,업체명,제품ID,제품명,두께,길이,너비,무지_인쇄,원단색상,대전방지,처리,압출메모,도안URL,전면도수,전면색상,전면위치,후면도수,후면색상,후면위치,인쇄메모,가공위치,초음파가공,가루포장,바람구멍,바람구멍개수,바람구멍크기,바람구멍위치,가공메모,포장방법,포장수량,전량납품,포장메모,재고수량';
+
+    // for managers
+    if (this.state.isAdmin || this.state.isManager) {
+      keys.push(['price', 'history', 'memo']);
+      headerCSV += ',가격,작업이력,메모';
+    }
+
     // generate body csv from account list
-    const bodyCSV = accounts
-      .map(account => {
+    const bodyCSV = products
+      .map(product => {
         return keys
           .map(key => {
-            if (account[key] === undefined) {
+            if (product[key] === undefined) {
               return '""';
             } else {
-              return '"t"'.replace('t', account[key]);
+              return '"t"'.replace('t', product[key]);
             }
           })
           .join(',');
@@ -118,6 +159,14 @@ export default class AccountPageHeaderButtons extends React.Component {
     return (
       <div className="page-header__buttons">
         <button
+          id="product-search-toggle"
+          className="button button-with-icon-span page-header__button"
+          onClick={this.onSearchExpandClick}
+        >
+          <i className="fa fa-search-plus" />
+          <span>확장검색</span>
+        </button>
+        <button
           className="button button-with-icon-span page-header__button"
           onClick={this.onClickExportExcel}
         >
@@ -148,16 +197,18 @@ export default class AccountPageHeaderButtons extends React.Component {
         )}
 
         {this.state.isModalNewOpen ? (
-          <AccountModal
+          <ProductModal
             isOpen={this.state.isModalNewOpen}
             onModalClose={this.onModalClose}
+            isAdmin={this.state.isAdmin}
+            isManager={this.state.isManager}
           />
         ) : (
           undefined
         )}
 
         {this.state.isModalNewMultiOpen ? (
-          <AccountNewMultiModal
+          <ProductNewMultiModal
             isOpen={this.state.isModalNewMultiOpen}
             onModalClose={this.onModalClose}
           />
