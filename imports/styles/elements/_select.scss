@@ -3,10 +3,10 @@
   border: 1px solid $color-primary--100;
   border-radius: $border-radius;
   color: $color-primary--500;
+  font-size: $font-size--md;
   height: 2.4rem;
   margin-bottom: $space-sm;
   outline: none;
-  padding: $space-xs;
 
   &:focus {
     border-color: $color-primary--500;

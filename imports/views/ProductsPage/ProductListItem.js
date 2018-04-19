@@ -41,35 +41,26 @@ export default class ProductListItem extends React.Component {
 
   onAccountNameClick(e) {
     selectedAccountID = e.target.name;
-
     this.props.showAccountDetailView(selectedAccountID);
   }
 
-  // show detail view modal
   onProductNameClick(e) {
     const selectedProductID = e.target.parentNode.parentNode.parentNode.id;
-
     this.props.showProductDetailView(selectedProductID);
   }
 
-  // show product order modal
   onProductOrderClick(e) {
     const selectedProductID = this.getProductID(e.target);
-
     this.props.showProductOrderModal(selectedProductID);
   }
 
-  // show account modal (EDIT mode)
   onEditClick(e) {
     const selectedProductID = this.getProductID(e.target);
-
     this.props.showProductModal(selectedProductID);
   }
 
-  // show confirmation modal before delete
   onDeleteClick(e) {
     const selectedProductID = this.getProductID(e.target);
-
     this.props.showDeleteConfirmationModal([selectedProductID]);
   }
 

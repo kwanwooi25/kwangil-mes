@@ -40,10 +40,10 @@
 }
 
 .order-range-button {
+  font-size: $font-size--md;
   width: 22%;
 
   @media (min-width: $break--sm) {
-    font-size: $font-size--xs;
     width: 12.5%;
   }
 
@@ -87,5 +87,6 @@
 }
 
 .order-search-reset-button {
+  font-size: $font-size--md;
   width: 100%;
 }

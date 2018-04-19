@@ -169,15 +169,9 @@ export default class ProductList extends React.Component {
 
   // show confirmation modal before delete
   showDeleteConfirmationModal(selectedProducts) {
-    let confirmationDescription = [];
-
-    if (selectedProducts.length === 1) {
-      confirmationDescription = ['품목을 삭제하시겠습니까?'];
-    } else {
-      confirmationDescription = [
-        `${selectedProducts.length}개 품목 삭제하시겠습니까?`
-      ];
-    }
+    let confirmationDescription = [`
+      ${selectedProducts.length}개 품목 삭제하시겠습니까?
+      `];
 
     selectedProducts.map(productID => {
       const product = ProductsData.findOne({ _id: productID });

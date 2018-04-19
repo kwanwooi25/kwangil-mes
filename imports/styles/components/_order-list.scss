@@ -21,6 +21,9 @@
 
   &.completed {
     background: $grey--200;
+    color: $grey--500;
+
+    .order-deliver-remark-container .order-list__text,
     * {
       color: $grey--500;
     }
@@ -77,6 +80,10 @@
   flex-direction: column;
   justify-content: space-between;
   width: 50%;
+}
+
+.order-id-container {
+  width: 40%;
 }
 
 .order-dates-container {
@@ -191,6 +198,9 @@
   }
 
   .order-deliver-remark-container {
+    justify-content: flex-start;
+    padding-left: 2.5rem;
+
     .order-list__text {
       font-size: $font-size--md;
     }
@@ -210,7 +220,7 @@
   }
 
   .order-product-details-container {
-    width: 62%;
+    width: 57%;
   }
 
   .order-names-container {
@@ -259,19 +269,18 @@
 
 @media (min-width: $break--lg) {
   .order-id-container {
-    width: 9%;
+    width: 10%;
   }
 
   .order-dates-container {
-    width: 10.5%;
+    width: 11%;
   }
 
   .order-product-details-container {
-    width: 52%;
+    width: 47%;
   }
 
   .order-buttons-container {
-    flex-wrap: wrap;
     width: auto;
   }
 

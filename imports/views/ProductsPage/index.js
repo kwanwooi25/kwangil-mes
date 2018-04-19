@@ -1,7 +1,7 @@
 import React from 'react';
 
-import PageHeaderSearch from '../components/PageHeaderSearch';
 import ProductPageHeaderButtons from './ProductPageHeaderButtons';
+import PageHeaderSearch from '../components/PageHeaderSearch';
 import ProductSearchExpand from './ProductSearchExpand';
 import ProductList from './ProductList';
 
