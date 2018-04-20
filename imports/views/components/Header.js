@@ -13,10 +13,12 @@ export default class Header extends React.Component {
   onNavToggle(e) {
     if (e.target.checked) {
       document.querySelector('.nav').classList.add('open');
+      document.querySelector('.main').classList.add('nav-open');
       document.querySelector('.toggle i').classList.remove('fa-bars');
       document.querySelector('.toggle i').classList.add('fa-times');
     } else {
       document.querySelector('.nav').classList.remove('open');
+      document.querySelector('.main').classList.remove('nav-open');
       document.querySelector('.toggle i').classList.remove('fa-times');
       document.querySelector('.toggle i').classList.add('fa-bars');
     }
@@ -25,6 +27,7 @@ export default class Header extends React.Component {
   closeNav() {
     document.getElementById('nav-toggle').checked = false;
     document.querySelector('.nav').classList.remove('open');
+    document.querySelector('.main').classList.remove('nav-open');
     document.querySelector('.toggle i').classList.remove('fa-times');
     document.querySelector('.toggle i').classList.add('fa-bars');
   }
@@ -85,6 +88,14 @@ export default class Header extends React.Component {
             onClick={this.closeNav}
           >
             품목관리
+          </NavLink>
+          <NavLink
+            className="nav--item"
+            activeClassName="nav--item--active"
+            to="/plates"
+            onClick={this.closeNav}
+          >
+            동판관리
           </NavLink>
           <NavLink
             className="nav--item"

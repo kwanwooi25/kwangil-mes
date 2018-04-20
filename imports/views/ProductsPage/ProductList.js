@@ -36,8 +36,7 @@ export default class ProductList extends React.Component {
       confirmationDescription: [],
       productsCount: 0,
       isSelectedMulti: false,
-      selectedProducts: [],
-      deleteMode: ''
+      selectedProducts: []
     };
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);

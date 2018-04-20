@@ -16,14 +16,14 @@ import Accordion from '../../custom/Accordion';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class ProductModal extends React.Component {
-  /*=========================================================================
+  /*========================================================================
   >> props <<
   isOpen       : if modal is open
-  productID   : product ID to display
+  productID    : product ID to display
   onModalClose : function to execute on modal close
   isAdmin
   isManager
-  ==========================================================================*/
+  ========================================================================*/
   constructor(props) {
     super(props);
 

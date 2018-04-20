@@ -14,11 +14,12 @@ import Header from '../views/components/Header';
 // import DashboardPage from '../views/DashboardPage';
 import AccountsPage from '../views/AccountsPage';
 import ProductsPage from '../views/ProductsPage';
+import PlatesPage from '../views/PlatesPage';
 import OrdersPage from '../views/OrdersPage';
 import NotFoundPage from '../views/NotFoundPage';
 
 const unauthenticatedPages = ['/', '/register'];
-const authenticatedPages = ['/dashboard', '/accounts', '/products', '/orders'];
+const authenticatedPages = ['/dashboard', '/accounts', '/products', '/plates', '/orders'];
 
 const DashboardPage = () => <h3>DashboardPage</h3>;
 
@@ -36,6 +37,7 @@ export const routes = (
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/accounts" component={AccountsPage} />
         <Route path="/products" component={ProductsPage} />
+        <Route path="/plates" component={PlatesPage} />
         <Route path="/orders" component={OrdersPage} />
         <Route path="*" component={NotFoundPage} />
       </Switch>

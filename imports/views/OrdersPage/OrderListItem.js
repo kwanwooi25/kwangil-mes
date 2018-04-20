@@ -1,7 +1,9 @@
 import React from 'react';
+import moment from 'moment';
 
 import { comma, uncomma } from '../../api/comma';
 import { printOrders } from '../../api/printOrders';
+import { countWeekdays } from '../../api/countWeekdays';
 
 import Checkbox from '../../custom/Checkbox';
 
@@ -101,13 +103,29 @@ export default class OrderListItem extends React.Component {
     const account = this.props.account;
     const product = this.props.product;
     const order = this.props.order;
+    const deliverBefore = moment(order.data.deliverBefore);
+    const daysCount = countWeekdays(moment(), deliverBefore);
 
-    let listClassName = 'order';
+    let listClassName = '';
+    let productSizeText = '';
+    let isPrintText = '';
+    let orderQuantityText = '';
+    let completedQuantityText = '';
+
+    listClassName = 'order';
     if (order.data.isCompleted) {
       listClassName += ' completed';
+    } else if (daysCount <= 1) {
+      listClassName += ' d-1';
+    } else if (daysCount <= 3) {
+      listClassName += ' d-3';
     }
 
-    let isPrintText = '무지';
+    productSizeText = `
+      ${product.thick} x ${product.length} x ${product.width}
+    `;
+
+    isPrintText = '무지';
     if (product.isPrint) {
       isPrintText = '인쇄';
       switch (order.data.plateStatus) {
@@ -123,13 +141,22 @@ export default class OrderListItem extends React.Component {
       }
     }
 
-    const weight =
-      Number(product.thick) *
-      (Number(product.length) + 5) *
-      Number(product.width) /
-      100 *
-      0.0184 *
-      Number(order.data.orderQuantity);
+    orderQuantityText = `${comma(order.data.orderQuantity)}매`;
+    completedQuantityText = `
+      ${comma(
+        order.data.completedQuantity ?
+        order.data.completedQuantity :
+        0)
+      }매
+      `;
+
+    // const weight =
+    //   Number(product.thick) *
+    //   (Number(product.length) + 5) *
+    //   Number(product.width) /
+    //   100 *
+    //   0.0184 *
+    //   Number(order.data.orderQuantity);
 
     return (
       <li className={listClassName} key={order._id} id={order._id}>
@@ -193,22 +220,12 @@ export default class OrderListItem extends React.Component {
               </a>
             </div>
             <div className="order-product-size-container">
-              <span className="order-list__text">{product.thick}</span>
-              <i className="fa fa-times" />
-              <span className="order-list__text">{product.length}</span>
-              <i className="fa fa-times" />
-              <span className="order-list__text">{product.width}</span>
-            </div>
-            <div className="order-product-isPrint-container">
+              <p className="order-list__text">{productSizeText}</p>
               <p className="order-list__text">{isPrintText}</p>
             </div>
             <div className="order-orderQuantity-container">
-              <p className="order-list__text">
-                {comma(order.data.orderQuantity) +
-                  '매 (' +
-                  comma(weight.toFixed(0)) +
-                  'kg)'}
-              </p>
+              <p className="order-list__text">{orderQuantityText} 중</p>
+              <p className="order-list__text">{completedQuantityText} 완료</p>
             </div>
           </div>
 

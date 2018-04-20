@@ -60,13 +60,23 @@ export default class CompleteOrderModal extends React.Component {
         [e.target.name]: comma(uncomma(e.target.value))
       });
       this.validate(e.target.name, e.target.value);
+
+      // set isCompleted: true
+      // if completed quantity is larger than order quantity
+      const order = OrdersData.findOne({ _id: this.props.orderID });
+      const orderQuantity = Number(order.data.orderQuantity);
+
+      if (Number(uncomma(e.target.value)) >= orderQuantity) {
+        this.setState({ isCompleted: true });
+      } else {
+        this.setState({ isCompleted: false });
+      }
     }
   }
 
   onClickOK(e) {
     e.preventDefault();
     if (this.validate('completedQuantity', this.state.completedQuantity)) {
-      console.log('onClickOK')
       const order = OrdersData.findOne({ _id: this.props.orderID });
       const product = ProductsData.findOne({ _id: order.data.productID });
       const completedQuantity = uncomma(this.state.completedQuantity);
@@ -93,7 +103,9 @@ export default class CompleteOrderModal extends React.Component {
       order.data.completedAt = this.state.completedAt.format('YYYY-MM-DD');
       order.data.completedQuantity = uncomma(this.state.completedQuantity);
       order.data.isCompleted = this.state.isCompleted;
-      order.data.status = 'completed';
+      if (this.state.isCompleted) {
+        order.data.status = 'completed';
+      }
 
       Meteor.call('orders.update', order._id, order.data, (err, res) => {
         if (!err) {

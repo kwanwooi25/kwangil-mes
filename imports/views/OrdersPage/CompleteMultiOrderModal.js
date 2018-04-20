@@ -90,6 +90,23 @@ export default class CompleteMultiOrderModal extends React.Component {
       completedQuantityArray[index] = comma(uncomma(e.target.value));
       this.setState({ completedQuantityArray });
       this.validate(e.target.name, e.target.value);
+
+      // set isCompleted: true
+      // if completed quantity is larger than order quantity
+      const order = OrdersData.findOne({
+        _id: this.props.selectedOrders[index]
+      });
+      const orderQuantity = Number(order.data.orderQuantity);
+
+      if (Number(uncomma(e.target.value)) >= orderQuantity) {
+        let isCompletedArray = this.state.isCompletedArray;
+        isCompletedArray[index] = true;
+        this.setState({ isCompletedArray });
+      } else {
+        let isCompletedArray = this.state.isCompletedArray;
+        isCompletedArray[index] = false;
+        this.setState({ isCompletedArray });
+      }
     }
   }
 
@@ -132,14 +149,19 @@ export default class CompleteMultiOrderModal extends React.Component {
     });
     if (answer) {
       const lis = document.querySelectorAll(
-        'li.complete-order-multi-modal__list-item'
+        'li.complete-multi-order-modal__list-item'
       );
       for (let i = 0; i < lis.length; i++) {
         const order = OrdersData.findOne({ _id: lis[i].id });
+        order.data.completedAt = this.state.completedAtArray[i];
         order.data.completedQuantity = uncomma(
           this.state.completedQuantityArray[i]
         );
         order.data.isCompleted = this.state.isCompletedArray[i];
+        if (this.state.isCompletedArray[i]) {
+          order.data.status = 'completed';
+        }
+
         Meteor.call('orders.update', order._id, order.data, (err, res) => {
           if (!err) {
             this.props.onModalClose();
@@ -162,28 +184,32 @@ export default class CompleteMultiOrderModal extends React.Component {
 
       return (
         <li
-          className="complete-order-multi-modal__list-item"
+          className="complete-multi-order-modal__list-item"
           id={orderID}
           key={orderID}
         >
-          <div className="complete-order-multi-modal__order-details-container">
-            <p className="complete-order-multi-modal__accountName">
-              {product.accountName}
-            </p>
-            <p className="complete-order-multi-modal__productName">
-              {product.name}
-            </p>
-            <p className="complete-order-multi-modal__productSize">
-              {productSizeText}
-            </p>
-            <p className="complete-order-multi-modal__orderQuantity">
-              주문수량: {comma(order.data.orderQuantity)}매
-            </p>
+          <div className="complete-multi-order-modal__order-details-container">
+            <div className="complete-multi-order-modal__names-container">
+              <p className="complete-multi-order-modal__accountName">
+                {product.accountName}
+              </p>
+              <p className="complete-multi-order-modal__productName">
+                {product.name}
+              </p>
+            </div>
+            <div className="complete-multi-order-modal__size-container">
+              <p className="complete-multi-order-modal__productSize">
+                {productSizeText}
+              </p>
+              <p className="complete-multi-order-modal__orderQuantity">
+                주문수량: {comma(order.data.orderQuantity)}매
+              </p>
+            </div>
           </div>
-          <div className="complete-order-multi-modal__inputs-container">
-            <div className="complete-order-multi-modal__input-container">
+          <div className="complete-multi-order-modal__inputs-container">
+            <div className="complete-multi-order-modal__input-container">
               <label
-                className="complete-order-multi-modal__label"
+                className="complete-multi-order-modal__label"
                 htmlFor={`completedAtArray[${index}]`}
               >
                 완료일
@@ -203,15 +229,15 @@ export default class CompleteMultiOrderModal extends React.Component {
                 anchorDirection="right"
               />
             </div>
-            <div className="complete-order-multi-modal__input-container">
+            <div className="complete-multi-order-modal__input-container">
               <label
-                className="complete-order-multi-modal__label"
+                className="complete-multi-order-modal__label"
                 htmlFor={`completedQuantityArray[${index}]`}
               >
                 완성수량
               </label>
               <TextInput
-                className="form-element complete-order-multi-modal__input"
+                className="form-element complete-multi-order-modal__input"
                 inputType="text"
                 id={`completedQuantityArray[${index}]`}
                 value={this.state.completedQuantityArray[index]}
@@ -223,8 +249,8 @@ export default class CompleteMultiOrderModal extends React.Component {
                 }
               />
             </div>
-            <div className="complete-order-multi-modal__input-container">
-              <label className="complete-order-multi-modal__label" />
+            <div className="complete-multi-order-modal__input-container">
+              <label className="complete-multi-order-modal__label" />
               <Checkbox
                 name={`isCompletedArray[${index}]`}
                 label="작업완료"
@@ -249,7 +275,7 @@ export default class CompleteMultiOrderModal extends React.Component {
           this.props.onModalClose();
         }}
         ariaHideApp={false}
-        className="boxed-view__box complete-order-multi-modal"
+        className="boxed-view__box complete-multi-order-modal"
         overlayClassName="react-modal__bg"
       >
         <div className="boxed-view__header">

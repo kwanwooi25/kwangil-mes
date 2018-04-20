@@ -4,7 +4,9 @@ import Modal from "react-modal";
 
 import { AccountsData } from "../../api/accounts";
 import { ProductsData } from "../../api/products";
-import { comma, uncomma } from '../../api/comma';
+import { comma, uncomma } from "../../api/comma";
+
+import noImage from "../../assets/no-image.png";
 
 export default class ProductDetailView extends React.Component {
   /*=========================================================================
@@ -12,7 +14,7 @@ export default class ProductDetailView extends React.Component {
   isOpen
   productID
   onModalClose
-  ==========================================================================*/
+  ========================================================================*/
   constructor(props) {
     super(props);
 
@@ -68,7 +70,7 @@ export default class ProductDetailView extends React.Component {
                   ${product.printBackColor}
           `;
         if (product.printBackPosition) {
-          printBackText +=` / ${product.printBackPosition}`;
+          printBackText += ` / ${product.printBackPosition}`;
         }
       } else {
         printSummaryText += ")";
@@ -132,13 +134,24 @@ export default class ProductDetailView extends React.Component {
         {product.isPrint ? (
           <div className="product-detail__subsection">
             <h3 className="product-detail__subtitle">인쇄</h3>
-            <img
-              className="product-detail__print-image"
-              src={product.printImageURL}
-            />
             <p className="product-detail__description">{printFrontText}</p>
             <p className="product-detail__description">{printBackText}</p>
             <p className="product-detail__description">{product.printMemo}</p>
+            <div className="product-detail__print-image">
+              <img
+                src={product.printImageURL}
+                onError={e => (e.target.src = noImage)}
+              />
+              <div className="image-overlay">
+                <a
+                  className="product-detail__image-link"
+                  href={product.printImageURL}
+                  target='_blank'
+                >
+                  <i className="fa fa-expand"></i>
+                </a>
+              </div>
+            </div>
           </div>
         ) : (
           undefined

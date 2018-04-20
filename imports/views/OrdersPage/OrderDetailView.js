@@ -1,11 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import React from 'react';
-import Modal from 'react-modal';
+import { Meteor } from "meteor/meteor";
+import React from "react";
+import Modal from "react-modal";
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
-import { OrdersData } from '../../api/orders';
-import { comma, uncomma } from '../../api/comma';
+import { AccountsData } from "../../api/accounts";
+import { ProductsData } from "../../api/products";
+import { OrdersData } from "../../api/orders";
+import { comma, uncomma } from "../../api/comma";
+
+import noImage from "../../assets/no-image.png";
 
 export default class OrderDetailView extends React.Component {
   /*=========================================================================
@@ -31,17 +33,17 @@ export default class OrderDetailView extends React.Component {
     const account = AccountsData.findOne({ _id: product.accountID });
 
     // variables
-    let orderedAtText = '';
-    let deliverBeforeText = '';
-    let orderInfoText = '';
-    let productExtText = '';
-    let productPrintSummaryText = '';
-    let productPrintFrontText = '';
-    let productPrintBackText = '';
-    let productCutPositionText = '';
-    let productCutRemarkText = '';
-    let productCutPunchesText = '';
-    let productPackDetailText = '';
+    let orderedAtText = "";
+    let deliverBeforeText = "";
+    let orderInfoText = "";
+    let productExtText = "";
+    let productPrintSummaryText = "";
+    let productPrintFrontText = "";
+    let productPrintBackText = "";
+    let productCutPositionText = "";
+    let productCutRemarkText = "";
+    let productCutPunchesText = "";
+    let productPackDetailText = "";
 
     orderedAtText = `발주일: ${order.data.orderedAt}`;
     deliverBeforeText = `납기일: ${order.data.deliverBefore}`;
@@ -60,18 +62,20 @@ export default class OrderDetailView extends React.Component {
       0.0184 *
       Number(uncomma(order.data.orderQuantity));
     orderInfoText = `
-      ${productSize} = ${orderQuantity} (${comma(orderQuantityInWeight.toFixed(0))}kg)
+      ${productSize} = ${orderQuantity} (${comma(
+      orderQuantityInWeight.toFixed(0)
+    )}kg)
       `;
 
     // product extrusion detail
     productExtText = `${product.extColor}원단`;
-    if (product.extPretreat === 'single') {
-      productExtText += ' / 단면처리';
-    } else if (product.extPretreat === 'both') {
-      productExtText += ' / 양면처리';
+    if (product.extPretreat === "single") {
+      productExtText += " / 단면처리";
+    } else if (product.extPretreat === "both") {
+      productExtText += " / 양면처리";
     }
     if (product.extAntistatic) {
-      productExtText += ' / 대전방지';
+      productExtText += " / 대전방지";
     }
 
     // product print detail
@@ -98,7 +102,7 @@ export default class OrderDetailView extends React.Component {
           productPrintBackText += ` / ${product.printBackPosition}`;
         }
       } else {
-        productPrintSummaryText += ')';
+        productPrintSummaryText += ")";
       }
     }
 
@@ -108,12 +112,12 @@ export default class OrderDetailView extends React.Component {
     }
 
     if (product.cutUltrasonic) {
-      productCutRemarkText = '초음파가공';
+      productCutRemarkText = "초음파가공";
       if (product.cutPowderPack) {
-        productCutRemarkText += ' / 가루포장';
+        productCutRemarkText += " / 가루포장";
       }
     } else if (product.cutPowderPack) {
-      productCutRemarkText = '가루포장';
+      productCutRemarkText = "가루포장";
     }
 
     if (product.cutPunches) {
@@ -132,7 +136,7 @@ export default class OrderDetailView extends React.Component {
       productPackDetailText += ` (${comma(product.packQuantity)}매씩)`;
     }
     if (product.packDeliverAll) {
-      productPackDetailText += ' / 전량납품';
+      productPackDetailText += " / 전량납품";
     }
 
     return (
@@ -186,6 +190,7 @@ export default class OrderDetailView extends React.Component {
             <img
               className="order-detail__print-image"
               src={product.printImageURL}
+              onError={e => (e.target.src = noImage)}
             />
           </div>
         ) : (

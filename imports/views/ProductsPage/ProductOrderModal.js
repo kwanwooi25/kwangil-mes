@@ -426,18 +426,6 @@ export default class ProductOrderModal extends React.Component {
                       id="deliverBefore"
                       date={this.state.deliverBefore}
                       onDateChange={deliverBefore => {
-                        if (
-                          initialState.deliverBefore.format('YYYY-MM-DD') !==
-                          deliverBefore.format('YYYY-MM-DD')
-                        ) {
-                          document
-                          .getElementById('deliverBefore')
-                          .parentNode.classList.add('changed');
-                        } else {
-                          document
-                          .getElementById('deliverBefore')
-                          .parentNode.classList.remove('changed');
-                        }
                         this.setState({ deliverBefore });
                       }}
                       errorMessage={

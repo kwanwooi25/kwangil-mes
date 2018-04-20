@@ -3,6 +3,12 @@
   box-shadow: $box-shadow--1;
   margin: $space-xs;
   padding: $space-md;
+
+  &.nav-open {
+    position: absolute;
+    left: 31%;
+    width: 100%;
+  }
 }
 
 .hidden {

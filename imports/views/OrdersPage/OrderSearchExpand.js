@@ -97,6 +97,8 @@ export default class OrderSearchExpand extends React.Component {
       accountName: "",
       productName: "",
       showCompletedOrder: false
+    }, () => {
+      this.props.onOrderSearchChange(this.getQueryObj());
     });
   }
 

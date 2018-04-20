@@ -1,11 +1,13 @@
 * {
   box-sizing: border-box;
-  transition: 0.15s;
+  transition: 0.15s ease-in-out;
 }
 
 html {
   font-size: 90%;
   font-weight: $font-weight--regular;
+  overflow-x: hidden;
+
   @media (min-width: $break--sm) {
     font-size: 100%;
   }
