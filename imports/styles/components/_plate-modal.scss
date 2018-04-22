@@ -1,0 +1,131 @@
+.plate-modal {
+  overflow-x: hidden;
+  width: 90%;
+  max-width: $break--sm;
+
+  .boxed-view__content {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.plate-modal__plateName-container,
+.plate-modal__size-container,
+.plate-modal__location-container,
+.plate-modal__material-container,
+.plate-modal__forProductList-container,
+.plate-modal__memo-container {
+  width: 100%;
+}
+
+.plate-modal__plateName-container,
+.plate-modal__size-container,
+.plate-modal__location-container,
+.plate-modal__material-container {
+  width: 50%;
+}
+
+.plate-modal__plateName-container input,
+.plate-modal__location-container input,
+.plate-modal__size-input input {
+  width: 100%;
+}
+
+.plate-modal__label {
+  min-width: 3rem;
+  width: 3rem;
+}
+
+.plate-modal__size-input {
+  width: 35%;
+}
+
+.plate-modal__material-select {
+  margin: 0;
+  height: 1.8rem;
+  width: 100%;
+}
+
+.plate-modal__forProductList-container {
+  display: flex;
+}
+
+.plate-modal__forProductList {
+  border: 1px solid $color-primary--100;
+  border-radius: $border-radius;
+  color: $color-primary--500;
+  overflow: auto;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.plate-modal__forProductList__item {
+  border-bottom: 0.5px solid $color-primary--100;
+  display: flex;
+  justify-content: space-between;
+  padding: $space-xs;
+
+  &:hover {
+    background: $color-primary--50;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.plate-modal__forProductList__item__productInfo {
+  display: flex;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  span {
+    padding: $space-xs;
+  }
+
+  span:first-child,
+  span:last-child {
+    font-weight: $font-weight--thin;
+    width: 100%;
+  }
+}
+
+.plate-modal__forProductList__item__removeButton {
+  background: none;
+  border: none;
+  color: $color-primary--500;
+  font-size: $font-size--xl;
+  margin-left: $space-xs;
+
+  &:hover {
+    color: $color-primary--200;
+    cursor: pointer;
+  }
+}
+
+.product-modal__addProductButton {
+  margin-left: 3.25rem;
+  width: 100%;
+}
+
+.plate-modal__error {
+  color: $color-error--500;
+  font-weight: $font-weight--bold;
+  margin: 0;
+  text-align: center;
+  width: 100%;
+}
+
+@media (min-width: $break--sm) {
+  .plate-modal__forProductList__item__productInfo {
+    span:nth-child(2) {
+      min-width: 45%;
+    }
+
+    span:last-child {
+      width: auto;
+    }
+  }
+}

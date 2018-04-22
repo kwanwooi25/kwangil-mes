@@ -2,6 +2,7 @@ import React from 'react';
 
 import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
+import { PlatesData } from '../../api/plates';
 
 import Checkbox from '../../custom/Checkbox';
 import PlateListItem from './PlateListItem';
@@ -70,7 +71,7 @@ export default class ProductList extends React.Component {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
       Meteor.subscribe('plates');
-      const plateList = ProductsData.find({}, { sort: { name: 1 } }).fetch();
+      const plateList = PlatesData.find({}, { sort: { name: 1 } }).fetch();
 
       this.setState({
         platesData: plateList,

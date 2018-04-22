@@ -69,6 +69,7 @@ export default class ProductListItem extends React.Component {
 
   render() {
     const plate = this.props.plate;
+    console.log(plate);
 
     return (
       <li className="plate" key={plate._id} id={plate._id}>
@@ -81,7 +82,12 @@ export default class ProductListItem extends React.Component {
         <div className="plate-container">
           <div className="plate-name-container">
             <a className="plate-plateName">
-              동판명
+              {plate.name}
+            </a>
+          </div>
+          <div className="plate-size-container">
+            <a className="plate-plateSize">
+              {plate.round} x {plate.length}
             </a>
           </div>
         </div>

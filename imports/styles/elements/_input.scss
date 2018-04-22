@@ -11,4 +11,10 @@
     border-color: $color-primary--500;
     box-shadow: $box-shadow--1;
   }
+
+  &.error {
+    background: $color-error--50;
+    border: 1px solid $color-error--500;
+    color: $color-error--500;
+  }
 }

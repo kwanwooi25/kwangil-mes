@@ -22,7 +22,7 @@ export default class ProductPageHeaderButtons extends React.Component {
     // this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
     // this.onClickNewMulti = this.onClickNewMulti.bind(this);
-    // this.onModalClose = this.onModalClose.bind(this);
+    this.onModalClose = this.onModalClose.bind(this);
     // this.onClickExportExcel = this.onClickExportExcel.bind(this);
   }
 
