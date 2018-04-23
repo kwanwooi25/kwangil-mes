@@ -1,5 +1,9 @@
 import React from 'react';
 
+import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
+import { PlatesData } from '../../api/plates';
+
 import PageHeaderSearch from '../components/PageHeaderSearch';
 import PlatePageHeaderButtons from './PlatePageHeaderButtons';
 import PlateSearchExpand from './PlateSearchExpand';
@@ -12,9 +16,11 @@ export default class PlatesPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
+      accountsData: [],
+      productsData: [],
+      platesData: [],
       queryObj: {
         productName: '',
-        name: '',
         plateMaterial: '',
         round: '',
         length: ''
@@ -48,10 +54,27 @@ export default class PlatesPage extends React.Component {
         });
       }
     });
+
+    // tracks data change
+    this.databaseTracker = Tracker.autorun(() => {
+      Meteor.subscribe('accounts');
+      Meteor.subscribe('products');
+      Meteor.subscribe('plates');
+      const accountsData = AccountsData.find({}, { sort: { name: 1 }}).fetch();
+      const productsData = ProductsData.find({}, { sort: { name: 1 }}).fetch();
+      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
+
+      this.setState({
+        accountsData,
+        productsData,
+        platesData
+      });
+    });
   }
 
   componentWillUnmount() {
     this.authTracker.stop();
+    this.databaseTracker.stop();
   }
 
   // dynamically adjust height
@@ -76,12 +99,11 @@ export default class PlatesPage extends React.Component {
   onInputSearchChange(query) {
     const queryObj = {
       productName: query,
-      name: query,
       plateMaterial: '',
       round: '',
       length: ''
     };
-    this.setState({ queryObj }, () => {console.log(this.state.queryObj)});
+    this.setState({ queryObj });
   }
 
   onPlateSearchChange(queryObj) {
@@ -102,6 +124,8 @@ export default class PlatesPage extends React.Component {
             <PlatePageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
+              productsData={this.state.productsData}
+              platesData={this.state.platesData}
             />
           </div>
 
@@ -115,6 +139,9 @@ export default class PlatesPage extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             queryObj={this.state.queryObj}
+            accountsData={this.state.accountsData}
+            productsData={this.state.productsData}
+            platesData={this.state.platesData}
           />
         </div>
       </div>

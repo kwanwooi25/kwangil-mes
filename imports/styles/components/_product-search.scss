@@ -1,5 +1,6 @@
 .product-search__input-container {
   display: flex;
+  flex-grow: 1;
   flex-wrap: wrap;
   justify-content: space-between;
   width: 80%;
@@ -33,6 +34,7 @@
 }
 
 .product-search__input-container .search-by-account-name {
+  flex-grow: 1;
   width: 39%;
 
   @media (min-width: $break--sm) {
@@ -45,6 +47,7 @@
 }
 
 .product-search__input-container .search-by-product-name {
+  flex-grow: 1;
   width: 55%;
 
   @media (min-width: $break--sm) {
@@ -57,6 +60,7 @@
 }
 
 .product-search__input-container .search-by-size {
+  flex-grow: 1;
   width: 30%;
 
   @media (min-width: $break--sm) {
@@ -69,6 +73,7 @@
 }
 
 .product-search__input-container .search-by-color {
+  flex-grow: 1;
   width: 47%;
 
   @media (min-width: $break--sm) {

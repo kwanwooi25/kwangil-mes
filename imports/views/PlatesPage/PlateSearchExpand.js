@@ -9,38 +9,27 @@ export default class PlateSearchExpand extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      searchByProductName: '',
-      searchByPlateName: '',
-      searchByRound: '',
-      searchByLength: '',
-      searchByMaterial: 'both'
-    }
-
     this.onChange = this.onChange.bind(this);
     this.onReset = this.onReset.bind(this);
   }
 
-  onChange() {
+  onChange(e) {
     const queryObj = {
-      productName: this.state.searchByProductName,
-      name: this.state.searchByPlateName,
-      round: this.state.searchByRound,
-      length: this.state.searchByLength,
-      plateMaterial: this.state.searchByMaterial
+      productName: this.refs.searchByProductName.value.trim().toLowerCase(),
+      round: this.refs.searchByRound.value.trim().toLowerCase(),
+      length: this.refs.searchByLength.value.trim().toLowerCase(),
+      plateMaterial: this.refs.searchByMaterial.value.trim().toLowerCase()
     };
 
     this.props.onPlateSearchChange(queryObj);
   }
 
   onReset() {
-    this.setState({
-      productName: '',
-      name: '',
-      round: '',
-      length: '',
-      plateMaterial: 'both'
-    }, () => { this.onChange() });
+    this.refs.searchByProductName.value = '';
+    this.refs.searchByRound.value = '';
+    this.refs.searchByLength.value = '';
+    this.refs.searchByMaterial.value = 'both';
+    this.onChange();
   }
 
   render() {
@@ -53,17 +42,6 @@ export default class PlateSearchExpand extends React.Component {
             placeholder="제품명"
             ref="searchByProductName"
             name="searchByProductName"
-            onChange={this.onChange}
-            onFocus={e => {
-              e.target.select();
-            }}
-          />
-          <input
-            className="input search-by-plate-name"
-            type="text"
-            placeholder="동판명"
-            ref="searchByPlateName"
-            name="searchByPlateName"
             onChange={this.onChange}
             onFocus={e => {
               e.target.select();
@@ -93,8 +71,8 @@ export default class PlateSearchExpand extends React.Component {
           />
           <select
             className="select search-by-material"
+            ref="searchByMaterial"
             name="searchByMaterial"
-            value={this.state.searchByMaterial}
             onChange={this.onChange}
           >
             <option value="both">둘다</option>
@@ -103,14 +81,11 @@ export default class PlateSearchExpand extends React.Component {
           </select>
         </div>
         <div className="plate-search__button-container">
-          <button
-            className="button plate-search-button"
-            onClick={this.onReset}
-          >
+          <button className="button plate-search-button" onClick={this.onReset}>
             초기화
           </button>
         </div>
       </div>
-    )
+    );
   }
 }

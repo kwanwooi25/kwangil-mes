@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { AccountsData } from '../../api/accounts';
+
 import PageHeaderSearch from '../components/PageHeaderSearch';
 import AccountPageHeaderButtons from './AccountPageHeaderButtons';
 import AccountList from './AccountList';
@@ -11,7 +13,8 @@ export default class AccountsPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      query: ''
+      query: '',
+      accountsData: []
     };
 
     this.onInputSearchChange = this.onInputSearchChange.bind(this);
@@ -33,10 +36,19 @@ export default class AccountsPage extends React.Component {
         });
       }
     });
+
+    // tracks data change
+    this.databaseTracker = Tracker.autorun(() => {
+      Meteor.subscribe('accounts');
+      this.setState({
+        accountsData: AccountsData.find({}, { sort: { name: 1 } }).fetch()
+      });
+    });
   }
 
   componentWillUnmount() {
     this.authTracker.stop();
+    this.databaseTracker.stop();
   }
 
   // dynamically adjust height
@@ -83,6 +95,7 @@ export default class AccountsPage extends React.Component {
             query={this.state.query}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
+            accountsData={this.state.accountsData}
           />
         </div>
       </div>

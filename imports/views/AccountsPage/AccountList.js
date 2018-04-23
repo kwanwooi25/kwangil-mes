@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { AccountsData } from '../../api/accounts';
-
 import AccountListItem from './AccountListItem';
 import AccountDetailView from './AccountDetailView';
 import AccountModal from './AccountModal';
@@ -13,15 +11,16 @@ export default class AccountList extends React.Component {
   query : query string to filter account list
   isAdmin
   isManager
+  accountsData
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      data: [],
       query: props.query,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
+      accountsData: props.accountsData,
       isAccountModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -46,22 +45,9 @@ export default class AccountList extends React.Component {
     this.setState({
       query: props.query,
       isAdmin: props.isAdmin,
-      isManager: props.isManager
+      isManager: props.isManager,
+      accountsData: props.accountsData
     });
-  }
-
-  componentDidMount() {
-    // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
-      this.setState({
-        data: AccountsData.find({}, { sort: { name: 1 } }).fetch()
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    this.databaseTracker.stop();
   }
 
   showAccountDetailViewModal(selectedAccountID) {
@@ -87,7 +73,9 @@ export default class AccountList extends React.Component {
   }
 
   showDeleteConfirmationModal(selectedAccountID) {
-    const account = AccountsData.findOne({ _id: selectedAccountID });
+    const account = this.state.accountsData.find(
+      account => account._id == selectedAccountID
+    );
     const selectedAccountName = account.name;
 
     this.setState({
@@ -106,7 +94,7 @@ export default class AccountList extends React.Component {
   }
 
   getAccountList(query) {
-    return this.state.data.map(account => {
+    return this.state.accountsData.map(account => {
       let matchQuery = false;
       for (let key in account) {
         if (key !== '_id' && account[key].indexOf(query) > -1) {

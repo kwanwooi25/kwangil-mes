@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
+
 import ProductPageHeaderButtons from './ProductPageHeaderButtons';
 import PageHeaderSearch from '../components/PageHeaderSearch';
 import ProductSearchExpand from './ProductSearchExpand';
@@ -12,6 +15,8 @@ export default class ProductsPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
+      accountsData: [],
+      productsData: [],
       queryObj: {
         accountName: '',
         name: '',
@@ -50,10 +55,21 @@ export default class ProductsPage extends React.Component {
         });
       }
     });
+
+    // tracks data change
+    this.databaseTracker = Tracker.autorun(() => {
+      Meteor.subscribe('accounts');
+      Meteor.subscribe('products');
+      const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
+      const productsData = ProductsData.find({}, { sort: { name: 1 } }).fetch();
+
+      this.setState({ accountsData, productsData });
+    });
   }
 
   componentWillUnmount() {
     this.authTracker.stop();
+    this.databaseTracker.stop();
   }
 
   // dynamically adjust height
@@ -119,6 +135,8 @@ export default class ProductsPage extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             queryObj={this.state.queryObj}
+            accountsData={this.state.accountsData}
+            productsData={this.state.productsData}
           />
         </div>
       </div>

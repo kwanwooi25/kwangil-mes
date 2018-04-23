@@ -1,8 +1,5 @@
 import React from 'react';
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
-
 import Checkbox from '../../custom/Checkbox';
 import ProductListItem from './ProductListItem';
 import AccountDetailView from '../AccountsPage/AccountDetailView';
@@ -17,13 +14,15 @@ export default class ProductList extends React.Component {
   queryObj : query object to filter product list
   isAdmin
   isManager
+  accountsData
+  productsData
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      accountList: [],
-      productsData: [],
+      accountsData: props.accountsData,
+      productsData: props.productsData,
       queryObj: props.queryObj,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
@@ -34,7 +33,7 @@ export default class ProductList extends React.Component {
       isDeleteConfirmationModalOpen: false,
       selectedProductID: '',
       confirmationDescription: [],
-      productsCount: 0,
+      productsCount: props.productsData.length,
       isSelectedMulti: false,
       selectedProducts: []
     };
@@ -62,31 +61,11 @@ export default class ProductList extends React.Component {
     this.setState({
       queryObj: props.queryObj,
       isAdmin: props.isAdmin,
-      isManager: props.isManager
+      isManager: props.isManager,
+      accountsData: props.accountsData,
+      productsData: props.productsData,
+      productsCount: props.productsData.length,
     });
-  }
-
-  componentDidMount() {
-    // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
-      const accountList = AccountsData.find(
-        {},
-        { fields: { _id: 1, name: 1 } }
-      ).fetch();
-      const productList = ProductsData.find({}, { sort: { name: 1 } }).fetch();
-
-      this.setState({
-        accountList,
-        productsData: productList,
-        productsCount: productList.length
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    this.databaseTracker.stop();
   }
 
   onCheckboxChange(e) {
@@ -168,15 +147,15 @@ export default class ProductList extends React.Component {
 
   // show confirmation modal before delete
   showDeleteConfirmationModal(selectedProducts) {
-    let confirmationDescription = [`
-      ${selectedProducts.length}개 품목 삭제하시겠습니까?
-      `];
+    let confirmationDescription = [
+      `${selectedProducts.length}개 품목 삭제하시겠습니까?`
+    ];
 
     selectedProducts.map(productID => {
-      const product = ProductsData.findOne({ _id: productID });
-      let productInfoText = `
-          ${product.name} (${product.thick}x${product.length}x${product.width})
-        `;
+      const product = this.state.productsData.find(
+        product => product._id === productID
+      );
+      let productInfoText = `${product.name} (${product.thick}x${product.length}x${product.width})`;
       confirmationDescription.push(productInfoText);
     });
 
@@ -203,15 +182,15 @@ export default class ProductList extends React.Component {
 
   getProductList(queryObj) {
     return this.state.productsData.map(product => {
-      const account = this.state.accountList.find(
+      const account = this.state.accountsData.find(
         account => account._id === product.accountID
       );
 
       let matchQuery = false;
 
       if (
-        product.accountName &&
-        product.accountName.indexOf(queryObj.accountName) > -1 &&
+        account.name &&
+        account.name.indexOf(queryObj.accountName) > -1 &&
         product.name &&
         product.name.indexOf(queryObj.name) > -1 &&
         product.thick &&
@@ -264,16 +243,16 @@ export default class ProductList extends React.Component {
     return (
       <ul id="product-list">
         {this.state.productsCount &&
-          (this.state.isAdmin || this.state.isManager) ? (
-            <div className="product-list-header">
-              <Checkbox
-                name="selectAll"
-                label="전체선택"
-                onInputChange={this.onCheckboxChange}
-              />
-              <div className="product-buttons-container">
-                <button
-                  className="button button-with-icon-span product-button"
+        (this.state.isAdmin || this.state.isManager) ? (
+          <div className="product-list-header">
+            <Checkbox
+              name="selectAll"
+              label="전체선택"
+              onInputChange={this.onCheckboxChange}
+            />
+            <div className="product-buttons-container">
+              <button
+                className="button button-with-icon-span product-button"
                 onClick={this.onDeleteMultiClick}
                 disabled={!this.state.isSelectedMulti}
               >

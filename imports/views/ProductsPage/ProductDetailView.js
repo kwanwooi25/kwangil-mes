@@ -28,7 +28,7 @@ export default class ProductDetailView extends React.Component {
 
   getProductDetails() {
     const product = ProductsData.findOne({ _id: this.props.productID });
-    const accountName = AccountsData.findOne({ _id: product.accountID }).name;
+    const account = AccountsData.findOne({ _id: product.accountID });
 
     let extSurmmaryText = "",
       printSummaryText = "",
@@ -115,7 +115,7 @@ export default class ProductDetailView extends React.Component {
     return (
       <div className="product-detail__container">
         <div className="product-detail__subsection">
-          <h3 className="product-detail__accountName">{accountName}</h3>
+          <h3 className="product-detail__accountName">{account.name}</h3>
           <h2 className="product-detail__productName">{product.name}</h2>
           <p className="product-detail__description">
             {product.thick} &times; {product.length} &times; {product.width}

@@ -27,18 +27,7 @@ Meteor.methods({
       PlatesData.insert(data);
     }
   },
-
-  // 'plates.insertmany'(json) {
-  //   console.log(json);
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //   json.map(product => {
-  //     console.log(product);
-  //     PlatesData.insert(product);
-  //   });
-  // },
-  //
+  
   'plates.update'(plateID, data) {
     if (!this.userId) {
       throw new Meteor.Error('User not logged in!');
@@ -46,12 +35,12 @@ Meteor.methods({
 
     PlatesData.update({ _id: plateID }, { $set: data });
   },
-  //
-  // 'plates.remove'(productID) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //
-  //   PlatesData.remove({ _id: productID });
-  // }
+
+  'plates.remove'(plateID) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+
+    PlatesData.remove({ _id: plateID });
+  }
 });

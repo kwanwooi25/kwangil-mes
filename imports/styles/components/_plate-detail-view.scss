@@ -1,0 +1,65 @@
+.plate-detail-modal {
+  overflow-x: hidden;
+  width: 95%;
+  max-width: 480px;
+}
+
+.plate-detail__container {
+  display: flex;
+  flex-direction: column;
+
+  & * {
+    margin: 0;
+  }
+}
+
+.plate-detail__subsection {
+  display: flex;
+  flex-direction: column;
+}
+
+.plate-detail__subtitle {
+  border-bottom: 1px solid $color-primary--100;
+  color: $color-primary--600;
+  font-size: $font-size--lg;
+  margin-top: $space-sm;
+  padding: $space-xs;
+}
+
+.plate-detail__plateSize {
+  font-size: $font-size--xl;
+}
+
+.plate-detail__description {
+  color: $grey--700;
+  font-size: $font-size--md;
+  padding: $space-xs;
+}
+
+.plate-detail__forProductList {
+  margin: 0;
+  padding: 0;
+}
+
+.plate-detail__forProductListItem {
+  border-top: 0.5px dashed $color-primary--100;
+  display: flex;
+  justify-content: space-between;
+  padding: $space-xs;
+
+  span {
+    font-size: $font-size--md;
+  }
+
+  span:first-child {
+    min-width: 50%;
+  }
+
+  &:first-child {
+    border-top: none;
+  }
+
+  &:last-child {
+    border-bottom: 0.5px solid $color-primary--100;
+  }
+}

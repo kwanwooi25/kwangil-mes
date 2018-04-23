@@ -10,7 +10,10 @@ export default class ProductListItem extends React.Component {
   plate
   productsData
   onCheckboxChange
+  showPlateDetailView
+  showProductDetailView
   showPlateModal
+  showDeleteConfirmationModal
   =========================================================================*/
   constructor(props) {
     super(props);
@@ -20,11 +23,10 @@ export default class ProductListItem extends React.Component {
       isManager: props.isManager
     };
 
-    // this.onAccountNameClick = this.onAccountNameClick.bind(this);
-    // this.onProductNameClick = this.onProductNameClick.bind(this);
-    // this.onProductOrderClick = this.onProductOrderClick.bind(this);
+    this.onPlateSizeClick = this.onPlateSizeClick.bind(this);
+    this.onProductNameClick = this.onProductNameClick.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
-    // this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.onDeleteClick = this.onDeleteClick.bind(this);
   }
 
   // set state on props change
@@ -35,31 +37,26 @@ export default class ProductListItem extends React.Component {
     });
   }
 
-  // onAccountNameClick(e) {
-  //   selectedAccountID = e.target.name;
-  //   this.props.showAccountDetailView(selectedAccountID);
-  // }
-  //
-  // onProductNameClick(e) {
-  //   const selectedProductID = e.target.parentNode.parentNode.parentNode.id;
-  //   this.props.showProductDetailView(selectedProductID);
-  // }
-  //
-  // onProductOrderClick(e) {
-  //   const selectedProductID = this.getProductID(e.target);
-  //   this.props.showProductOrderModal(selectedProductID);
-  // }
-  //
+  onPlateSizeClick(e) {
+    const selectedPlateID = e.target.parentNode.parentNode.parentNode.id;
+    this.props.showPlateDetailView(selectedPlateID);
+  }
+
+  onProductNameClick(e) {
+    const selectedProductID = e.target.parentNode.id;
+    this.props.showProductDetailView(selectedProductID);
+  }
+
   onEditClick(e) {
     const selectedPlateID = this.getPlateID(e.target);
     this.props.showPlateModal(selectedPlateID);
   }
-  //
-  // onDeleteClick(e) {
-  //   const selectedProductID = this.getProductID(e.target);
-  //   this.props.showDeleteConfirmationModal([selectedProductID]);
-  // }
-  //
+
+  onDeleteClick(e) {
+    const selectedPlateID = this.getPlateID(e.target);
+    this.props.showDeleteConfirmationModal([selectedPlateID]);
+  }
+
   getPlateID(target) {
     if (target.tagName === 'SPAN') {
       return target.parentNode.parentNode.parentNode.id;
@@ -79,18 +76,21 @@ export default class ProductListItem extends React.Component {
       `;
 
       return (
-        <div key={product._id} className="plate-list-item__forProductListItem">
-          <span>{product.name}</span>
+        <div
+          id={product._id}
+          key={product._id}
+          className="plate-list-item__forProductListItem"
+        >
+          <a onClick={this.onProductNameClick}>{product.name}</a>
           <span>{productSize}</span>
           <span>{printContent}</span>
         </div>
-      )
-    })
+      );
+    });
   }
 
   render() {
     const plate = this.props.plate;
-    console.log(plate);
 
     return (
       <li className="plate" key={plate._id} id={plate._id}>
@@ -102,7 +102,10 @@ export default class ProductListItem extends React.Component {
         </div>
         <div className="plate-list-item__container">
           <div className="plate-list-item__size-container">
-            <a className="plate-list-item__plateSize">
+            <a
+              className="plate-list-item__plateSize"
+              onClick={this.onPlateSizeClick}
+            >
               {plate.round} x {plate.length}
             </a>
           </div>
@@ -122,7 +125,7 @@ export default class ProductListItem extends React.Component {
             </button>
             <button
               className="button button-with-icon-span plate-list-item__button"
-              // onClick={this.onDeleteClick}
+              onClick={this.onDeleteClick}
             >
               <i className="fa fa-trash fa-lg" />
               <span>삭제</span>

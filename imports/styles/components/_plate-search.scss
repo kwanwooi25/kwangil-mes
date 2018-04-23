@@ -1,0 +1,49 @@
+.plate-search__input-container {
+  display: flex;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 80%;
+}
+
+.plate-search__button-container {
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  width: 20%;
+
+  @media (min-width: $break--sm) {
+    width: 15%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 10%;
+  }
+}
+
+.plate-search-button {
+  width: 100%;
+}
+
+.plate-search__input-container .search-by-product-name {
+  flex-grow: 1;
+  width: 100%;
+
+  @media (min-width: $break--sm) {
+    width: 45%;
+  }
+}
+
+.plate-search__input-container .search-by-size {
+  flex-grow: 1;
+  width: 35%;
+
+  @media (min-width: $break--sm) {
+    width: 15%;
+  }
+}
+
+.plate-search__input-container .search-by-material {
+  height: 1.8rem;
+  margin: $space-xs;
+}

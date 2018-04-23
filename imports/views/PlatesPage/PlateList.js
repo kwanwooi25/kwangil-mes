@@ -1,16 +1,11 @@
 import React from 'react';
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
-import { PlatesData } from '../../api/plates';
-
 import Checkbox from '../../custom/Checkbox';
 import PlateListItem from './PlateListItem';
-// import AccountDetailView from '../AccountsPage/AccountDetailView';
-// import ProductDetailView from './ProductDetailView';
-// import ProductOrderModal from './ProductOrderModal';
+import PlateDetailView from './PlateDetailView';
+import ProductDetailView from '../ProductsPage/ProductDetailView';
 import PlateModal from './PlateModal';
-// import ConfirmationModal from '../components/ConfirmationModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class ProductList extends React.Component {
   /*=========================================================================
@@ -18,45 +13,46 @@ export default class ProductList extends React.Component {
   queryObj : query object to filter product list
   isAdmin
   isManager
+  accountsData
+  productsData
+  platesData
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      // accountList: [],
-      productsData: [],
-      platesData: [],
       queryObj: props.queryObj,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
-      // isAccountDetailViewOpen: false,
-      // isProductOrderModalOpen: false,
+      accountsData: props.accountsData,
+      productsData: props.productsData,
+      platesData: props.platesData,
+      isPlateDetailViewOpen: false,
+      isProductDetailViewOpen: false,
       isPlateModalOpen: false,
-      // isProductDetailViewOpen: false,
-      // isDeleteConfirmationModalOpen: false,
+      isDeleteConfirmationModalOpen: false,
       selectedPlateID: '',
-      // confirmationDescription: [],
-      platesCount: 0,
+      selectedProductID:'',
+      confirmationDescription: [],
+      platesCount: props.platesData.length,
       isSelectedMulti: false,
       selectedPlates: []
     };
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
-    // this.showAccountDetailView = this.showAccountDetailView.bind(this);
-    // this.hideAccountDetailView = this.hideAccountDetailView.bind(this);
-    // this.showProductDetailView = this.showProductDetailView.bind(this);
-    // this.hideProductDetailView = this.hideProductDetailView.bind(this);
-    // this.showProductOrderModal = this.showProductOrderModal.bind(this);
-    // this.hideProductOrderModal = this.hideProductOrderModal.bind(this);
+    this.showPlateDetailView = this.showPlateDetailView.bind(this);
+    this.hidePlateDetailView = this.hidePlateDetailView.bind(this);
+    this.showProductDetailView = this.showProductDetailView.bind(this);
+    this.hideProductDetailView = this.hideProductDetailView.bind(this);
     this.showPlateModal = this.showPlateModal.bind(this);
     this.hidePlateModal = this.hidePlateModal.bind(this);
-    // this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
-    //   this
-    // );
-    // this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
-    //   this
-    // );
-    // this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
+    this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
+      this
+    );
+    this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
+      this
+    );
+    this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
   }
 
   // set state on props change
@@ -64,28 +60,12 @@ export default class ProductList extends React.Component {
     this.setState({
       queryObj: props.queryObj,
       isAdmin: props.isAdmin,
-      isManager: props.isManager
+      isManager: props.isManager,
+      accountsData: props.accountsData,
+      productsData: props.productsData,
+      platesData: props.platesData,
+      platesCount: props.platesData.length
     });
-  }
-
-  componentDidMount() {
-    // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('products');
-      Meteor.subscribe('plates');
-      const productsData = ProductsData.find({}, { sort: { name: 1 }}).fetch();
-      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
-
-      this.setState({
-        productsData,
-        platesData,
-        platesCount: platesData.length
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    this.databaseTracker.stop();
   }
 
   onCheckboxChange(e) {
@@ -119,40 +99,28 @@ export default class ProductList extends React.Component {
     this.setState({ selectedPlates });
   }
 
-  // showAccountDetailView(selectedAccountID) {
-  //   this.setState({
-  //     isAccountDetailViewOpen: true,
-  //     selectedAccountID
-  //   });
-  // }
-  //
-  // hideAccountDetailView() {
-  //   this.setState({ isAccountDetailViewOpen: false });
-  // }
-  //
-  // showProductDetailView(selectedPlateID) {
-  //   this.setState({
-  //     isProductDetailViewOpen: true,
-  //     selectedPlateID
-  //   });
-  // }
-  //
-  // hideProductDetailView() {
-  //   this.setState({ isProductDetailViewOpen: false });
-  // }
-  //
-  // // show product order modal
-  // showProductOrderModal(selectedPlateID) {
-  //   this.setState({
-  //     isProductOrderModalOpen: true,
-  //     selectedPlateID
-  //   });
-  // }
-  //
-  // hideProductOrderModal() {
-  //   this.setState({ isProductOrderModalOpen: false });
-  // }
-  //
+  showPlateDetailView(selectedPlateID) {
+    this.setState({
+      isPlateDetailViewOpen: true,
+      selectedPlateID
+    });
+  }
+
+  hidePlateDetailView() {
+    this.setState({ isPlateDetailViewOpen: false });
+  }
+
+  showProductDetailView(selectedProductID) {
+    this.setState({
+      isProductDetailViewOpen: true,
+      selectedProductID
+    });
+  }
+
+  hideProductDetailView() {
+    this.setState({ isProductDetailViewOpen: false });
+  }
+
   // show plate modal (EDIT mode)
   showPlateModal(selectedPlateID) {
     this.setState({
@@ -164,46 +132,73 @@ export default class ProductList extends React.Component {
   hidePlateModal() {
     this.setState({ isPlateModalOpen: false });
   }
-  //
-  // // show confirmation modal before delete
-  // showDeleteConfirmationModal(selectedPlates) {
-  //   let confirmationDescription = [`
-  //     ${selectedPlates.length}개 품목 삭제하시겠습니까?
-  //     `];
-  //
-  //   selectedPlates.map(productID => {
-  //     const product = ProductsData.findOne({ _id: productID });
-  //     let productInfoText = `
-  //         ${product.name} (${product.thick}x${product.length}x${product.width})
-  //       `;
-  //     confirmationDescription.push(productInfoText);
-  //   });
-  //
-  //   this.setState({
-  //     isDeleteConfirmationModalOpen: true,
-  //     selectedPlates,
-  //     confirmationDescription
-  //   });
-  // }
-  //
-  // hideDeleteConfirmationModal(answer) {
-  //   this.setState({ isDeleteConfirmationModalOpen: false });
-  //
-  //   if (answer) {
-  //     this.state.selectedPlates.map(productID => {
-  //       Meteor.call('products.remove', productID);
-  //     });
-  //   }
-  // }
-  //
-  // onDeleteMultiClick() {
-  //   this.showDeleteConfirmationModal(this.state.selectedPlates);
-  // }
+
+  // show confirmation modal before delete
+  showDeleteConfirmationModal(selectedPlates) {
+    let confirmationDescription = [`${selectedPlates.length}개 동판 삭제하시겠습니까?`];
+
+    selectedPlates.map(plateID => {
+      const plate = this.state.platesData.find(plate => plate._id === plateID);
+      let plateInfoText = `${plate.round} x ${plate.length}`;
+
+      confirmationDescription.push(plateInfoText);
+    });
+
+    this.setState({
+      isDeleteConfirmationModalOpen: true,
+      selectedPlates,
+      confirmationDescription
+    });
+  }
+
+  hideDeleteConfirmationModal(answer) {
+    this.setState({ isDeleteConfirmationModalOpen: false });
+
+    if (answer) {
+      this.state.selectedPlates.map(plateID => {
+        Meteor.call('plates.remove', plateID);
+      });
+    }
+  }
+
+  onDeleteMultiClick() {
+    this.showDeleteConfirmationModal(this.state.selectedPlates);
+  }
 
   getProductList(queryObj) {
     return this.state.platesData.map(plate => {
 
-      let matchQuery = true;
+      // store product names in an array
+      const productNames = [];
+      plate.forProductList.map(({ productID }) => {
+        const product = this.state.productsData.find(
+          product => product._id === productID
+        );
+        productNames.push(product.name);
+      });
+
+      let matchQuery = false;
+      let matchProductNameQuery = false;
+      let matchRoundQuery = false;
+      let matchLengthQuery = false;
+
+      // return true if any of product names contain query text
+      productNames.forEach(productName => {
+        if (productName.indexOf(queryObj.productName) > -1) {
+          matchProductNameQuery = true;
+        }
+      });
+
+      if (plate.round.indexOf(queryObj.round) > -1) {
+        matchRoundQuery = true;
+      }
+      if (plate.length.indexOf(queryObj.length) > -1) {
+        matchLengthQuery = true;
+      }
+
+      if (matchProductNameQuery && matchRoundQuery && matchLengthQuery) {
+        matchQuery = true;
+      }
 
       // only show product that has matching query text
       if (matchQuery) {
@@ -215,11 +210,10 @@ export default class ProductList extends React.Component {
             plate={plate}
             productsData={this.state.productsData}
             onCheckboxChange={this.onCheckboxChange}
-            // showAccountDetailView={this.showAccountDetailView}
-            // showProductDetailView={this.showProductDetailView}
-            // showProductOrderModal={this.showProductOrderModal}
+            showPlateDetailView={this.showPlateDetailView}
+            showProductDetailView={this.showProductDetailView}
             showPlateModal={this.showPlateModal}
-            // showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
         );
       }
@@ -239,52 +233,40 @@ export default class ProductList extends React.Component {
               />
               <div className="plate-buttons-container">
                 <button
-                  className="button button-with-icon-span plate-button"
-                onClick={this.onDeleteMultiClick}
-                disabled={!this.state.isSelectedMulti}
-              >
-                <i className="fa fa-trash fa-lg" />
-                <span>삭제</span>
-              </button>
+                  className="button button-with-icon-span plate-list-item__button"
+                  onClick={this.onDeleteMultiClick}
+                  disabled={!this.state.isSelectedMulti}
+                >
+                  <i className="fa fa-trash fa-lg" />
+                  <span>삭제</span>
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            undefined
+          )}
+
+        {this.getProductList(this.state.queryObj)}
+
+        {this.state.isPlateDetailViewOpen ? (
+          <PlateDetailView
+            isOpen={this.state.isPlateDetailViewOpen}
+            plateID={this.state.selectedPlateID}
+            onModalClose={this.hidePlateDetailView}
+          />
         ) : (
           undefined
         )}
 
-        {this.getProductList(this.state.queryObj)}
-
-        {/* {this.state.isAccountDetailViewOpen ? (
-          <AccountDetailView
-            isOpen={this.state.isAccountDetailViewOpen}
-            accountID={this.state.selectedAccountID}
-            onModalClose={this.hideAccountDetailView}
-          />
-        ) : (
-          undefined
-        )} */}
-
-        {/* {this.state.isProductDetailViewOpen ? (
+        {this.state.isProductDetailViewOpen ? (
           <ProductDetailView
             isOpen={this.state.isProductDetailViewOpen}
-            productID={this.state.selectedPlateID}
+            productID={this.state.selectedProductID}
             onModalClose={this.hideProductDetailView}
           />
         ) : (
           undefined
-        )} */}
-
-        {/* {this.state.isProductOrderModalOpen ? (
-          <ProductOrderModal
-            isOpen={this.state.isProductOrderModalOpen}
-            productID={this.state.selectedPlateID}
-            onModalClose={this.hideProductOrderModal}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
-          />
-        ) : (
-          undefined
-        )} */}
+        )}
 
         {this.state.isPlateModalOpen ? (
           <PlateModal
@@ -298,16 +280,16 @@ export default class ProductList extends React.Component {
           undefined
         )}
 
-        {/* {this.state.isDeleteConfirmationModalOpen ? (
+        {this.state.isDeleteConfirmationModalOpen ? (
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmationModalOpen}
-            title="품목 삭제"
+            title="동판 삭제"
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.hideDeleteConfirmationModal}
           />
         ) : (
           undefined
-        )} */}
+        )}
       </ul>
     );
   }

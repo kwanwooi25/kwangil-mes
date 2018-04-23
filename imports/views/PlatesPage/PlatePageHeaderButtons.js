@@ -1,13 +1,16 @@
 import React from 'react';
 
-import PlateModal from './PlateModal';
-// import ProductNewMultiModal from './ProductNewMultiModal';
+import { exportCSV } from '../../api/exportCSV';
 
-export default class ProductPageHeaderButtons extends React.Component {
+import PlateModal from './PlateModal';
+
+export default class PlatePageHeaderButtons extends React.Component {
   /*=========================================================================
   >> props <<
   isAdmin
   isManager
+  productsData
+  platesData
   =========================================================================*/
   constructor(props) {
     super(props);
@@ -15,32 +18,32 @@ export default class ProductPageHeaderButtons extends React.Component {
     this.state = {
       isAdmin: props.isAdmin,
       isManager: props.isManager,
-      isModalNewOpen: false,
-      isModalNewMultiOpen: false
+      productsData: props.productsData,
+      platesData: props.platesData,
+      isModalNewOpen: false
     };
 
-    // this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
+    this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
-    // this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
-    // this.onClickExportExcel = this.onClickExportExcel.bind(this);
+    this.onClickExportExcel = this.onClickExportExcel.bind(this);
   }
 
   componentWillReceiveProps(props) {
     this.setState({
       isAdmin: props.isAdmin,
-      isManager: props.isManager
+      isManager: props.isManager,
+      productsData: props.productsData,
+      platesData: props.platesData
     });
   }
 
-  // onSearchExpandClick() {
-  //   const plateSearch = document.getElementById('plate-search');
-  //   const plateSearchExpand = document.getElementById(
-  //     'plate-search-expand'
-  //   );
-  //   plateSearch.classList.toggle('hidden');
-  //   plateSearchExpand.classList.toggle('hidden');
-  // }
+  onSearchExpandClick() {
+    const plateSearch = document.getElementById('plate-search');
+    const plateSearchExpand = document.getElementById('plate-search-expand');
+    plateSearch.classList.toggle('hidden');
+    plateSearchExpand.classList.toggle('hidden');
+  }
 
   onClickNew() {
     this.setState({ isModalNewOpen: true });
@@ -54,104 +57,81 @@ export default class ProductPageHeaderButtons extends React.Component {
     this.setState({ isModalNewOpen: false, isModalNewMultiOpen: false });
   }
 
-  // onClickExportExcel() {
-  //   const list = document.getElementById('product-list');
-  //   const filename = '광일지퍼백.csv';
-  //   const slice = Array.prototype.slice;
-  //
-  //   // get account list
-  //   const lis = list.querySelectorAll('li');
-  //   const products = [];
-  //   const keys = [
-  //     'accountID',
-  //     'accountName',
-  //     '_id',
-  //     'name',
-  //     'thick',
-  //     'length',
-  //     'width',
-  //     'isPrint',
-  //     'extColor',
-  //     'extAntistatic',
-  //     'extPretreat',
-  //     'extMemo',
-  //     'printImageURL',
-  //     'printFrontColorCount',
-  //     'printFrontColor',
-  //     'printFrontPosition',
-  //     'printBackColorCount',
-  //     'printBackColor',
-  //     'printBackPosition',
-  //     'printMemo',
-  //     'cutPosition',
-  //     'utUltrasonic',
-  //     'cutPowderPack',
-  //     'cutPunches',
-  //     'cutPunchCount',
-  //     'cutPunchSize',
-  //     'cutPunchPosition',
-  //     'cutMemo',
-  //     'packMaterial',
-  //     'packQuantity',
-  //     'packDeliverAll',
-  //     'packMemo',
-  //     'stockQuantity'
-  //   ];
-  //
-  //   for (let i = 0; i < lis.length; i++) {
-  //     products.push(ProductsData.findOne({ _id: lis[i].id }));
-  //   }
-  //
-  //   // generate header csv
-  //   let headerCSV =
-  //     '업체ID,업체명,제품ID,제품명,두께,길이,너비,무지_인쇄,원단색상,대전방지,처리,압출메모,도안URL,전면도수,전면색상,전면위치,후면도수,후면색상,후면위치,인쇄메모,가공위치,초음파가공,가루포장,바람구멍,바람구멍개수,바람구멍크기,바람구멍위치,가공메모,포장방법,포장수량,전량납품,포장메모,재고수량';
-  //
-  //   // for managers
-  //   if (this.state.isAdmin || this.state.isManager) {
-  //     keys.push(['price', 'history', 'memo']);
-  //     headerCSV += ',가격,작업이력,메모';
-  //   }
-  //
-  //   // generate body csv from account list
-  //   const bodyCSV = products
-  //     .map(product => {
-  //       return keys
-  //         .map(key => {
-  //           if (product[key] === undefined) {
-  //             return '""';
-  //           } else {
-  //             return '"t"'.replace('t', product[key]);
-  //           }
-  //         })
-  //         .join(',');
-  //     })
-  //     .join('\r\n');
-  //
-  //   // function to generate download anchor
-  //   const downloadAnchor = content => {
-  //     const anchor = document.createElement('a');
-  //     anchor.style = 'display:none !important';
-  //     anchor.id = 'downloadanchor';
-  //     document.body.appendChild(anchor);
-  //
-  //     if ('download' in anchor) {
-  //       anchor.download = filename;
-  //     }
-  //     anchor.href = content;
-  //     anchor.click();
-  //     anchor.remove();
-  //   };
-  //
-  //   // ** must add '\ueff' to prevent broken korean font
-  //   const blob = new Blob(['\ufeff' + headerCSV + '\r\n' + bodyCSV], {
-  //     type: 'text/csv;charset=utf-8;'
-  //   });
-  //   if (navigator.msSaveOrOpenBlob) {
-  //     navigator.msSaveOrOpenBlob(blob, filename);
-  //   } else {
-  //     downloadAnchor(URL.createObjectURL(blob));
-  //   }
-  // }
+  onClickExportExcel() {
+    const list = document.getElementById('plate-list');
+    const filename = '광일_동판목록.csv';
+    const slice = Array.prototype.slice;
+
+    // get plate list
+    const lis = list.querySelectorAll('li');
+    const plates = [];
+    const keys = [
+      '_id',
+      'round',
+      'length',
+      'material',
+      'location',
+      'forProductList',
+      'history',
+      'memo'
+    ];
+
+    for (let i = 0; i < lis.length; i++) {
+      plates.push(this.state.platesData.find(plate => plate._id === lis[i].id));
+    }
+
+    // generate header csv
+    let headerCSV = '동판ID,둘레,기장,구분,위치,사용품목,이력,메모';
+
+    // generate body csv from plate list
+    const bodyCSV = plates
+      .map(plate => {
+        return keys
+          .map(key => {
+            if (plate[key] === undefined) {
+              return '""';
+            } else {
+
+              // change array into text for product list
+              if (key === 'forProductList') {
+                return '"t"'.replace(
+                  't',
+                  plate[key]
+                    .map(({ productID, printContent }) => {
+                      const product = this.state.productsData.find(
+                        product => product._id === productID
+                      );
+
+                      const productInfoText = `${product.name} (${
+                        product.thick
+                      }x${product.length}x${product.width}) ${printContent}`;
+
+                      return productInfoText;
+                    })
+                    .join(' / ')
+                );
+
+              // change array into text for history
+              } else if (key === 'history') {
+                return '"t"'.replace(
+                  't',
+                  plate[key].map(({ date, memo }) => {
+                    return `${date}: ${memo}`;
+                  }).join(' / ')
+                )
+
+              // return plain text for the rest
+              } else {
+                return '"t"'.replace('t', plate[key]);
+              }
+            }
+          })
+          .join(',');
+      })
+      .join('\r\n');
+
+    exportCSV(headerCSV, bodyCSV, filename);
+  }
 
   render() {
     return (
@@ -159,14 +139,14 @@ export default class ProductPageHeaderButtons extends React.Component {
         <button
           id="plate-search-toggle"
           className="button button-with-icon-span page-header__button"
-          // onClick={this.onSearchExpandClick}
+          onClick={this.onSearchExpandClick}
         >
           <i className="fa fa-search-plus" />
           <span>확장검색</span>
         </button>
         <button
           className="button button-with-icon-span page-header__button"
-          // onClick={this.onClickExportExcel}
+          onClick={this.onClickExportExcel}
         >
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>
@@ -204,15 +184,6 @@ export default class ProductPageHeaderButtons extends React.Component {
         ) : (
           undefined
         )}
-
-        {/* {this.state.isModalNewMultiOpen ? (
-          <ProductNewMultiModal
-            isOpen={this.state.isModalNewMultiOpen}
-            onModalClose={this.onModalClose}
-          />
-        ) : (
-          undefined
-        )} */}
       </div>
     );
   }
