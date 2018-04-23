@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import moment from 'moment';
 
 import { ProductsData } from '../../api/products';
+import { PlatesData } from '../../api/plates';
 
 import TextInput from '../../custom/TextInput';
 import Textarea from '../../custom/Textarea';
@@ -21,30 +22,58 @@ export default class PlateModal extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      productsData: [],
-      mode: 'ADDNEW',
-      name: '',
-      round: '',
-      length: '',
-      material: '',
-      location: '',
-      forProductList: [], // [ productID, content ],
-      history: [], // [ date, memo ]
-      memo: '',
-      nameEmpty: false,
-      roundEmpty: false,
-      roundError: false,
-      lengthEmpty: false,
-      lengthError: false,
-      isConfirmationModalOpen: false,
-      confirmationTitle: '',
-      confirmationDescription: [],
-      isAddProductModalOpen: false,
-      error: ''
-    };
+    if (props.plateID) {
+      // EDIT mode
+      const plate = PlatesData.findOne({_id: props.plateID});
+      initialState = {
+        isAdmin: props.isAdmin,
+        isManager: props.isManager,
+        mode: 'EDIT',
+        round: plate.round,
+        length: plate.length,
+        material: plate.material,
+        location: plate.location,
+        forProductList: plate.forProductList,
+        history: plate.history,
+        memo: plate.memo,
+        nameEmpty: false,
+        roundEmpty: false,
+        roundError: false,
+        lengthEmpty: false,
+        lengthError: false,
+        isConfirmationModalOpen: false,
+        confirmationTitle: '',
+        confirmationDescription: [],
+        isAddProductModalOpen: false,
+        error: ''
+      }
+    } else {
+      // ADDNEW mode
+      initialState = {
+        isAdmin: props.isAdmin,
+        isManager: props.isManager,
+        mode: 'ADDNEW',
+        round: '',
+        length: '',
+        material: 'brass',
+        location: '',
+        forProductList: [], // [ productID, content ],
+        history: [], // [ date, memo ]
+        memo: '',
+        nameEmpty: false,
+        roundEmpty: false,
+        roundError: false,
+        lengthEmpty: false,
+        lengthError: false,
+        isConfirmationModalOpen: false,
+        confirmationTitle: '',
+        confirmationDescription: [],
+        isAddProductModalOpen: false,
+        error: ''
+      }
+    }
+
+    this.state = initialState;
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onClickOK = this.onClickOK.bind(this);
@@ -57,36 +86,10 @@ export default class PlateModal extends React.Component {
     );
   }
 
-  componentDidMount() {
-    // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('products');
-      const productsData = ProductsData.find({}, { sort: { name: 1 } }).fetch();
-
-      this.setState({ productsData });
-    });
-  }
-
-  componentWillUnmount() {
-    this.databaseTracker.stop();
-  }
-
   validate(name, value) {
     const inputContainer = document.getElementById(name).parentNode;
 
     switch (name) {
-      case 'name':
-        if (value === '') {
-          this.setState({ [`${name}Empty`]: true });
-          inputContainer.classList.add('error');
-          return false;
-        } else {
-          this.setState({ [`${name}Empty`]: false });
-          inputContainer.classList.remove('error');
-          return true;
-        }
-        break;
-
       case 'round':
       case 'length':
         if (value === '') {
@@ -107,15 +110,22 @@ export default class PlateModal extends React.Component {
   }
 
   onInputChange(e) {
+    if (
+      this.state.mode === 'EDIT' &&
+      initialState[e.target.name] !== e.target.value
+    ) {
+      e.target.parentNode.classList.add('changed');
+    } else {
+      e.target.parentNode.classList.remove('changed');
+    }
+
     this.setState({ [e.target.name]: e.target.value });
     this.validate(e.target.name, e.target.value);
   }
 
   onClickOK(e) {
     e.preventDefault();
-    if (!this.validate('name', this.state.name)) {
-      document.getElementById('name').focus();
-    } else if (!this.validate('round', this.state.round)) {
+    if (!this.validate('round', this.state.round)) {
       document.getElementById('round').focus();
     } else if (!this.validate('length', this.state.length)) {
       document.getElementById('length').focus();
@@ -126,7 +136,13 @@ export default class PlateModal extends React.Component {
         this.setState({
           isConfirmationModalOpen: true,
           confirmationTitle: '동판 신규 등록',
-          confirmationDescription: ['신규 등록 하시겠습니까?', this.state.name]
+          confirmationDescription: ['신규 등록 하시겠습니까?']
+        });
+      } else if (this.state.mode === 'EDIT') {
+        this.setState({
+          isConfirmationModalOpen: true,
+          confirmationTitle: '동판 정보 수정',
+          confirmationDescription: ['수정한 내용을 저장 하시겠습니까?']
         });
       }
     }
@@ -136,11 +152,35 @@ export default class PlateModal extends React.Component {
     let history = [];
     if (this.state.mode === 'ADDNEW') {
       history = [
-        { date: moment().format('YYYY-MM-DD'), memo: '동판 신규 등록' }
+        { date: moment().format('YYYY-MM-DD'), memo: '동판 신규 등록' }
       ];
+    } else if (this.state.mode === 'EDIT') {
+      let changedText = '변경내용:';
+      if (initialState.round !== this.state.round) {
+        changedText += ` (둘레: ${initialState.round} > ${this.state.round})`;
+      }
+      if (initialState.length !== this.state.length) {
+        changedText += ` (기장: ${initialState.length} > ${this.state.length})`;
+      }
+      if (initialState.material !== this.state.material) {
+        changedText += ` (구분: ${initialState.material} > ${this.state.material})`;
+      }
+      if (initialState.location !== this.state.location) {
+        changedText += ` (위치: ${initialState.location} > ${this.state.location})`;
+      }
+      if (initialState.forProductList !== this.state.forProductList) {
+        changedText += ` (사용품목 변경)`;
+      }
+      if (initialState.memo !== this.state.memo) {
+        changedText += ` (메모: ${initialState.memo} > ${this.state.memo})`;
+      }
+      history = this.state.history;
+      history.push({
+        date: moment().format('YYYY-MM-DD'),
+        memo: changedText
+      });
     }
     return {
-      name: this.state.name,
       round: this.state.round,
       length: this.state.length,
       material: this.state.material,
@@ -162,6 +202,22 @@ export default class PlateModal extends React.Component {
       const data = this.getDataToSave();
 
       Meteor.call('plates.insert', data, (err, res) => {
+        if (!err) {
+          this.props.onModalClose();
+        } else {
+          this.setState({ error: err.message });
+        }
+      });
+    } else if (this.state.mode === 'EDIT' && answer) {
+      this.setState({
+        isConfirmationModalOpen: false,
+        confirmationTitle: '',
+        confirmationDescription: []
+      });
+
+      const data = this.getDataToSave();
+
+      Meteor.call('plates.update', this.props.plateID, data, (err, res) => {
         if (!err) {
           this.props.onModalClose();
         } else {
@@ -215,9 +271,7 @@ export default class PlateModal extends React.Component {
   getForProductList() {
     if (this.state.forProductList) {
       return this.state.forProductList.map(({ productID, printContent }) => {
-        const product = this.state.productsData.find(
-          product => product._id === productID
-        );
+        const product = ProductsData.findOne({ _id: productID });
         const productSize = `
             ${product.thick} x ${product.length} x ${product.width}
           `;
@@ -251,7 +305,7 @@ export default class PlateModal extends React.Component {
       <Modal
         isOpen={this.props.isOpen}
         onAfterOpen={() => {
-          document.getElementById('name').focus();
+          document.getElementById('round').select();
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
@@ -265,23 +319,6 @@ export default class PlateModal extends React.Component {
           </h1>
         </div>
         <form className="boxed-view__content">
-          <div className="form-element-container plate-modal__plateName-container">
-            <div className="form-element__label plate-modal__label">
-              <label htmlFor="name">동판명</label>
-            </div>
-            <div className="form-elements">
-              <TextInput
-                className="form-element"
-                inputType="text"
-                id="name"
-                value={this.state.name}
-                onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.nameEmpty ? '동판명을 입력하세요.' : undefined
-                }
-              />
-            </div>
-          </div>
           <div className="form-element-container plate-modal__size-container">
             <div className="form-element__label plate-modal__label">
               <label htmlFor="round">규격</label>

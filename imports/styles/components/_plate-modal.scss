@@ -9,7 +9,6 @@
   }
 }
 
-.plate-modal__plateName-container,
 .plate-modal__size-container,
 .plate-modal__location-container,
 .plate-modal__material-container,
@@ -18,14 +17,6 @@
   width: 100%;
 }
 
-.plate-modal__plateName-container,
-.plate-modal__size-container,
-.plate-modal__location-container,
-.plate-modal__material-container {
-  width: 50%;
-}
-
-.plate-modal__plateName-container input,
 .plate-modal__location-container input,
 .plate-modal__size-input input {
   width: 100%;
@@ -119,6 +110,12 @@
 }
 
 @media (min-width: $break--sm) {
+  .plate-modal__size-container,
+  .plate-modal__location-container,
+  .plate-modal__material-container {
+    width: 33.3%;
+  }
+
   .plate-modal__forProductList__item__productInfo {
     span:nth-child(2) {
       min-width: 45%;

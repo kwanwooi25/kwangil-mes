@@ -39,13 +39,13 @@ Meteor.methods({
   //   });
   // },
   //
-  // 'plates.update'(productID, data) {
-  //   if (!this.userId) {
-  //     throw new Meteor.Error('User not logged in!');
-  //   }
-  //
-  //   PlatesData.update({ _id: productID }, { $set: data });
-  // },
+  'plates.update'(plateID, data) {
+    if (!this.userId) {
+      throw new Meteor.Error('User not logged in!');
+    }
+
+    PlatesData.update({ _id: plateID }, { $set: data });
+  },
   //
   // 'plates.remove'(productID) {
   //   if (!this.userId) {

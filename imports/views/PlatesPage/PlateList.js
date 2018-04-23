@@ -9,7 +9,7 @@ import PlateListItem from './PlateListItem';
 // import AccountDetailView from '../AccountsPage/AccountDetailView';
 // import ProductDetailView from './ProductDetailView';
 // import ProductOrderModal from './ProductOrderModal';
-// import ProductModal from './ProductModal';
+import PlateModal from './PlateModal';
 // import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class ProductList extends React.Component {
@@ -24,16 +24,17 @@ export default class ProductList extends React.Component {
 
     this.state = {
       // accountList: [],
+      productsData: [],
       platesData: [],
       queryObj: props.queryObj,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
       // isAccountDetailViewOpen: false,
       // isProductOrderModalOpen: false,
-      // isProductModalOpen: false,
+      isPlateModalOpen: false,
       // isProductDetailViewOpen: false,
       // isDeleteConfirmationModalOpen: false,
-      // selectedProductID: '',
+      selectedPlateID: '',
       // confirmationDescription: [],
       platesCount: 0,
       isSelectedMulti: false,
@@ -47,8 +48,8 @@ export default class ProductList extends React.Component {
     // this.hideProductDetailView = this.hideProductDetailView.bind(this);
     // this.showProductOrderModal = this.showProductOrderModal.bind(this);
     // this.hideProductOrderModal = this.hideProductOrderModal.bind(this);
-    // this.showProductModal = this.showProductModal.bind(this);
-    // this.hideProductModal = this.hideProductModal.bind(this);
+    this.showPlateModal = this.showPlateModal.bind(this);
+    this.hidePlateModal = this.hidePlateModal.bind(this);
     // this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
     //   this
     // );
@@ -70,12 +71,15 @@ export default class ProductList extends React.Component {
   componentDidMount() {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
+      Meteor.subscribe('products');
       Meteor.subscribe('plates');
-      const plateList = PlatesData.find({}, { sort: { name: 1 } }).fetch();
+      const productsData = ProductsData.find({}, { sort: { name: 1 }}).fetch();
+      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
 
       this.setState({
-        platesData: plateList,
-        platesCount: plateList.length
+        productsData,
+        platesData,
+        platesCount: platesData.length
       });
     });
   }
@@ -126,10 +130,10 @@ export default class ProductList extends React.Component {
   //   this.setState({ isAccountDetailViewOpen: false });
   // }
   //
-  // showProductDetailView(selectedProductID) {
+  // showProductDetailView(selectedPlateID) {
   //   this.setState({
   //     isProductDetailViewOpen: true,
-  //     selectedProductID
+  //     selectedPlateID
   //   });
   // }
   //
@@ -138,10 +142,10 @@ export default class ProductList extends React.Component {
   // }
   //
   // // show product order modal
-  // showProductOrderModal(selectedProductID) {
+  // showProductOrderModal(selectedPlateID) {
   //   this.setState({
   //     isProductOrderModalOpen: true,
-  //     selectedProductID
+  //     selectedPlateID
   //   });
   // }
   //
@@ -149,17 +153,17 @@ export default class ProductList extends React.Component {
   //   this.setState({ isProductOrderModalOpen: false });
   // }
   //
-  // // show account modal (EDIT mode)
-  // showProductModal(selectedProductID) {
-  //   this.setState({
-  //     isProductModalOpen: true,
-  //     selectedProductID
-  //   });
-  // }
-  //
-  // hideProductModal() {
-  //   this.setState({ isProductModalOpen: false });
-  // }
+  // show plate modal (EDIT mode)
+  showPlateModal(selectedPlateID) {
+    this.setState({
+      isPlateModalOpen: true,
+      selectedPlateID
+    });
+  }
+
+  hidePlateModal() {
+    this.setState({ isPlateModalOpen: false });
+  }
   //
   // // show confirmation modal before delete
   // showDeleteConfirmationModal(selectedPlates) {
@@ -209,12 +213,12 @@ export default class ProductList extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             plate={plate}
-            // product={product}
+            productsData={this.state.productsData}
             onCheckboxChange={this.onCheckboxChange}
             // showAccountDetailView={this.showAccountDetailView}
             // showProductDetailView={this.showProductDetailView}
             // showProductOrderModal={this.showProductOrderModal}
-            // showProductModal={this.showProductModal}
+            showPlateModal={this.showPlateModal}
             // showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
         );
@@ -258,35 +262,35 @@ export default class ProductList extends React.Component {
           />
         ) : (
           undefined
-        )}
+        )} */}
 
-        {this.state.isProductDetailViewOpen ? (
+        {/* {this.state.isProductDetailViewOpen ? (
           <ProductDetailView
             isOpen={this.state.isProductDetailViewOpen}
-            productID={this.state.selectedProductID}
+            productID={this.state.selectedPlateID}
             onModalClose={this.hideProductDetailView}
           />
         ) : (
           undefined
-        )}
+        )} */}
 
-        {this.state.isProductOrderModalOpen ? (
+        {/* {this.state.isProductOrderModalOpen ? (
           <ProductOrderModal
             isOpen={this.state.isProductOrderModalOpen}
-            productID={this.state.selectedProductID}
+            productID={this.state.selectedPlateID}
             onModalClose={this.hideProductOrderModal}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
         ) : (
           undefined
-        )}
+        )} */}
 
-        {this.state.isProductModalOpen ? (
-          <ProductModal
-            isOpen={this.state.isProductModalOpen}
-            productID={this.state.selectedProductID}
-            onModalClose={this.hideProductModal}
+        {this.state.isPlateModalOpen ? (
+          <PlateModal
+            isOpen={this.state.isPlateModalOpen}
+            plateID={this.state.selectedPlateID}
+            onModalClose={this.hidePlateModal}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
@@ -294,7 +298,7 @@ export default class ProductList extends React.Component {
           undefined
         )}
 
-        {this.state.isDeleteConfirmationModalOpen ? (
+        {/* {this.state.isDeleteConfirmationModalOpen ? (
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmationModalOpen}
             title="품목 삭제"
