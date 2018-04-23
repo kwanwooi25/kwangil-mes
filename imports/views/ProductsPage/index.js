@@ -122,6 +122,7 @@ export default class ProductsPage extends React.Component {
             <ProductPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
+              productsData={this.state.productsData}
             />
           </div>
 

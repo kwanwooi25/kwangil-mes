@@ -74,13 +74,10 @@ export default class AccountListItem extends React.Component {
             <a className="account-phone" href={`tel:${account.phone_1}`}>
               <i className="fa fa-phone" /> {account.phone_1}
             </a>
-            {account.fax ? (
-              <a className="account-fax">
-                <i className="fa fa-fax" /> {account.fax}
-              </a>
-            ) : (
-              undefined
-            )}
+            <a className="account-fax">
+              {account.fax ? <i className="fa fa-fax" /> : undefined}
+              {account.fax}
+            </a>
             {account.email_1 ? (
               <a className="account-email" href={`mailto:${account.email_1}`}>
                 <i className="fa fa-envelope" /> {account.email_1}

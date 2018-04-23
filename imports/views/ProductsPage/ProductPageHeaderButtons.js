@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ProductsData } from '../../api/products';
+import { exportCSV } from '../../api/exportCSV';
 
 import ProductModal from './ProductModal';
 import ProductNewMultiModal from './ProductNewMultiModal';
@@ -10,6 +10,7 @@ export default class ProductPageHeaderButtons extends React.Component {
   >> props <<
   isAdmin
   isManager
+  productsData
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -17,6 +18,7 @@ export default class ProductPageHeaderButtons extends React.Component {
     this.state = {
       isAdmin: props.isAdmin,
       isManager: props.isManager,
+      productsData: props.productsData,
       isModalNewOpen: false,
       isModalNewMultiOpen: false
     };
@@ -31,7 +33,8 @@ export default class ProductPageHeaderButtons extends React.Component {
   componentWillReceiveProps(props) {
     this.setState({
       isAdmin: props.isAdmin,
-      isManager: props.isManager
+      isManager: props.isManager,
+      productsData: props.productsData
     });
   }
 
@@ -58,7 +61,7 @@ export default class ProductPageHeaderButtons extends React.Component {
 
   onClickExportExcel() {
     const list = document.getElementById('product-list');
-    const filename = '광일지퍼백.csv';
+    const filename = '광일_제품목록.csv';
     const slice = Array.prototype.slice;
 
     // get account list
@@ -101,7 +104,9 @@ export default class ProductPageHeaderButtons extends React.Component {
     ];
 
     for (let i = 0; i < lis.length; i++) {
-      products.push(ProductsData.findOne({ _id: lis[i].id }));
+      products.push(
+        this.state.productsData.find(product => product._id === lis[i].id)
+      );
     }
 
     // generate header csv
@@ -129,30 +134,7 @@ export default class ProductPageHeaderButtons extends React.Component {
       })
       .join('\r\n');
 
-    // function to generate download anchor
-    const downloadAnchor = content => {
-      const anchor = document.createElement('a');
-      anchor.style = 'display:none !important';
-      anchor.id = 'downloadanchor';
-      document.body.appendChild(anchor);
-
-      if ('download' in anchor) {
-        anchor.download = filename;
-      }
-      anchor.href = content;
-      anchor.click();
-      anchor.remove();
-    };
-
-    // ** must add '\ueff' to prevent broken korean font
-    const blob = new Blob(['\ufeff' + headerCSV + '\r\n' + bodyCSV], {
-      type: 'text/csv;charset=utf-8;'
-    });
-    if (navigator.msSaveOrOpenBlob) {
-      navigator.msSaveOrOpenBlob(blob, filename);
-    } else {
-      downloadAnchor(URL.createObjectURL(blob));
-    }
+    exportCSV(headerCSV, bodyCSV, filename);
   }
 
   render() {

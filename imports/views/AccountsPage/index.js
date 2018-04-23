@@ -86,6 +86,7 @@ export default class AccountsPage extends React.Component {
             <AccountPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
+              accountsData={this.state.accountsData}
             />
           </div>
         </div>

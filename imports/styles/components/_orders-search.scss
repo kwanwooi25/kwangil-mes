@@ -41,6 +41,7 @@
 
 .order-range-button {
   font-size: $font-size--md;
+  flex-grow: 1;
   width: 22%;
 
   @media (min-width: $break--sm) {
@@ -57,6 +58,7 @@
 }
 
 .order-search__input-container .search-by-account-name {
+  flex-grow: 1;
   width: 37%;
 
   @media (min-width: $break--md) {
@@ -69,6 +71,7 @@
 }
 
 .order-search__input-container .search-by-product-name {
+  flex-grow: 1;
   width: 57%;
 
   @media (min-width: $break--md) {

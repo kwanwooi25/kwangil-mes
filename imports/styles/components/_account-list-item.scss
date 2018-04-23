@@ -17,6 +17,7 @@
   align-items: center;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   font-size: $font-size--md;
   justify-content: center;
   padding: $space-sm 0;
@@ -75,6 +76,7 @@
 @media (min-width: $break--sm) {
   .account-details-container {
     flex-direction: row;
+    margin: 0 $space-sm;
   }
 
   .account-name-container {
@@ -85,12 +87,31 @@
     width: 65%;
   }
 
+  .account-phone,
+  .account-fax,
+  .account-email {
+    text-align: right;
+  }
+
   .account-name {
     font-size: $font-size--md;
   }
 }
 
 @media (min-width: $break--md) {
+  .account-contact-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .account-phone,
+  .account-fax {
+    flex-grow: 1;
+    width: 50%;
+    text-align: left;
+  }
+
   .account-button {
     height: 2rem;
     width: 2.5rem;
@@ -103,24 +124,17 @@
 
 @media (min-width: $break--lg) {
   .account-name-container {
+    flex-grow: 1;
     width: 30%;
   }
 
-  .account-contact-container {
-    align-items: center;
-    flex-direction: row;
-    width: 70%;
-  }
-
-  .account-phone {
-    width: 25%;
-  }
-
+  .account-phone,
   .account-fax {
-    width: 25%
+    width: 30%;
   }
 
   .account-email {
-    width: 50%;
+    width: 40%;
+    text-align: left;
   }
 }
