@@ -178,6 +178,7 @@ export default class OrderListItem extends React.Component {
             )}
           </div>
 
+          {this.state.isAdmin || this.state.isManager ? (
           <div className="order-checkbox-container">
             <Checkbox
               name={order._id}
@@ -185,6 +186,7 @@ export default class OrderListItem extends React.Component {
               disabled={order.data.isCompleted}
             />
           </div>
+          ): undefined}
 
           <div className="order-id-container">
             <a

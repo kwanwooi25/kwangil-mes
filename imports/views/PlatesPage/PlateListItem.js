@@ -2,7 +2,7 @@ import React from 'react';
 
 import Checkbox from '../../custom/Checkbox';
 
-export default class ProductListItem extends React.Component {
+export default class PlateListItem extends React.Component {
   /*=========================================================================
   >> props <<
   isAdmin
@@ -94,12 +94,14 @@ export default class ProductListItem extends React.Component {
 
     return (
       <li className="plate" key={plate._id} id={plate._id}>
+        {this.state.isAdmin || this.state.isManager ? (
         <div className="plate-list-item__checkbox-container">
           <Checkbox
             name={plate._id}
             onInputChange={this.props.onCheckboxChange}
           />
         </div>
+        ): undefined}
         <div className="plate-list-item__container">
           <div className="plate-list-item__size-container">
             <a

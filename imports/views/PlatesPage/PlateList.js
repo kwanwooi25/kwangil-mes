@@ -7,7 +7,7 @@ import ProductDetailView from '../ProductsPage/ProductDetailView';
 import PlateModal from './PlateModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
-export default class ProductList extends React.Component {
+export default class PlateList extends React.Component {
   /*=========================================================================
   >> props <<
   queryObj : query object to filter product list

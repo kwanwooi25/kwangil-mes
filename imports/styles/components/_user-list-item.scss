@@ -1,0 +1,33 @@
+.user {
+  align-items: center;
+  border-bottom: 1px solid $color-primary--100;
+  display: flex;
+  justify-content: space-between;
+
+  &:hover {
+    background: $color-primary--50;
+  }
+
+  &:last-child {
+    border-bottom: 1.8px solid $color-primary--100;
+  }
+}
+
+.user-list-item__user-detail-container {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  padding: 0 $space-sm;
+}
+
+.user-list-item__buttons-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-list-item__button {
+  height: 2.3rem;
+  width: 2.8rem;
+  margin: $space-xs;
+}

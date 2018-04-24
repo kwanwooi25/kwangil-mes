@@ -16,6 +16,7 @@ export default class ProductList extends React.Component {
   isManager
   accountsData
   productsData
+  platesData
   ==========================================================================*/
   constructor(props) {
     super(props);

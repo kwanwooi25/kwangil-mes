@@ -4,8 +4,10 @@ import Modal from "react-modal";
 
 import { AccountsData } from "../../api/accounts";
 import { ProductsData } from "../../api/products";
+import { PlatesData } from "../../api/plates";
 import { comma, uncomma } from "../../api/comma";
 
+import PlateDetailView from "../PlatesPage/PlateDetailView";
 import noImage from "../../assets/no-image.png";
 
 export default class ProductDetailView extends React.Component {
@@ -18,7 +20,14 @@ export default class ProductDetailView extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      isPlateDetailViewOpen: false,
+      selectedPlateID: ""
+    };
+
     this.onClickOK = this.onClickOK.bind(this);
+    this.showPlateDetailView = this.showPlateDetailView.bind(this);
+    this.hidePlateDetailView = this.hidePlateDetailView.bind(this);
   }
 
   onClickOK(e) {
@@ -26,9 +35,26 @@ export default class ProductDetailView extends React.Component {
     this.props.onModalClose();
   }
 
+  showPlateDetailView(selectedPlateID) {
+    this.setState({
+      isPlateDetailViewOpen: true,
+      selectedPlateID
+    });
+  }
+
+  hidePlateDetailView() {
+    this.setState({
+      isPlateDetailViewOpen: false,
+      selectedPlateID: ""
+    });
+  }
+
   getProductDetails() {
     const product = ProductsData.findOne({ _id: this.props.productID });
     const account = AccountsData.findOne({ _id: product.accountID });
+    const plateList = PlatesData.find({
+      "forProductList.productID": product._id
+    }).fetch();
 
     let extSurmmaryText = "",
       printSummaryText = "",
@@ -112,6 +138,29 @@ export default class ProductDetailView extends React.Component {
       priceText = `단가: ${product.price}원`;
     }
 
+    // display plate list
+    const getPlateList = plateList => {
+      return plateList.map((plate, index) => {
+        const printContent = plate.forProductList.find(
+          forProduct => forProduct.productID === product._id
+        ).printContent;
+
+        return (
+          <li key={plate._id} className="product-detail__plateListItem">
+            <span>동판 {index + 1}:</span>
+            <a
+              onClick={() => {
+                this.showPlateDetailView(plate._id);
+              }}
+            >
+              {plate.round} x {plate.length}
+            </a>
+            <span>{printContent}</span>
+          </li>
+        );
+      });
+    };
+
     return (
       <div className="product-detail__container">
         <div className="product-detail__subsection">
@@ -136,6 +185,13 @@ export default class ProductDetailView extends React.Component {
             <h3 className="product-detail__subtitle">인쇄</h3>
             <p className="product-detail__description">{printFrontText}</p>
             <p className="product-detail__description">{printBackText}</p>
+            {plateList ? (
+              <ul className="product-detail__plateList">
+                {getPlateList(plateList)}
+              </ul>
+            ) : (
+              undefined
+            )}
             <p className="product-detail__description">{product.printMemo}</p>
             <div className="product-detail__print-image">
               <img
@@ -146,9 +202,9 @@ export default class ProductDetailView extends React.Component {
                 <a
                   className="product-detail__image-link"
                   href={product.printImageURL}
-                  target='_blank'
+                  target="_blank"
                 >
-                  <i className="fa fa-expand"></i>
+                  <i className="fa fa-expand" />
                 </a>
               </div>
             </div>
@@ -198,6 +254,16 @@ export default class ProductDetailView extends React.Component {
             확인
           </button>
         </div>
+
+        {this.state.isPlateDetailViewOpen ? (
+          <PlateDetailView
+            isOpen={this.state.isPlateDetailViewOpen}
+            plateID={this.state.selectedPlateID}
+            onModalClose={this.hidePlateDetailView}
+          />
+        ) : (
+          undefined
+        )}
       </Modal>
     );
   }

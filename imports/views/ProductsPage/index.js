@@ -2,6 +2,7 @@ import React from 'react';
 
 import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
+import { PlatesData } from '../../api/plates';
 
 import ProductPageHeaderButtons from './ProductPageHeaderButtons';
 import PageHeaderSearch from '../components/PageHeaderSearch';
@@ -17,6 +18,7 @@ export default class ProductsPage extends React.Component {
       isManager: false,
       accountsData: [],
       productsData: [],
+      platesData: [],
       queryObj: {
         accountName: '',
         name: '',
@@ -60,10 +62,12 @@ export default class ProductsPage extends React.Component {
     this.databaseTracker = Tracker.autorun(() => {
       Meteor.subscribe('accounts');
       Meteor.subscribe('products');
+      Meteor.subscribe('plates');
       const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
       const productsData = ProductsData.find({}, { sort: { name: 1 } }).fetch();
+      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
 
-      this.setState({ accountsData, productsData });
+      this.setState({ accountsData, productsData, platesData });
     });
   }
 
@@ -138,6 +142,7 @@ export default class ProductsPage extends React.Component {
             queryObj={this.state.queryObj}
             accountsData={this.state.accountsData}
             productsData={this.state.productsData}
+            platesData={this.state.platesData}
           />
         </div>
       </div>

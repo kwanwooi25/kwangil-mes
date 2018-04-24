@@ -1,0 +1,27 @@
+.user-modal {
+  .form-element-container {
+    align-items: flex-start;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  .form-element__label {
+    margin-bottom: $space-xs;
+  }
+
+  .form-element span {
+    text-align: right;
+  }
+}
+
+.user-modal__role-select {
+  height: 2.1rem;
+  margin: 0;
+}
+
+.user-modal__error {
+  color: $color-error--500;
+  font-weight: $font-weight--bold;
+  margin: 0;
+  text-align: center;
+}

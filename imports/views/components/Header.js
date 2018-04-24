@@ -6,8 +6,29 @@ export default class Header extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      isAdmin: false,
+      displayName: ''
+    }
+
     this.onNavToggle = this.onNavToggle.bind(this);
     this.closeNav = this.closeNav.bind(this);
+  }
+
+  componentDidMount() {
+    // tracks if the user logged in is admin or manager
+    this.authTracker = Tracker.autorun(() => {
+      if (Meteor.user()) {
+        this.setState({
+          isAdmin: Meteor.user().profile.isAdmin,
+          displayName: Meteor.user().profile.displayName
+        });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.authTracker.stop();
   }
 
   onNavToggle(e) {
@@ -54,14 +75,19 @@ export default class Header extends React.Component {
                 광일MES
               </NavLink>
             </div>
-            <a
-              className="header--logout"
-              onClick={() => {
-                Accounts.logout();
-              }}
-            >
-              <i className="fa fa-sign-out fa-lg"></i>
-            </a>
+            <div className="header--button-container">
+              <span className="header--userLoggedIn">
+                <b>{this.state.displayName}</b>님, 안녕하세요.
+              </span>
+              <a
+                className="header--logout"
+                onClick={() => {
+                  Accounts.logout();
+                }}
+              >
+                <i className="fa fa-sign-out"></i>
+              </a>
+            </div>
           </div>
         </div>
         <nav className="nav">
@@ -105,6 +131,16 @@ export default class Header extends React.Component {
           >
             주문관리
           </NavLink>
+          {this.state.isAdmin ? (
+            <NavLink
+              className="nav--item"
+              activeClassName="nav--item--active"
+              to="/users"
+              onClick={this.closeNav}
+            >
+              사용자관리
+            </NavLink>
+          ): undefined}
         </nav>
       </header>
     );

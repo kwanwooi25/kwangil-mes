@@ -88,12 +88,14 @@ export default class ProductListItem extends React.Component {
 
     return (
       <li className="product" key={product._id} id={product._id}>
-        <div className="product-checkbox-container">
-          <Checkbox
-            name={product._id}
-            onInputChange={this.props.onCheckboxChange}
-          />
-        </div>
+        {this.state.isAdmin || this.state.isManager ? (
+          <div className="product-checkbox-container">
+            <Checkbox
+              name={product._id}
+              onInputChange={this.props.onCheckboxChange}
+            />
+          </div>
+        ): undefined}
         <div className="product-container">
           <div className="product-name-container">
             <a

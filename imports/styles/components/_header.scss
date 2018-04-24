@@ -34,15 +34,28 @@
   }
 }
 
+.header--button-container {
+  align-items: stretch;
+  display: flex;
+}
+
+.header--userLoggedIn {
+  align-self: center;
+  color: white;
+  vertical-align: middle;
+}
+
 .header--logout {
   color: white;
-  display: inline-block;
+  display: flex;
   font-size: $font-size--md;
+  justify-content: flex-end;
   padding: $space-md;
   text-decoration: none;
+  width: 5rem;
 
   i {
-    vertical-align: middle;
+    font-size: $font-size--lg;
   }
 
   &:hover {
@@ -78,7 +91,7 @@
 }
 
 .nav {
-  background: $color-primary--100;
+  background: $color-primary--50;
   box-shadow: $box-shadow--2;
   display: flex;
   flex-direction: column;
@@ -105,7 +118,7 @@
 
   &:hover,
   &--active {
-    background: $color-primary--300;
+    background: $color-primary--200;
     color: white;
   }
 }
