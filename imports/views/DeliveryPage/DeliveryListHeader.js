@@ -10,21 +10,21 @@ export default class DeliveryListHeader extends React.Component {
   onCheckboxChange
   isSelectedMulti
   selectedOrders
-  showCompleteConfirmationModal
+  showConfirmationModal
   ==========================================================================*/
   constructor(props) {
     super(props);
 
-    // this.onPrintMultiOrderClick = this.onPrintMultiOrderClick.bind(this);
+    this.onMultiDeliveryOrderClick = this.onMultiDeliveryOrderClick.bind(this);
     this.onCompleteMultiDeliveryClick = this.onCompleteMultiDeliveryClick.bind(this);
   }
 
-  // onPrintMultiOrderClick() {
-  //   printOrders(this.props.selectedOrders);
-  // }
+  onMultiDeliveryOrderClick() {
+
+  }
 
   onCompleteMultiDeliveryClick() {
-    this.props.showCompleteConfirmationModal(this.props.selectedOrders);
+    this.props.showConfirmationModal(this.props.selectedOrders);
   }
 
   render() {
@@ -37,15 +37,15 @@ export default class DeliveryListHeader extends React.Component {
         />
         <div className="order-buttons-container">
           <button
-            className="button button-with-icon-span order-button"
-            // onClick={this.onPrintMultiOrderClick}
+            className="button button-with-icon-span delivery-list-item__button"
+            onClick={this.onMultiDeliveryOrderClick}
             disabled={!this.props.isSelected}
           >
-            <i className="fa fa-print fa-lg" />
-            <span>출력</span>
+            <i className="fa fa-truck fa-lg" />
+            <span>출고등록</span>
           </button>
           <button
-            className="button button-with-icon-span order-button"
+            className="button button-with-icon-span delivery-list-item__button"
             onClick={this.onCompleteMultiDeliveryClick}
             disabled={!this.props.isSelectedMulti}
           >

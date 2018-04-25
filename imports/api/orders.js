@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import SimpleSchema from 'simpl-schema';
 
 export const OrdersData = new Mongo.Collection('orders');
 export const OrderCounter = new Mongo.Collection('orderCounter');
@@ -42,7 +41,7 @@ Meteor.methods({
       OrdersData.insert({ _id: orderID, data });
     }
   },
-  
+
   'orders.update'(orderID, data) {
     if (!this.userId) {
       throw new Meteor.Error('User not logged in!');

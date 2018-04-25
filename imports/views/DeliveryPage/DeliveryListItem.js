@@ -18,7 +18,8 @@ export default class DeliveryListItem extends React.Component {
   showAccountDetailView
   showProductDetailView
   showOrderDetailView
-  showCompleteConfirmationModal
+  showDeliveryOrderModal
+  showConfirmationModal
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -32,8 +33,7 @@ export default class DeliveryListItem extends React.Component {
     this.onProductNameClick = this.onProductNameClick.bind(this);
     this.onOrderIDClick = this.onOrderIDClick.bind(this);
     this.onCompleteDeliveryClick = this.onCompleteDeliveryClick.bind(this);
-    // this.onEditClick = this.onEditClick.bind(this);
-    // this.onDeleteClick = this.onDeleteClick.bind(this);
+    this.onDeliveryOrderClick = this.onDeliveryOrderClick.bind(this);
   }
 
   // set state on props change
@@ -61,7 +61,12 @@ export default class DeliveryListItem extends React.Component {
 
   onCompleteDeliveryClick(e) {
     const selectedOrderID = this.getOrderID(e.target);
-    this.props.showCompleteConfirmationModal([selectedOrderID]);
+    this.props.showConfirmationModal([selectedOrderID]);
+  }
+
+  onDeliveryOrderClick(e) {
+    const selectedOrderID = this.getOrderID(e.target);
+    this.props.showDeliveryOrderModal(selectedOrderID);
   }
 
   getOrderID(target) {
@@ -184,6 +189,14 @@ export default class DeliveryListItem extends React.Component {
 
         {this.state.isAdmin || this.state.isManager ? (
           <div className="delivery-list-item__buttons-container">
+            <button
+              className="button button-with-icon-span delivery-list-item__button"
+              onClick={this.onDeliveryOrderClick}
+              disabled={order.data.isDelivered}
+            >
+              <i className="fa fa-truck fa-lg" />
+              <span>출고등록</span>
+            </button>
             <button
               className="button button-with-icon-span delivery-list-item__button"
               onClick={this.onCompleteDeliveryClick}

@@ -7,6 +7,7 @@ export default class TextInput extends React.Component {
   inputType
   id                 : for id and name attribute
   value
+  disabled
   onInputChange      : for onChange and onBlur function
   listID             : datalist id for autocomplete
   errorMessage
@@ -19,6 +20,7 @@ export default class TextInput extends React.Component {
           id={this.props.id}
           name={this.props.id}
           value={this.props.value}
+          disabled={this.props.disabled}
           onChange={this.props.onInputChange}
           onBlur={this.props.onInputChange}
           list={this.props.listID}

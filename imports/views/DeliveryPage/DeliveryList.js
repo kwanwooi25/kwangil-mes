@@ -8,6 +8,7 @@ import DeliveryListItem from './DeliveryListItem';
 import AccountDetailView from '../AccountsPage/AccountDetailView';
 import ProductDetailView from '../ProductsPage/ProductDetailView';
 import OrderDetailView from '../OrdersPage/OrderDetailView';
+import DeliveryOrderModal from './DeliveryOrderModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class DeliveryList extends React.Component {
@@ -34,14 +35,13 @@ export default class DeliveryList extends React.Component {
       isAccountDetailViewOpen: false,
       isProductDetailViewOpen: false,
       isOrderDetailViewOpen: false,
-      isCompleteOrderModalOpen: false,
-      isProductOrderModalOpen: false,
-      isCompleteConfirmationModalOpen: false,
-      isCompleteMultiOrderModalOpen: false,
+      isDeliveryOrderModalOpen: false,
+      isConfirmationModalOpen: false,
       selectedAccountID: '',
       selectedProductID: '',
       selectedOrderID: '',
       selectedOrders: [],
+      confirmationTitle: '',
       confirmationDescription: [],
       isSelected: false,
       isSelectedMulti: false
@@ -54,12 +54,10 @@ export default class DeliveryList extends React.Component {
     this.hideProductDetailView = this.hideProductDetailView.bind(this);
     this.showOrderDetailView = this.showOrderDetailView.bind(this);
     this.hideOrderDetailView = this.hideOrderDetailView.bind(this);
-    this.showCompleteConfirmationModal = this.showCompleteConfirmationModal.bind(
-      this
-    );
-    this.hideCompleteConfirmationModal = this.hideCompleteConfirmationModal.bind(
-      this
-    );
+    this.showDeliveryOrderModal = this.showDeliveryOrderModal.bind(this);
+    this.hideDeliveryOrderModal = this.hideDeliveryOrderModal.bind(this);
+    this.showConfirmationModal = this.showConfirmationModal.bind(this);
+    this.hideConfirmationModal = this.hideConfirmationModal.bind(this);
   }
 
   // set state on props change
@@ -130,7 +128,16 @@ export default class DeliveryList extends React.Component {
     this.setState({ isOrderDetailViewOpen: false, selectedOrderID: '' });
   }
 
-  showCompleteConfirmationModal(selectedOrders) {
+  showDeliveryOrderModal(selectedOrderID) {
+    this.setState({ isDeliveryOrderModalOpen: true, selectedOrderID });
+  }
+
+  hideDeliveryOrderModal(selectedOrderID) {
+    this.setState({ isDeliveryOrderModalOpen: false, selectedOrderID: '' });
+  }
+
+  showConfirmationModal(selectedOrders) {
+    let confirmationTitle = '납품 완료';
     let confirmationDescription = [`${selectedOrders.length}건 납품완료하시겠습니까?`];
 
     selectedOrders.map(orderID => {
@@ -146,24 +153,23 @@ export default class DeliveryList extends React.Component {
     });
 
     this.setState({
-      isCompleteConfirmationModalOpen: true,
+      isConfirmationModalOpen: true,
       selectedOrders,
+      confirmationTitle,
       confirmationDescription
     });
   }
 
-  hideCompleteConfirmationModal(answer) {
-    this.setState({ isCompleteConfirmationModalOpen: false });
+  hideConfirmationModal(answer) {
+    this.setState({ isConfirmationModalOpen: false });
 
-    if (answer) {
-      this.state.selectedOrders.map(orderID => {
-        const order = this.state.ordersData.find(order => order._id === orderID);
-        order.data.isDelivered = true;
-        order.data.deliveredAt = moment().format('YYYY-MM-DD');
+    this.state.selectedOrders.map(orderID => {
+      const order = this.state.ordersData.find(order => order._id === orderID);
+      order.data.isDelivered = true;
+      order.data.deliveredAt = moment().format('YYYY-MM-DD');
 
-        Meteor.call('orders.update', order._id, order.data, (err, res) => {});
-      });
-    }
+      Meteor.call('orders.update', order._id, order.data, (err, res) => {});
+    });
   }
 
   getDeliveryList(query) {
@@ -200,7 +206,8 @@ export default class DeliveryList extends React.Component {
             showAccountDetailView={this.showAccountDetailView}
             showProductDetailView={this.showProductDetailView}
             showOrderDetailView={this.showOrderDetailView}
-            showCompleteConfirmationModal={this.showCompleteConfirmationModal}
+            showDeliveryOrderModal={this.showDeliveryOrderModal}
+            showConfirmationModal={this.showConfirmationModal}
           />
         );
       }
@@ -217,7 +224,7 @@ export default class DeliveryList extends React.Component {
               isSelected={this.state.isSelected}
               isSelectedMulti={this.state.isSelectedMulti}
               selectedOrders={this.state.selectedOrders}
-              showCompleteConfirmationModal={this.showCompleteConfirmationModal}
+              showConfirmationModal={this.showConfirmationModal}
             />
           ) : (
             undefined
@@ -255,12 +262,22 @@ export default class DeliveryList extends React.Component {
           undefined
         )}
 
-        {this.state.isCompleteConfirmationModalOpen ? (
+        {this.state.isDeliveryOrderModalOpen ? (
+          <DeliveryOrderModal
+            isOpen={this.state.isDeliveryOrderModalOpen}
+            orderID={this.state.selectedOrderID}
+            onModalClose={this.hideDeliveryOrderModal}
+          />
+        ) : (
+          undefined
+        )}
+
+        {this.state.isConfirmationModalOpen ? (
           <ConfirmationModal
-            isOpen={this.state.isCompleteConfirmationModalOpen}
-            title="납품 완료"
+            isOpen={this.state.isConfirmationModalOpen}
+            title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
-            onModalClose={this.hideCompleteConfirmationModal}
+            onModalClose={this.hideConfirmationModal}
           />
         ) : (
           undefined
