@@ -5,11 +5,11 @@ import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
 import { OrdersData } from '../../api/orders';
 
-import OrderPageHeaderButtons from './OrderPageHeaderButtons';
-import OrderSearchExpand from './OrderSearchExpand';
-import OrderList from './OrderList';
+import PageHeaderSearch from '../components/PageHeaderSearch';
+import DeliveryPageHeaderButtons from './DeliveryPageHeaderButtons';
+import DeliveryList from './DeliveryList';
 
-export default class OrdersPage extends React.Component {
+export default class DeliveryPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -19,19 +19,10 @@ export default class OrdersPage extends React.Component {
       accountsData: [],
       productsData: [],
       ordersData: [],
-      queryObj: {
-        searchFrom: moment()
-          .subtract(2, 'weeks')
-          .format('YYYY-MM-DD'),
-        searchTo: moment().format('YYYY-MM-DD'),
-        isPrintQuery: 'both',
-        accountName: '',
-        productName: '',
-        showCompletedOrder: false
-      }
+      query: ''
     };
 
-    this.onOrderSearchChange = this.onOrderSearchChange.bind(this);
+    this.onInputSearchChange = this.onInputSearchChange.bind(this);
   }
 
   componentDidMount() {
@@ -88,8 +79,8 @@ export default class OrdersPage extends React.Component {
     pageContent.style.height = contentHeight;
   }
 
-  onOrderSearchChange(queryObj) {
-    this.setState({ queryObj });
+  onInputSearchChange(query) {
+    this.setState({ query });
   }
 
   render() {
@@ -97,8 +88,9 @@ export default class OrdersPage extends React.Component {
       <div className="main">
         <div className="page-header">
           <div className="page-header__row">
-            <h1 className="page-header__title">작업지시목록</h1>
-            <OrderPageHeaderButtons
+            <h1 className="page-header__title">납품대기목록</h1>
+            <PageHeaderSearch onInputSearchChange={this.onInputSearchChange} />
+            <DeliveryPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
               accountsData={this.state.accountsData}
@@ -106,13 +98,11 @@ export default class OrdersPage extends React.Component {
               ordersData={this.state.ordersData}
             />
           </div>
-
-          <OrderSearchExpand onOrderSearchChange={this.onOrderSearchChange} />
         </div>
 
         <div className="page-content">
-          <OrderList
-            queryObj={this.state.queryObj}
+          <DeliveryList
+            query={this.state.query}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             accountsData={this.state.accountsData}

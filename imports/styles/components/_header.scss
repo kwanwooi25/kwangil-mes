@@ -46,16 +46,19 @@
 }
 
 .header--logout {
+  align-items: center;
   color: white;
   display: flex;
   font-size: $font-size--md;
-  justify-content: flex-end;
-  padding: $space-md;
+  justify-content: center;
   text-decoration: none;
   width: 5rem;
 
   i {
     font-size: $font-size--lg;
+    padding: $space-sm;
+    width: 100%;
+    text-align: right;
   }
 
   &:hover {

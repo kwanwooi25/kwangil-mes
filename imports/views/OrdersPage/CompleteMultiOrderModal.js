@@ -112,11 +112,8 @@ export default class CompleteMultiOrderModal extends React.Component {
 
   onClickOK() {
     let isValidated = false;
-    let confirmationDescription = [
-      `
-      주문 ${this.state.ordersCount}건 작업 완료 하시겠습니까?
-    `
-    ];
+    let confirmationDescription = [`${this.state.ordersCount}건 작업 완료 하시겠습니까?`];
+
     for (let i = 0; i < this.state.ordersCount; i++) {
       const targetName = `completedQuantityArray[${i}]`;
       const value = this.state.completedQuantityArray[i];

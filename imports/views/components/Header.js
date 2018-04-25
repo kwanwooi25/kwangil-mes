@@ -131,6 +131,14 @@ export default class Header extends React.Component {
           >
             주문관리
           </NavLink>
+          <NavLink
+            className="nav--item"
+            activeClassName="nav--item--active"
+            to="/delivery"
+            onClick={this.closeNav}
+          >
+            납품관리
+          </NavLink>
           {this.state.isAdmin ? (
             <NavLink
               className="nav--item"

@@ -3,17 +3,14 @@ import moment from 'moment';
 
 import { comma } from '../../api/comma';
 
-import OrderListHeader from './OrderListHeader';
-import OrderListItem from './OrderListItem';
+import DeliveryListHeader from './DeliveryListHeader';
+import DeliveryListItem from './DeliveryListItem';
 import AccountDetailView from '../AccountsPage/AccountDetailView';
 import ProductDetailView from '../ProductsPage/ProductDetailView';
-import OrderDetailView from './OrderDetailView';
-import ProductOrderModal from '../ProductsPage/ProductOrderModal';
-import CompleteOrderModal from './CompleteOrderModal';
-import CompleteMultiOrderModal from './CompleteMultiOrderModal';
+import OrderDetailView from '../OrdersPage/OrderDetailView';
 import ConfirmationModal from '../components/ConfirmationModal';
 
-export default class OrderList extends React.Component {
+export default class DeliveryList extends React.Component {
   /*=========================================================================
   >> props <<
   query : query string to filter list
@@ -27,7 +24,7 @@ export default class OrderList extends React.Component {
     super(props);
 
     this.state = {
-      queryObj: props.queryObj,
+      query: props.query,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
       accountsData: props.accountsData,
@@ -39,13 +36,14 @@ export default class OrderList extends React.Component {
       isOrderDetailViewOpen: false,
       isCompleteOrderModalOpen: false,
       isProductOrderModalOpen: false,
-      isDeleteConfirmationModalOpen: false,
+      isCompleteConfirmationModalOpen: false,
       isCompleteMultiOrderModalOpen: false,
       selectedAccountID: '',
       selectedProductID: '',
       selectedOrderID: '',
       selectedOrders: [],
       confirmationDescription: [],
+      isSelected: false,
       isSelectedMulti: false
     };
 
@@ -56,21 +54,10 @@ export default class OrderList extends React.Component {
     this.hideProductDetailView = this.hideProductDetailView.bind(this);
     this.showOrderDetailView = this.showOrderDetailView.bind(this);
     this.hideOrderDetailView = this.hideOrderDetailView.bind(this);
-    this.updateOrderStatus = this.updateOrderStatus.bind(this);
-    this.showCompleteOrderModal = this.showCompleteOrderModal.bind(this);
-    this.hideCompleteOrderModal = this.hideCompleteOrderModal.bind(this);
-    this.showProductOrderModal = this.showProductOrderModal.bind(this);
-    this.hideProductOrderModal = this.hideProductOrderModal.bind(this);
-    this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
+    this.showCompleteConfirmationModal = this.showCompleteConfirmationModal.bind(
       this
     );
-    this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
-      this
-    );
-    this.showCompleteMultiOrderModal = this.showCompleteMultiOrderModal.bind(
-      this
-    );
-    this.hideCompleteMultiOrderModal = this.hideCompleteMultiOrderModal.bind(
+    this.hideCompleteConfirmationModal = this.hideCompleteConfirmationModal.bind(
       this
     );
   }
@@ -78,7 +65,7 @@ export default class OrderList extends React.Component {
   // set state on props change
   componentWillReceiveProps(props) {
     this.setState({
-      queryObj: props.queryObj,
+      query: props.query,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
       accountsData: props.accountsData,
@@ -93,7 +80,7 @@ export default class OrderList extends React.Component {
     if (e.target.name === 'selectAll') {
       selectedOrders = [];
       const checkboxes = document.querySelectorAll(
-        '#order-list input[type="checkbox"]'
+        '#delivery-list input[type="checkbox"]'
       );
 
       for (let i = 0; i < checkboxes.length; i++) {
@@ -110,9 +97,11 @@ export default class OrderList extends React.Component {
     }
     selectedOrders = selectedOrders.filter(value => value !== 'selectAll');
     if (selectedOrders.length >= 2) {
-      this.setState({ isSelectedMulti: true });
+      this.setState({ isSelected: true, isSelectedMulti: true });
+    } else if (selectedOrders.length >= 1) {
+      this.setState({ isSelected: true, isSelectedMulti: false });
     } else {
-      this.setState({ isSelectedMulti: false });
+      this.setState({ isSelected: false, isSelectedMulti: false });
     }
     this.setState({ selectedOrders });
   }
@@ -141,43 +130,8 @@ export default class OrderList extends React.Component {
     this.setState({ isOrderDetailViewOpen: false, selectedOrderID: '' });
   }
 
-  updateOrderStatus(orderID, statusValue) {
-    const order = this.state.ordersData.find(order => order._id === orderID);
-    let data = order.data;
-    data.status = statusValue;
-
-    Meteor.call('orders.update', orderID, data, (err, res) => {
-      if (err) {
-        this.setState({ error: err.error });
-      }
-    });
-  }
-
-  showCompleteOrderModal(selectedOrders) {
-    if (selectedOrders.length === 1) {
-      this.setState({
-        isCompleteOrderModalOpen: true,
-        selectedOrders
-      });
-    }
-  }
-
-  hideCompleteOrderModal() {
-    this.setState({ isCompleteOrderModalOpen: false, selectedOrders: [] });
-  }
-
-  showProductOrderModal(selectedOrderID) {
-    this.setState({ isProductOrderModalOpen: true, selectedOrderID });
-  }
-
-  hideProductOrderModal() {
-    this.setState({ isProductOrderModalOpen: false, selectedOrderID: '' });
-  }
-
-  showDeleteConfirmationModal(selectedOrders) {
-    let confirmationDescription = [
-      `작업지시 ${selectedOrders.length}건 취소하시겠습니까?`
-    ];
+  showCompleteConfirmationModal(selectedOrders) {
+    let confirmationDescription = [`${selectedOrders.length}건 납품완료하시겠습니까?`];
 
     selectedOrders.map(orderID => {
       const order = this.state.ordersData.find(
@@ -186,38 +140,33 @@ export default class OrderList extends React.Component {
       const product = this.state.productsData.find(
         product => product._id === order.data.productID
       );
-      const orderInfoText = `${product.name} (${product.thick}x${product.length}x${product.width}) = ${comma(order.data.orderQuantity)}매`;
+      const deliveryInfoText = `${product.name} (${product.thick}x${product.length}x${product.width}) = ${comma(order.data.completedQuantity)}매`;
 
-      confirmationDescription.push(orderInfoText);
+      confirmationDescription.push(deliveryInfoText);
     });
 
     this.setState({
-      isDeleteConfirmationModalOpen: true,
+      isCompleteConfirmationModalOpen: true,
       selectedOrders,
       confirmationDescription
     });
   }
 
-  hideDeleteConfirmationModal(answer) {
-    this.setState({ isDeleteConfirmationModalOpen: false });
+  hideCompleteConfirmationModal(answer) {
+    this.setState({ isCompleteConfirmationModalOpen: false });
 
     if (answer) {
       this.state.selectedOrders.map(orderID => {
-        Meteor.call('orders.remove', orderID);
+        const order = this.state.ordersData.find(order => order._id === orderID);
+        order.data.isDelivered = true;
+        order.data.deliveredAt = moment().format('YYYY-MM-DD');
+
+        Meteor.call('orders.update', order._id, order.data, (err, res) => {});
       });
     }
   }
 
-  // show order complete modal multi
-  showCompleteMultiOrderModal() {
-    this.setState({ isCompleteMultiOrderModalOpen: true });
-  }
-
-  hideCompleteMultiOrderModal() {
-    this.setState({ isCompleteMultiOrderModalOpen: false });
-  }
-
-  getOrderList(queryObj) {
+  getDeliveryList(query) {
     return this.state.ordersData.map(order => {
       const product = this.state.productsData.find(
         product => product._id === order.data.productID
@@ -228,45 +177,19 @@ export default class OrderList extends React.Component {
 
       let matchQuery = false;
 
-      const orderedAt = moment(order.data.orderedAt);
-      const searchFrom = moment(queryObj.searchFrom);
-      const searchTo = moment(queryObj.searchTo);
-
       if (
-        searchFrom <= orderedAt &&
-        orderedAt <= searchTo &&
-        account.name.indexOf(queryObj.accountName) > -1 &&
-        product.name.indexOf(queryObj.productName) > -1
+        (account.name.indexOf(query) > -1 ||
+        product.name.indexOf(query) > -1) &&
+        order.data.isCompleted &&
+        !order.data.isDelivered
       ) {
-        if (!order.data.isCompleted) {
-          if (queryObj.isPrintQuery === 'both') {
-            matchQuery = true;
-          }
-          if (queryObj.isPrintQuery === 'false' && !product.isPrint) {
-            matchQuery = true;
-          }
-          if (queryObj.isPrintQuery === 'true' && product.isPrint) {
-            matchQuery = true;
-          }
-        } else {
-          if (queryObj.showCompletedOrder) {
-            if (queryObj.isPrintQuery === 'both') {
-              matchQuery = true;
-            }
-            if (queryObj.isPrintQuery === 'false' && !product.isPrint) {
-              matchQuery = true;
-            }
-            if (queryObj.isPrintQuery === 'true' && product.isPrint) {
-              matchQuery = true;
-            }
-          }
-        }
+        matchQuery = true;
       }
 
       // only show product that has matching query text
       if (matchQuery) {
         return (
-          <OrderListItem
+          <DeliveryListItem
             key={order._id}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
@@ -277,10 +200,7 @@ export default class OrderList extends React.Component {
             showAccountDetailView={this.showAccountDetailView}
             showProductDetailView={this.showProductDetailView}
             showOrderDetailView={this.showOrderDetailView}
-            updateOrderStatus={this.updateOrderStatus}
-            showCompleteOrderModal={this.showCompleteOrderModal}
-            showProductOrderModal={this.showProductOrderModal}
-            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+            showCompleteConfirmationModal={this.showCompleteConfirmationModal}
           />
         );
       }
@@ -292,18 +212,18 @@ export default class OrderList extends React.Component {
       <div className="list-container">
         {this.state.ordersCount &&
           (this.state.isAdmin || this.state.isManager) ? (
-            <OrderListHeader
+            <DeliveryListHeader
               onCheckboxChange={this.onCheckboxChange}
+              isSelected={this.state.isSelected}
               isSelectedMulti={this.state.isSelectedMulti}
               selectedOrders={this.state.selectedOrders}
-              showCompleteMultiOrderModal={this.showCompleteMultiOrderModal}
-              showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+              showCompleteConfirmationModal={this.showCompleteConfirmationModal}
             />
           ) : (
             undefined
           )}
 
-        <ul id="order-list">{this.getOrderList(this.state.queryObj)}</ul>
+        <ul id="delivery-list">{this.getDeliveryList(this.state.query)}</ul>
 
         {this.state.isAccountDetailViewOpen ? (
           <AccountDetailView
@@ -335,44 +255,12 @@ export default class OrderList extends React.Component {
           undefined
         )}
 
-        {this.state.isCompleteOrderModalOpen ? (
-          <CompleteOrderModal
-            isOpen={this.state.isCompleteOrderModalOpen}
-            orderID={this.state.selectedOrders[0]}
-            onModalClose={this.hideCompleteOrderModal}
-          />
-        ) : (
-          undefined
-        )}
-
-        {this.state.isProductOrderModalOpen ? (
-          <ProductOrderModal
-            isOpen={this.state.isProductOrderModalOpen}
-            orderID={this.state.selectedOrderID}
-            onModalClose={this.hideProductOrderModal}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
-          />
-        ) : (
-          undefined
-        )}
-
-        {this.state.isDeleteConfirmationModalOpen ? (
+        {this.state.isCompleteConfirmationModalOpen ? (
           <ConfirmationModal
-            isOpen={this.state.isDeleteConfirmationModalOpen}
-            title="작업지시 취소"
+            isOpen={this.state.isCompleteConfirmationModalOpen}
+            title="납품 완료"
             descriptionArray={this.state.confirmationDescription}
-            onModalClose={this.hideDeleteConfirmationModal}
-          />
-        ) : (
-          undefined
-        )}
-
-        {this.state.isCompleteMultiOrderModalOpen ? (
-          <CompleteMultiOrderModal
-            isOpen={this.state.isCompleteMultiOrderModalOpen}
-            selectedOrders={this.state.selectedOrders}
-            onModalClose={this.hideCompleteMultiOrderModal}
+            onModalClose={this.hideCompleteConfirmationModal}
           />
         ) : (
           undefined

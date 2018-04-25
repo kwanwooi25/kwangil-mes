@@ -1,14 +1,15 @@
 import React from 'react';
 
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
-import { OrdersData } from '../../api/orders';
+import { exportCSV } from '../../api/exportCSV';
 
 export default class OrderPageHeaderButtons extends React.Component {
   /*=========================================================================
   >> props <<
   isAdmin
   isManager
+  accountsData
+  productsData
+  ordersData
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -18,7 +19,7 @@ export default class OrderPageHeaderButtons extends React.Component {
 
   onClickExportExcel() {
     const list = document.getElementById('order-list');
-    const filename = '광일작업지시내역.csv';
+    const filename = '광일_작업지시내역.csv';
     const slice = Array.prototype.slice;
 
     // get order list
@@ -45,7 +46,7 @@ export default class OrderPageHeaderButtons extends React.Component {
     ];
 
     for (let i = 0; i < lis.length; i++) {
-      orders.push(OrdersData.findOne({ _id: lis[i].id }));
+      orders.push(this.props.ordersData.find(order => order._id === lis[i].id));
     }
 
     // generate header csv
@@ -55,8 +56,12 @@ export default class OrderPageHeaderButtons extends React.Component {
     // generate body csv from account list
     const bodyCSV = orders
       .map(order => {
-        const product = ProductsData.findOne({ _id: order.data.productID });
-        const account = AccountsData.findOne({ _id: product.accountID });
+        const product = this.props.productsData.find(
+          product => product._id === order.data.productID
+        );
+        const account = this.props.accountsData.find(
+          account => account._id === product.accountID
+        );
         return keys
           .map(key => {
             switch (key) {
@@ -82,30 +87,7 @@ export default class OrderPageHeaderButtons extends React.Component {
       })
       .join('\r\n');
 
-    // function to generate download anchor
-    const downloadAnchor = content => {
-      const anchor = document.createElement('a');
-      anchor.style = 'display:none !important';
-      anchor.id = 'downloadanchor';
-      document.body.appendChild(anchor);
-
-      if ('download' in anchor) {
-        anchor.download = filename;
-      }
-      anchor.href = content;
-      anchor.click();
-      anchor.remove();
-    };
-
-    // ** must add '\ueff' to prevent broken korean font
-    const blob = new Blob(['\ufeff' + headerCSV + '\r\n' + bodyCSV], {
-      type: 'text/csv;charset=utf-8;'
-    });
-    if (navigator.msSaveOrOpenBlob) {
-      navigator.msSaveOrOpenBlob(blob, filename);
-    } else {
-      downloadAnchor(URL.createObjectURL(blob));
-    }
+    exportCSV(headerCSV, bodyCSV, filename);
   }
 
   render() {
