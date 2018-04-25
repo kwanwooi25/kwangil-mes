@@ -1,55 +1,146 @@
 .complete-order-modal {
   overflow-x: hidden;
   width: 95%;
-  max-width: 420px;
+  max-width: $break--lg;
+}
+
+#order-list-to-complete {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.complete-order-modal__list-item {
+  align-items: center;
+  border-bottom: 1px solid $color-primary--500;
+  display: flex;
+  flex-wrap: wrap;
+  padding: $space-xs 0;
 }
 
 .complete-order-modal__order-details-container {
+  width: 60%;
+}
+
+.complete-order-modal__inputs-container {
+  width: 40%;
+}
+
+.complete-order-modal__input-container {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
+  padding: $space-xs 0;
 }
+
 .complete-order-modal__accountName,
 .complete-order-modal__productName,
 .complete-order-modal__productSize,
 .complete-order-modal__orderQuantity {
-  font-size: $font-size--lg;
+  font-size: $font-size--md;
   margin: 0;
   padding: $space-xs;
   width: 100%;
 }
 
 .complete-order-modal__productName {
-  font-size: $font-size--xl;
+  font-size: $font-size--lg;
   font-weight: $font-weight--bold;
 }
 
-.complete-order-modal__productSize {
-  font-size: $font-size--md;
-  width: 40%;
-}
-
-.complete-order-modal__orderQuantity {
-  text-align: right;
-  width: 60%;
-}
-
-.complete-order-modal__form {
-  border-top: 1px solid $color-primary--500;
-  margin-top: $space-md;
-  padding-top: $space-md;
-}
-
-.complete-order-modal__input-container {
-  align-items: center;
-  display: flex;
-  padding: $space-xs;
-}
-
 .complete-order-modal__label {
-  width: 20%;
+  font-size: $font-size--sm;
+  margin-bottom: 0 !important;
+  width: 35%;
 }
 
 .complete-order-modal__input {
-  margin-right: $space-md;
+  width: 65%;
+}
+
+.complete-order-modal__completedAt-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-top: $space-lg;
+
+  .complete-order-modal__label {
+    font-size: $font-size--md;
+    margin-right: $space-md;
+    width: auto;
+  }
+}
+
+@media (min-width: $break--md) {
+  .complete-order-modal__order-details-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-right: $space-md;
+    width: 65%;
+  }
+
+  .complete-order-modal__inputs-container {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: 35%;
+  }
+
+  .complete-order-modal__names-container {
+    width: 60%;
+  }
+
+  .complete-order-modal__size-container {
+    width: 40%;
+    text-align: right;
+  }
+
+  .complete-order-modal__input-container {
+    align-items: flex-start;
+    flex-direction: column;
+    max-width: 50%;
+  }
+
+  .complete-order-modal__label,
+  .complete-order-modal__input {
+    width: 100%;
+  }
+}
+
+@media (min-width: $break--lg) {
+  .complete-order-modal__order-details-container {
+    width: 75%;
+  }
+
+  .complete-order-modal__inputs-container {
+    width: 25%;
+  }
+
+  .complete-order-modal__names-container,
+  .complete-order-modal__size-container {
+    align-items: center;
+    display: flex;
+  }
+
+  .complete-order-modal__accountName {
+    width: 30%;
+  }
+
+  .complete-order-modal__productName {
+    width: 70%;
+  }
+
+  .complete-order-modal__productSize {
+    width: 45%;
+    text-align: left;
+  }
+
+  .complete-order-modal__orderQuantity {
+    width: 55%;
+    text-align: left;
+  }
 }

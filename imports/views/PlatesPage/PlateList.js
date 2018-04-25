@@ -32,7 +32,7 @@ export default class PlateList extends React.Component {
       isPlateModalOpen: false,
       isDeleteConfirmationModalOpen: false,
       selectedPlateID: '',
-      selectedProductID:'',
+      selectedProductID: '',
       confirmationDescription: [],
       platesCount: props.platesData.length,
       isSelectedMulti: false,
@@ -83,9 +83,7 @@ export default class PlateList extends React.Component {
         }
       }
     } else {
-      selectedPlates = selectedPlates.filter(
-        value => value !== e.target.name
-      );
+      selectedPlates = selectedPlates.filter(value => value !== e.target.name);
       if (e.target.checked) {
         selectedPlates.push(e.target.name);
       }
@@ -135,7 +133,9 @@ export default class PlateList extends React.Component {
 
   // show confirmation modal before delete
   showDeleteConfirmationModal(selectedPlates) {
-    let confirmationDescription = [`${selectedPlates.length}개 동판 삭제하시겠습니까?`];
+    let confirmationDescription = [
+      `${selectedPlates.length}개 동판 삭제하시겠습니까?`
+    ];
 
     selectedPlates.map(plateID => {
       const plate = this.state.platesData.find(plate => plate._id === plateID);
@@ -167,7 +167,6 @@ export default class PlateList extends React.Component {
 
   getProductList(queryObj) {
     return this.state.platesData.map(plate => {
-
       // store product names in an array
       const productNames = [];
       plate.forProductList.map(({ productID }) => {
@@ -222,8 +221,8 @@ export default class PlateList extends React.Component {
 
   render() {
     return (
-      <ul id="plate-list">
-        {this.state.platesCount &&
+      <div className="list-container">
+        {this.state.platesCount > 0 &&
           (this.state.isAdmin || this.state.isManager) ? (
             <div className="plate-list-header">
               <Checkbox
@@ -246,7 +245,9 @@ export default class PlateList extends React.Component {
             undefined
           )}
 
-        {this.getProductList(this.state.queryObj)}
+        <ul id="plate-list" className="list">
+          {this.getProductList(this.state.queryObj)}
+        </ul>
 
         {this.state.isPlateDetailViewOpen ? (
           <PlateDetailView
@@ -290,7 +291,7 @@ export default class PlateList extends React.Component {
         ) : (
           undefined
         )}
-      </ul>
+      </div>
     );
   }
 }

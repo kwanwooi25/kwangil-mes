@@ -4,6 +4,8 @@ import moment from 'moment';
 import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
 import { OrdersData } from '../../api/orders';
+import { DeliveryData } from '../../api/delivery';
+import { setLayout } from '../../api/setLayout';
 
 import PageHeaderSearch from '../components/PageHeaderSearch';
 import DeliveryPageHeaderButtons from './DeliveryPageHeaderButtons';
@@ -19,6 +21,7 @@ export default class DeliveryPage extends React.Component {
       accountsData: [],
       productsData: [],
       ordersData: [],
+      deliveryData: [],
       query: ''
     };
 
@@ -27,9 +30,9 @@ export default class DeliveryPage extends React.Component {
 
   componentDidMount() {
     // dynamically adjust height
-    this.setLayout();
+    setLayout();
     window.addEventListener('resize', () => {
-      this.setLayout();
+      setLayout();
     });
 
     // tracks if the user logged in is admin or manager
@@ -47,36 +50,19 @@ export default class DeliveryPage extends React.Component {
       Meteor.subscribe('accounts');
       Meteor.subscribe('products');
       Meteor.subscribe('orders');
+      Meteor.subscribe('delivery');
       const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
       const productsData = ProductsData.find({}, { sort: { name: 1 } }).fetch();
       const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
+      const deliveryData = DeliveryData.find({}, { sort: { _id: 1 } }).fetch();
 
-      this.setState({ accountsData, productsData, ordersData });
+      this.setState({ accountsData, productsData, ordersData, deliveryData });
     });
   }
 
   componentWillUnmount() {
     this.authTracker.stop();
     this.databaseTracker.stop();
-  }
-
-  // dynamically adjust height
-  setLayout() {
-    const headerHeight = document
-      .querySelector('.header')
-      .getBoundingClientRect().height;
-    const pageHeaderHeight = document
-      .querySelector('.page-header')
-      .getBoundingClientRect().height;
-    const main = document.querySelector('.main');
-    const pageContent = document.querySelector('.page-content');
-    const mainHeight = `calc(100vh - ${headerHeight + 10}px)`;
-    const contentHeight = `calc(100vh - ${headerHeight +
-      25 +
-      pageHeaderHeight}px)`;
-    main.style.height = mainHeight;
-    main.style.marginTop = `${headerHeight + 5}px`;
-    pageContent.style.height = contentHeight;
   }
 
   onInputSearchChange(query) {

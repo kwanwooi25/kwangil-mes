@@ -10,7 +10,7 @@ export default class OrderListHeader extends React.Component {
   onCheckboxChange
   isSelectedMulti
   selectedOrders
-  showCompleteMultiOrderModal
+  showCompleteOrderModal
   showDeleteConfirmationModal
   ==========================================================================*/
   constructor(props) {
@@ -26,7 +26,7 @@ export default class OrderListHeader extends React.Component {
   }
 
   onCompleteMultiOrderClick() {
-    this.props.showCompleteMultiOrderModal();
+    this.props.showCompleteOrderModal(this.props.selectedOrders);
   }
 
   onDeleteMultiClick() {

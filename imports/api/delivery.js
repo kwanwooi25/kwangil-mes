@@ -28,7 +28,7 @@ Meteor.methods({
       throw new Meteor.Error('User not logged in!');
     }
 
-    OrdersData.update({ _id: orderID }, { orderList });
+    DeliveryData.update({ _id: deliveryDate }, { orderList });
   },
   //
   // 'delivery.remove'(orderID) {

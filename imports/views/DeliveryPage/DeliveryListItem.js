@@ -66,7 +66,7 @@ export default class DeliveryListItem extends React.Component {
 
   onDeliveryOrderClick(e) {
     const selectedOrderID = this.getOrderID(e.target);
-    this.props.showDeliveryOrderModal(selectedOrderID);
+    this.props.showDeliveryOrderModal([selectedOrderID]);
   }
 
   getOrderID(target) {

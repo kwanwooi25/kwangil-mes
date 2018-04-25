@@ -36,6 +36,7 @@ export default class DeliveryList extends React.Component {
       isProductDetailViewOpen: false,
       isOrderDetailViewOpen: false,
       isDeliveryOrderModalOpen: false,
+      isMultiDeliveryOrderModalOpen: false,
       isConfirmationModalOpen: false,
       selectedAccountID: '',
       selectedProductID: '',
@@ -43,7 +44,6 @@ export default class DeliveryList extends React.Component {
       selectedOrders: [],
       confirmationTitle: '',
       confirmationDescription: [],
-      isSelected: false,
       isSelectedMulti: false
     };
 
@@ -95,11 +95,9 @@ export default class DeliveryList extends React.Component {
     }
     selectedOrders = selectedOrders.filter(value => value !== 'selectAll');
     if (selectedOrders.length >= 2) {
-      this.setState({ isSelected: true, isSelectedMulti: true });
-    } else if (selectedOrders.length >= 1) {
-      this.setState({ isSelected: true, isSelectedMulti: false });
+      this.setState({ isSelectedMulti: true });
     } else {
-      this.setState({ isSelected: false, isSelectedMulti: false });
+      this.setState({ isSelectedMulti: false });
     }
     this.setState({ selectedOrders });
   }
@@ -128,26 +126,32 @@ export default class DeliveryList extends React.Component {
     this.setState({ isOrderDetailViewOpen: false, selectedOrderID: '' });
   }
 
-  showDeliveryOrderModal(selectedOrderID) {
-    this.setState({ isDeliveryOrderModalOpen: true, selectedOrderID });
+  showDeliveryOrderModal(selectedOrders) {
+    this.setState({ isDeliveryOrderModalOpen: true, selectedOrders });
   }
 
-  hideDeliveryOrderModal(selectedOrderID) {
-    this.setState({ isDeliveryOrderModalOpen: false, selectedOrderID: '' });
+  hideDeliveryOrderModal() {
+    this.setState({
+      isDeliveryOrderModalOpen: false,
+      selectedOrders: [],
+      isSelectedMulti: false
+    });
   }
 
   showConfirmationModal(selectedOrders) {
     let confirmationTitle = '납품 완료';
-    let confirmationDescription = [`${selectedOrders.length}건 납품완료하시겠습니까?`];
+    let confirmationDescription = [
+      `${selectedOrders.length}건 납품완료하시겠습니까?`
+    ];
 
     selectedOrders.map(orderID => {
-      const order = this.state.ordersData.find(
-        order => order._id === orderID
-      );
+      const order = this.state.ordersData.find(order => order._id === orderID);
       const product = this.state.productsData.find(
         product => product._id === order.data.productID
       );
-      const deliveryInfoText = `${product.name} (${product.thick}x${product.length}x${product.width}) = ${comma(order.data.completedQuantity)}매`;
+      const deliveryInfoText = `${product.name} (${product.thick}x${
+        product.length
+      }x${product.width}) = ${comma(order.data.completedQuantity)}매`;
 
       confirmationDescription.push(deliveryInfoText);
     });
@@ -161,76 +165,94 @@ export default class DeliveryList extends React.Component {
   }
 
   hideConfirmationModal(answer) {
-    this.setState({ isConfirmationModalOpen: false });
+    if (answer) {
+      this.state.selectedOrders.map(orderID => {
+        const order = this.state.ordersData.find(
+          order => order._id === orderID
+        );
+        order.data.isDelivered = true;
+        order.data.deliveredAt = moment().format('YYYY-MM-DD');
 
-    this.state.selectedOrders.map(orderID => {
-      const order = this.state.ordersData.find(order => order._id === orderID);
-      order.data.isDelivered = true;
-      order.data.deliveredAt = moment().format('YYYY-MM-DD');
+        Meteor.call('orders.update', order._id, order.data, (err, res) => {});
+      });
+    }
 
-      Meteor.call('orders.update', order._id, order.data, (err, res) => {});
+    this.setState({
+      isConfirmationModalOpen: false,
+      selectedOrders: [],
+      isSelectedMulti: false
     });
   }
 
   getDeliveryList(query) {
-    return this.state.ordersData.map(order => {
-      const product = this.state.productsData.find(
-        product => product._id === order.data.productID
-      );
-      const account = this.state.accountsData.find(
-        account => account._id === product.accountID
-      );
-
-      let matchQuery = false;
-
-      if (
-        (account.name.indexOf(query) > -1 ||
-        product.name.indexOf(query) > -1) &&
-        order.data.isCompleted &&
-        !order.data.isDelivered
-      ) {
-        matchQuery = true;
-      }
-
-      // only show product that has matching query text
-      if (matchQuery) {
-        return (
-          <DeliveryListItem
-            key={order._id}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
-            account={account}
-            product={product}
-            order={order}
-            onCheckboxChange={this.onCheckboxChange}
-            showAccountDetailView={this.showAccountDetailView}
-            showProductDetailView={this.showProductDetailView}
-            showOrderDetailView={this.showOrderDetailView}
-            showDeliveryOrderModal={this.showDeliveryOrderModal}
-            showConfirmationModal={this.showConfirmationModal}
-          />
+    return this.state.ordersData
+      .sort((a, b) => {
+        const a_deliverBefore = a.data.deliverBefore;
+        const b_deliverBefore = b.data.deliverBefore;
+        if (a_deliverBefore > b_deliverBefore) return 1;
+        if (a_deliverBefore < b_deliverBefore) return -1;
+        return 0;
+      })
+      .map(order => {
+        const product = this.state.productsData.find(
+          product => product._id === order.data.productID
         );
-      }
-    });
+        const account = this.state.accountsData.find(
+          account => account._id === product.accountID
+        );
+
+        let matchQuery = false;
+
+        if (
+          (account.name.indexOf(query) > -1 ||
+            product.name.indexOf(query) > -1) &&
+          order.data.isCompleted &&
+          !order.data.isDelivered
+        ) {
+          matchQuery = true;
+        }
+
+        // only show product that has matching query text
+        if (matchQuery) {
+          return (
+            <DeliveryListItem
+              key={order._id}
+              isAdmin={this.state.isAdmin}
+              isManager={this.state.isManager}
+              account={account}
+              product={product}
+              order={order}
+              onCheckboxChange={this.onCheckboxChange}
+              showAccountDetailView={this.showAccountDetailView}
+              showProductDetailView={this.showProductDetailView}
+              showOrderDetailView={this.showOrderDetailView}
+              showDeliveryOrderModal={this.showDeliveryOrderModal}
+              showConfirmationModal={this.showConfirmationModal}
+            />
+          );
+        }
+      });
   }
 
   render() {
     return (
       <div className="list-container">
-        {this.state.ordersCount &&
+        {this.state.ordersCount > 0 &&
           (this.state.isAdmin || this.state.isManager) ? (
             <DeliveryListHeader
               onCheckboxChange={this.onCheckboxChange}
-              isSelected={this.state.isSelected}
               isSelectedMulti={this.state.isSelectedMulti}
               selectedOrders={this.state.selectedOrders}
+              showDeliveryOrderModal={this.showDeliveryOrderModal}
               showConfirmationModal={this.showConfirmationModal}
             />
           ) : (
             undefined
           )}
 
-        <ul id="delivery-list">{this.getDeliveryList(this.state.query)}</ul>
+        <ul id="delivery-list" className="list">
+          {this.getDeliveryList(this.state.query)}
+        </ul>
 
         {this.state.isAccountDetailViewOpen ? (
           <AccountDetailView
@@ -265,7 +287,7 @@ export default class DeliveryList extends React.Component {
         {this.state.isDeliveryOrderModalOpen ? (
           <DeliveryOrderModal
             isOpen={this.state.isDeliveryOrderModalOpen}
-            orderID={this.state.selectedOrderID}
+            selectedOrders={this.state.selectedOrders}
             onModalClose={this.hideDeliveryOrderModal}
           />
         ) : (

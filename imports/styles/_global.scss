@@ -37,7 +37,10 @@
 .page-content {
   border-top: 1.8px solid $color-primary--100;
   overflow-x: hidden;
-  overflow-y: scroll;
+}
+
+.list {
+  overflow-y: auto;
 }
 
 @media (min-width: $break--sm) {

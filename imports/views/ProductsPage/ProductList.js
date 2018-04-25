@@ -65,7 +65,7 @@ export default class ProductList extends React.Component {
       isManager: props.isManager,
       accountsData: props.accountsData,
       productsData: props.productsData,
-      productsCount: props.productsData.length,
+      productsCount: props.productsData.length
     });
   }
 
@@ -156,7 +156,9 @@ export default class ProductList extends React.Component {
       const product = this.state.productsData.find(
         product => product._id === productID
       );
-      let productInfoText = `${product.name} (${product.thick}x${product.length}x${product.width})`;
+      let productInfoText = `${product.name} (${product.thick}x${
+        product.length
+      }x${product.width})`;
       confirmationDescription.push(productInfoText);
     });
 
@@ -242,31 +244,33 @@ export default class ProductList extends React.Component {
 
   render() {
     return (
-      <ul id="product-list">
-        {this.state.productsCount &&
-        (this.state.isAdmin || this.state.isManager) ? (
-          <div className="product-list-header">
-            <Checkbox
-              name="selectAll"
-              label="전체선택"
-              onInputChange={this.onCheckboxChange}
-            />
-            <div className="product-buttons-container">
-              <button
-                className="button button-with-icon-span product-button"
-                onClick={this.onDeleteMultiClick}
-                disabled={!this.state.isSelectedMulti}
-              >
-                <i className="fa fa-trash fa-lg" />
-                <span>삭제</span>
-              </button>
+      <div className="list-container">
+        {this.state.productsCount > 0 &&
+          (this.state.isAdmin || this.state.isManager) ? (
+            <div className="product-list-header">
+              <Checkbox
+                name="selectAll"
+                label="전체선택"
+                onInputChange={this.onCheckboxChange}
+              />
+              <div className="product-buttons-container">
+                <button
+                  className="button button-with-icon-span product-button"
+                  onClick={this.onDeleteMultiClick}
+                  disabled={!this.state.isSelectedMulti}
+                >
+                  <i className="fa fa-trash fa-lg" />
+                  <span>삭제</span>
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          undefined
-        )}
+          ) : (
+            undefined
+          )}
 
-        {this.getProductList(this.state.queryObj)}
+        <ul id="product-list" className="list">
+          {this.getProductList(this.state.queryObj)}
+        </ul>
 
         {this.state.isAccountDetailViewOpen ? (
           <AccountDetailView
@@ -322,7 +326,7 @@ export default class ProductList extends React.Component {
         ) : (
           undefined
         )}
-      </ul>
+      </div>
     );
   }
 }

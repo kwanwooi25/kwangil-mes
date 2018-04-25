@@ -3,6 +3,7 @@ import React from 'react';
 import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
 import { PlatesData } from '../../api/plates';
+import { setLayout } from '../../api/setLayout';
 
 import ProductPageHeaderButtons from './ProductPageHeaderButtons';
 import PageHeaderSearch from '../components/PageHeaderSearch';
@@ -36,15 +37,15 @@ export default class ProductsPage extends React.Component {
 
   componentDidMount() {
     // dynamically adjust height
-    this.setLayout();
+    setLayout();
     window.addEventListener('resize', () => {
-      this.setLayout();
+      setLayout();
     });
     document
       .getElementById('product-search-toggle')
       .addEventListener('click', () => {
         setTimeout(() => {
-          this.setLayout();
+          setLayout();
         }, 0);
       });
 
@@ -74,25 +75,6 @@ export default class ProductsPage extends React.Component {
   componentWillUnmount() {
     this.authTracker.stop();
     this.databaseTracker.stop();
-  }
-
-  // dynamically adjust height
-  setLayout() {
-    const headerHeight = document
-      .querySelector('.header')
-      .getBoundingClientRect().height;
-    const pageHeaderHeight = document
-      .querySelector('.page-header')
-      .getBoundingClientRect().height;
-    const main = document.querySelector('.main');
-    const pageContent = document.querySelector('.page-content');
-    const mainHeight = `calc(100vh - ${headerHeight + 10}px)`;
-    const contentHeight = `calc(100vh - ${headerHeight +
-      25 +
-      pageHeaderHeight}px)`;
-    main.style.height = mainHeight;
-    main.style.marginTop = `${headerHeight + 5}px`;
-    pageContent.style.height = contentHeight;
   }
 
   onInputSearchChange(query) {

@@ -10,7 +10,6 @@ import ProductDetailView from '../ProductsPage/ProductDetailView';
 import OrderDetailView from './OrderDetailView';
 import ProductOrderModal from '../ProductsPage/ProductOrderModal';
 import CompleteOrderModal from './CompleteOrderModal';
-import CompleteMultiOrderModal from './CompleteMultiOrderModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class OrderList extends React.Component {
@@ -40,7 +39,6 @@ export default class OrderList extends React.Component {
       isCompleteOrderModalOpen: false,
       isProductOrderModalOpen: false,
       isDeleteConfirmationModalOpen: false,
-      isCompleteMultiOrderModalOpen: false,
       selectedAccountID: '',
       selectedProductID: '',
       selectedOrderID: '',
@@ -65,12 +63,6 @@ export default class OrderList extends React.Component {
       this
     );
     this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
-      this
-    );
-    this.showCompleteMultiOrderModal = this.showCompleteMultiOrderModal.bind(
-      this
-    );
-    this.hideCompleteMultiOrderModal = this.hideCompleteMultiOrderModal.bind(
       this
     );
   }
@@ -154,16 +146,15 @@ export default class OrderList extends React.Component {
   }
 
   showCompleteOrderModal(selectedOrders) {
-    if (selectedOrders.length === 1) {
-      this.setState({
-        isCompleteOrderModalOpen: true,
-        selectedOrders
-      });
-    }
+    this.setState({ isCompleteOrderModalOpen: true, selectedOrders });
   }
 
   hideCompleteOrderModal() {
-    this.setState({ isCompleteOrderModalOpen: false, selectedOrders: [] });
+    this.setState({
+      isCompleteOrderModalOpen: false,
+      selectedOrders: [],
+      isSelectedMulti: false
+    });
   }
 
   showProductOrderModal(selectedOrderID) {
@@ -180,13 +171,13 @@ export default class OrderList extends React.Component {
     ];
 
     selectedOrders.map(orderID => {
-      const order = this.state.ordersData.find(
-        order => order._id === orderID
-      );
+      const order = this.state.ordersData.find(order => order._id === orderID);
       const product = this.state.productsData.find(
         product => product._id === order.data.productID
       );
-      const orderInfoText = `${product.name} (${product.thick}x${product.length}x${product.width}) = ${comma(order.data.orderQuantity)}매`;
+      const orderInfoText = `${product.name} (${product.thick}x${
+        product.length
+      }x${product.width}) = ${comma(order.data.orderQuantity)}매`;
 
       confirmationDescription.push(orderInfoText);
     });
@@ -206,15 +197,6 @@ export default class OrderList extends React.Component {
         Meteor.call('orders.remove', orderID);
       });
     }
-  }
-
-  // show order complete modal multi
-  showCompleteMultiOrderModal() {
-    this.setState({ isCompleteMultiOrderModalOpen: true });
-  }
-
-  hideCompleteMultiOrderModal() {
-    this.setState({ isCompleteMultiOrderModalOpen: false });
   }
 
   getOrderList(queryObj) {
@@ -290,20 +272,22 @@ export default class OrderList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {this.state.ordersCount &&
+        {this.state.ordersCount > 0 &&
           (this.state.isAdmin || this.state.isManager) ? (
             <OrderListHeader
               onCheckboxChange={this.onCheckboxChange}
               isSelectedMulti={this.state.isSelectedMulti}
               selectedOrders={this.state.selectedOrders}
-              showCompleteMultiOrderModal={this.showCompleteMultiOrderModal}
-              showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-            />
-          ) : (
-            undefined
-          )}
+              showCompleteOrderModal={this.showCompleteOrderModal}
+            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+          />
+        ) : (
+          undefined
+        )}
 
-        <ul id="order-list">{this.getOrderList(this.state.queryObj)}</ul>
+        <ul id="order-list" className="list">
+          {this.getOrderList(this.state.queryObj)}
+        </ul>
 
         {this.state.isAccountDetailViewOpen ? (
           <AccountDetailView
@@ -338,7 +322,7 @@ export default class OrderList extends React.Component {
         {this.state.isCompleteOrderModalOpen ? (
           <CompleteOrderModal
             isOpen={this.state.isCompleteOrderModalOpen}
-            orderID={this.state.selectedOrders[0]}
+            selectedOrders={this.state.selectedOrders}
             onModalClose={this.hideCompleteOrderModal}
           />
         ) : (
@@ -363,16 +347,6 @@ export default class OrderList extends React.Component {
             title="작업지시 취소"
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.hideDeleteConfirmationModal}
-          />
-        ) : (
-          undefined
-        )}
-
-        {this.state.isCompleteMultiOrderModalOpen ? (
-          <CompleteMultiOrderModal
-            isOpen={this.state.isCompleteMultiOrderModalOpen}
-            selectedOrders={this.state.selectedOrders}
-            onModalClose={this.hideCompleteMultiOrderModal}
           />
         ) : (
           undefined
