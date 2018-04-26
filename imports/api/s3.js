@@ -5,7 +5,8 @@ export const uploadToS3 = (file, uploader) => {
   return new Promise((resolve, reject) => {
     uploader.send(file, (error, downloadURL) => {
       if (error) {
-        reject(console.error('Error uploading', uploader.xhr.response));
+        reject(console.error(error))
+        // reject(console.error('Error uploading', uploader.xhr.response));
       } else {
         const convertedURL = downloadURL.replace(
           file.name,
