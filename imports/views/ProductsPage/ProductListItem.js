@@ -92,7 +92,7 @@ export default class ProductListItem extends React.Component {
               accountName={account.name}
             />
             <ProductName
-              className="product-name"
+              className="product-productName"
               productID={product._id}
               productName={product.name}
             />
