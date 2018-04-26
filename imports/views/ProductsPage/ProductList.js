@@ -2,8 +2,6 @@ import React from 'react';
 
 import Checkbox from '../../custom/Checkbox';
 import ProductListItem from './ProductListItem';
-import AccountDetailView from '../AccountsPage/AccountDetailView';
-import ProductDetailView from './ProductDetailView';
 import ProductOrderModal from './ProductOrderModal';
 import ProductModal from './ProductModal';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -27,23 +25,16 @@ export default class ProductList extends React.Component {
       queryObj: props.queryObj,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
-      isAccountDetailViewOpen: false,
       isProductOrderModalOpen: false,
       isProductModalOpen: false,
-      isProductDetailViewOpen: false,
       isDeleteConfirmationModalOpen: false,
       selectedProductID: '',
       confirmationDescription: [],
-      productsCount: props.productsData.length,
       isSelectedMulti: false,
       selectedProducts: []
     };
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
-    this.showAccountDetailView = this.showAccountDetailView.bind(this);
-    this.hideAccountDetailView = this.hideAccountDetailView.bind(this);
-    this.showProductDetailView = this.showProductDetailView.bind(this);
-    this.hideProductDetailView = this.hideProductDetailView.bind(this);
     this.showProductOrderModal = this.showProductOrderModal.bind(this);
     this.hideProductOrderModal = this.hideProductOrderModal.bind(this);
     this.showProductModal = this.showProductModal.bind(this);
@@ -64,8 +55,7 @@ export default class ProductList extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager,
       accountsData: props.accountsData,
-      productsData: props.productsData,
-      productsCount: props.productsData.length
+      productsData: props.productsData
     });
   }
 
@@ -98,28 +88,6 @@ export default class ProductList extends React.Component {
       this.setState({ isSelectedMulti: false });
     }
     this.setState({ selectedProducts });
-  }
-
-  showAccountDetailView(selectedAccountID) {
-    this.setState({
-      isAccountDetailViewOpen: true,
-      selectedAccountID
-    });
-  }
-
-  hideAccountDetailView() {
-    this.setState({ isAccountDetailViewOpen: false });
-  }
-
-  showProductDetailView(selectedProductID) {
-    this.setState({
-      isProductDetailViewOpen: true,
-      selectedProductID
-    });
-  }
-
-  hideProductDetailView() {
-    this.setState({ isProductDetailViewOpen: false });
   }
 
   // show product order modal
@@ -231,8 +199,6 @@ export default class ProductList extends React.Component {
             account={account}
             product={product}
             onCheckboxChange={this.onCheckboxChange}
-            showAccountDetailView={this.showAccountDetailView}
-            showProductDetailView={this.showProductDetailView}
             showProductOrderModal={this.showProductOrderModal}
             showProductModal={this.showProductModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
@@ -245,8 +211,7 @@ export default class ProductList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {this.state.productsCount > 0 &&
-          (this.state.isAdmin || this.state.isManager) ? (
+        {this.state.isAdmin || this.state.isManager ? (
             <div className="product-list-header">
               <Checkbox
                 name="selectAll"
@@ -271,26 +236,6 @@ export default class ProductList extends React.Component {
         <ul id="product-list" className="list">
           {this.getProductList(this.state.queryObj)}
         </ul>
-
-        {this.state.isAccountDetailViewOpen ? (
-          <AccountDetailView
-            isOpen={this.state.isAccountDetailViewOpen}
-            accountID={this.state.selectedAccountID}
-            onModalClose={this.hideAccountDetailView}
-          />
-        ) : (
-          undefined
-        )}
-
-        {this.state.isProductDetailViewOpen ? (
-          <ProductDetailView
-            isOpen={this.state.isProductDetailViewOpen}
-            productID={this.state.selectedProductID}
-            onModalClose={this.hideProductDetailView}
-          />
-        ) : (
-          undefined
-        )}
 
         {this.state.isProductOrderModalOpen ? (
           <ProductOrderModal

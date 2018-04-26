@@ -9,7 +9,6 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
  IMPORTS COMPONENTS
 =============================================*/
 import LoginPage from '../views/LoginPage';
-import RegisterPage from '../views/RegisterPage';
 import Header from '../views/components/Header';
 // import DashboardPage from '../views/DashboardPage';
 import AccountsPage from '../views/AccountsPage';
@@ -20,7 +19,7 @@ import DeliveryPage from '../views/DeliveryPage';
 import UsersPage from '../views/UsersPage';
 import NotFoundPage from '../views/NotFoundPage';
 
-const unauthenticatedPages = ['/', '/register'];
+const unauthenticatedPages = ['/'];
 const authenticatedPages = ['/dashboard', '/accounts', '/products', '/plates', '/orders', '/delivery', '/users'];
 
 const DashboardPage = () => <h3>DashboardPage</h3>;
@@ -35,7 +34,6 @@ export const routes = (
       )}
       <Switch>
         <Route exact path="/" component={LoginPage} />
-        <Route path="/register" component={RegisterPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/accounts" component={AccountsPage} />
         <Route path="/products" component={ProductsPage} />

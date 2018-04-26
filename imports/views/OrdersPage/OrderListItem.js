@@ -6,6 +6,9 @@ import { printOrders } from '../../api/printOrders';
 import { countWeekdays } from '../../api/countWeekdays';
 
 import Checkbox from '../../custom/Checkbox';
+import AccountName from '../components/AccountName';
+import ProductName from '../components/ProductName';
+import OrderName from '../components/OrderName';
 
 export default class OrderListItem extends React.Component {
   /*=========================================================================
@@ -16,9 +19,6 @@ export default class OrderListItem extends React.Component {
   product
   order
   onCheckboxChange
-  showAccountDetailView
-  showProductDetailView
-  showOrderDetailView
   updateOrderStatus
   showCompleteOrderModal
   showProductOrderModal
@@ -32,9 +32,6 @@ export default class OrderListItem extends React.Component {
       isManager: props.isManager
     };
 
-    this.onAccountNameClick = this.onAccountNameClick.bind(this);
-    this.onProductNameClick = this.onProductNameClick.bind(this);
-    this.onOrderIDClick = this.onOrderIDClick.bind(this);
     this.onStatusChange = this.onStatusChange.bind(this);
     this.onPrintOrderClick = this.onPrintOrderClick.bind(this);
     this.onCompleteOrderClick = this.onCompleteOrderClick.bind(this);
@@ -48,21 +45,6 @@ export default class OrderListItem extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager
     });
-  }
-
-  onAccountNameClick(e) {
-    const selectedAccountID = e.target.name;
-    this.props.showAccountDetailView(selectedAccountID);
-  }
-
-  onProductNameClick(e) {
-    const selectedProductID = e.target.name;
-    this.props.showProductDetailView(selectedProductID);
-  }
-
-  onOrderIDClick(e) {
-    const selectedOrderID = e.target.textContent;
-    this.props.showOrderDetailView(selectedOrderID);
   }
 
   onStatusChange(e) {
@@ -160,8 +142,18 @@ export default class OrderListItem extends React.Component {
 
     return (
       <li className={listClassName} key={order._id} id={order._id}>
+        {this.state.isAdmin || this.state.isManager ? (
+        <div className="order-checkbox-container">
+          <Checkbox
+            name={order._id}
+            onInputChange={this.props.onCheckboxChange}
+            disabled={order.data.isCompleted}
+          />
+        </div>
+        ): undefined}
+
         <div className="order-container">
-          <div className="order-deliver-remark-container">
+          <div className="order-id-container">
             {order.data.deliverFast ? (
               <span className="order-list__text">
                 <i className="fa fa-star" /> 지급
@@ -176,25 +168,11 @@ export default class OrderListItem extends React.Component {
             ) : (
               undefined
             )}
-          </div>
 
-          {this.state.isAdmin || this.state.isManager ? (
-          <div className="order-checkbox-container">
-            <Checkbox
-              name={order._id}
-              onInputChange={this.props.onCheckboxChange}
-              disabled={order.data.isCompleted}
+            <OrderName
+              className="order-list__orderID"
+              orderID={order._id}
             />
-          </div>
-          ): undefined}
-
-          <div className="order-id-container">
-            <a
-              className="order-list__text order-list__orderID"
-              onClick={this.onOrderIDClick}
-            >
-              {order._id}
-            </a>
           </div>
 
           <div className="order-dates-container">
@@ -206,20 +184,16 @@ export default class OrderListItem extends React.Component {
 
           <div className={product._id + ' order-product-details-container'}>
             <div className="order-names-container">
-              <a
-                name={account._id}
-                className="order-list__subtitle"
-                onClick={this.onAccountNameClick}
-              >
-                {account.name}
-              </a>
-              <a
-                name={product._id}
-                className="order-list__title"
-                onClick={this.onProductNameClick}
-              >
-                {product.name}
-              </a>
+              <AccountName
+                className="order-list__accountName"
+                accountID={account._id}
+                accountName={account.name}
+              />
+              <ProductName
+                className="order-list__productName"
+                productID={product._id}
+                productName={product.name}
+              />
             </div>
             <div className="order-product-size-container">
               <p className="order-list__text">{productSizeText}</p>

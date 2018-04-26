@@ -5,9 +5,6 @@ import { comma } from '../../api/comma';
 
 import DeliveryListHeader from './DeliveryListHeader';
 import DeliveryListItem from './DeliveryListItem';
-import AccountDetailView from '../AccountsPage/AccountDetailView';
-import ProductDetailView from '../ProductsPage/ProductDetailView';
-import OrderDetailView from '../OrdersPage/OrderDetailView';
 import DeliveryOrderModal from './DeliveryOrderModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -31,16 +28,9 @@ export default class DeliveryList extends React.Component {
       accountsData: props.accountsData,
       productsData: props.productsData,
       ordersData: props.ordersData,
-      ordersCount: props.ordersData.length,
-      isAccountDetailViewOpen: false,
-      isProductDetailViewOpen: false,
-      isOrderDetailViewOpen: false,
       isDeliveryOrderModalOpen: false,
       isMultiDeliveryOrderModalOpen: false,
       isConfirmationModalOpen: false,
-      selectedAccountID: '',
-      selectedProductID: '',
-      selectedOrderID: '',
       selectedOrders: [],
       confirmationTitle: '',
       confirmationDescription: [],
@@ -48,12 +38,6 @@ export default class DeliveryList extends React.Component {
     };
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
-    this.showAccountDetailView = this.showAccountDetailView.bind(this);
-    this.hideAccountDetailView = this.hideAccountDetailView.bind(this);
-    this.showProductDetailView = this.showProductDetailView.bind(this);
-    this.hideProductDetailView = this.hideProductDetailView.bind(this);
-    this.showOrderDetailView = this.showOrderDetailView.bind(this);
-    this.hideOrderDetailView = this.hideOrderDetailView.bind(this);
     this.showDeliveryOrderModal = this.showDeliveryOrderModal.bind(this);
     this.hideDeliveryOrderModal = this.hideDeliveryOrderModal.bind(this);
     this.showConfirmationModal = this.showConfirmationModal.bind(this);
@@ -68,8 +52,7 @@ export default class DeliveryList extends React.Component {
       isManager: props.isManager,
       accountsData: props.accountsData,
       productsData: props.productsData,
-      ordersData: props.ordersData,
-      ordersCount: props.ordersData.length
+      ordersData: props.ordersData
     });
   }
 
@@ -100,30 +83,6 @@ export default class DeliveryList extends React.Component {
       this.setState({ isSelectedMulti: false });
     }
     this.setState({ selectedOrders });
-  }
-
-  showAccountDetailView(selectedAccountID) {
-    this.setState({ isAccountDetailViewOpen: true, selectedAccountID });
-  }
-
-  hideAccountDetailView() {
-    this.setState({ isAccountDetailViewOpen: false, selectedAccountID: '' });
-  }
-
-  showProductDetailView(selectedProductID) {
-    this.setState({ isProductDetailViewOpen: true, selectedProductID });
-  }
-
-  hideProductDetailView() {
-    this.setState({ isProductDetailViewOpen: false, selectedProductID: '' });
-  }
-
-  showOrderDetailView(selectedOrderID) {
-    this.setState({ isOrderDetailViewOpen: true, selectedOrderID });
-  }
-
-  hideOrderDetailView() {
-    this.setState({ isOrderDetailViewOpen: false, selectedOrderID: '' });
   }
 
   showDeliveryOrderModal(selectedOrders) {
@@ -223,9 +182,6 @@ export default class DeliveryList extends React.Component {
               product={product}
               order={order}
               onCheckboxChange={this.onCheckboxChange}
-              showAccountDetailView={this.showAccountDetailView}
-              showProductDetailView={this.showProductDetailView}
-              showOrderDetailView={this.showOrderDetailView}
               showDeliveryOrderModal={this.showDeliveryOrderModal}
               showConfirmationModal={this.showConfirmationModal}
             />
@@ -237,8 +193,7 @@ export default class DeliveryList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {this.state.ordersCount > 0 &&
-          (this.state.isAdmin || this.state.isManager) ? (
+        {this.state.isAdmin || this.state.isManager ? (
             <DeliveryListHeader
               onCheckboxChange={this.onCheckboxChange}
               isSelectedMulti={this.state.isSelectedMulti}
@@ -253,36 +208,6 @@ export default class DeliveryList extends React.Component {
         <ul id="delivery-list" className="list">
           {this.getDeliveryList(this.state.query)}
         </ul>
-
-        {this.state.isAccountDetailViewOpen ? (
-          <AccountDetailView
-            isOpen={this.state.isAccountDetailViewOpen}
-            accountID={this.state.selectedAccountID}
-            onModalClose={this.hideAccountDetailView}
-          />
-        ) : (
-          undefined
-        )}
-
-        {this.state.isProductDetailViewOpen ? (
-          <ProductDetailView
-            isOpen={this.state.isProductDetailViewOpen}
-            productID={this.state.selectedProductID}
-            onModalClose={this.hideProductDetailView}
-          />
-        ) : (
-          undefined
-        )}
-
-        {this.state.isOrderDetailViewOpen ? (
-          <OrderDetailView
-            isOpen={this.state.isOrderDetailViewOpen}
-            orderID={this.state.selectedOrderID}
-            onModalClose={this.hideOrderDetailView}
-          />
-        ) : (
-          undefined
-        )}
 
         {this.state.isDeliveryOrderModalOpen ? (
           <DeliveryOrderModal

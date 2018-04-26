@@ -22,10 +22,6 @@ Meteor.startup(() => {
       isAdmin: true
     };
 
-    Accounts.createUser({ username, password, profile }, err => {
-      if (err) {
-        console.log(err);
-      }
-    });
+    Accounts.createUser({ username, password, profile });
   }
 });

@@ -1,7 +1,6 @@
 import React from 'react';
 
 import AccountListItem from './AccountListItem';
-import AccountDetailView from './AccountDetailView';
 import AccountModal from './AccountModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -28,8 +27,6 @@ export default class AccountList extends React.Component {
       selectedAccountName: ''
     };
 
-    this.showAccountDetailViewModal = this.showAccountDetailViewModal.bind(this);
-    this.hideAccountDetailViewModal = this.hideAccountDetailViewModal.bind(this);
     this.showEditAccountModal = this.showEditAccountModal.bind(this);
     this.hideEditAccountModal = this.hideEditAccountModal.bind(this);
     this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
@@ -48,17 +45,6 @@ export default class AccountList extends React.Component {
       isManager: props.isManager,
       accountsData: props.accountsData
     });
-  }
-
-  showAccountDetailViewModal(selectedAccountID) {
-    this.setState({
-      isDetailViewOpen: true,
-      selectedAccountID
-    });
-  }
-
-  hideAccountDetailViewModal() {
-    this.setState({ isDetailViewOpen: false });
   }
 
   showEditAccountModal(selectedAccountID) {
@@ -121,17 +107,11 @@ export default class AccountList extends React.Component {
 
   render() {
     return (
-      <ul id="account-list">
-        {this.getAccountList(this.state.query)}
-        {this.state.isDetailViewOpen ? (
-          <AccountDetailView
-            isOpen={this.state.isDetailViewOpen}
-            accountID={this.state.selectedAccountID}
-            onModalClose={this.hideAccountDetailViewModal}
-          />
-        ) : (
-          undefined
-        )}
+      <div className="list-container">
+        <ul id="account-list" className="list">
+          {this.getAccountList(this.state.query)}
+        </ul>
+
         {this.state.isAccountModalOpen ? (
           <AccountModal
             isOpen={this.state.isAccountModalOpen}
@@ -141,6 +121,7 @@ export default class AccountList extends React.Component {
         ) : (
           undefined
         )}
+
         {this.state.isDeleteConfirmationModalOpen ? (
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmationModalOpen}
@@ -154,7 +135,7 @@ export default class AccountList extends React.Component {
         ) : (
           undefined
         )}
-      </ul>
+      </div>
     );
   }
 }

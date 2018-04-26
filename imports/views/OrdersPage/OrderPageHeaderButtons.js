@@ -34,6 +34,7 @@ export default class OrderPageHeaderButtons extends React.Component {
       'productLength', // ProductsData
       'productWidth',  // ProductsData
       'orderQuantity',
+      'orderQuantityInWeight',
       'plateStatus',
       'deliverBefore',
       'deliverDateStrict',
@@ -51,7 +52,7 @@ export default class OrderPageHeaderButtons extends React.Component {
 
     // generate header csv
     let headerCSV =
-      '발주ID,발주일,업체명,제품명,두께,길이,너비,주문량,동판,납기일,엄수,지급,작업참고,납품참고,완성수량,완료일,납품일';
+      '발주ID,발주일,업체명,제품명,두께,길이,너비,주문량,주문중량,동판,납기일,엄수,지급,작업참고,납품참고,완성수량,완료일,납품일';
 
     // generate body csv from account list
     const bodyCSV = orders
@@ -62,6 +63,7 @@ export default class OrderPageHeaderButtons extends React.Component {
         const account = this.props.accountsData.find(
           account => account._id === product.accountID
         );
+        const orderQuantityInWeight = Number(product.thick) * (Number(product.length) + 5) * (Number(product.width)/100) * 0.0184 * Number(order.data.orderQuantity);
         return keys
           .map(key => {
             switch (key) {
@@ -77,6 +79,8 @@ export default class OrderPageHeaderButtons extends React.Component {
                 return '"t"'.replace('t', product.length);
               case 'productWidth':
                 return '"t"'.replace('t', product.width);
+              case 'orderQuantityInWeight':
+                return '"t"'.replace('t', orderQuantityInWeight);
               case order.data[key] === undefined:
                 return '""';
               default:

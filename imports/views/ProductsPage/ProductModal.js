@@ -67,9 +67,7 @@ export default class ProductModal extends React.Component {
         packQuantity: product.packQuantity,
         packDeliverAll: product.packDeliverAll,
         packMemo: product.packMemo,
-        stockQuantity: product.stockQuantity,
         price: product.price,
-        history: product.history,
         memo: product.memo,
         accountNameEmpty: false,
         accountNameError: false,
@@ -85,7 +83,6 @@ export default class ProductModal extends React.Component {
         printBackColorCountError: false,
         cutPunchCountError: false,
         packQuantityError: false,
-        stockQuantityError: false,
         priceError: false,
         isConfirmationModalOpen: false,
         confirmationTitle: '',
@@ -130,9 +127,7 @@ export default class ProductModal extends React.Component {
         packQuantity: '',
         packDeliverAll: false,
         packMemo: '',
-        stockQuantity: '',
         price: '',
-        history: '',
         memo: '',
         accountNameEmpty: false,
         accountNameError: false,
@@ -148,7 +143,6 @@ export default class ProductModal extends React.Component {
         printBackColorCountError: false,
         cutPunchCountError: false,
         packQuantityError: false,
-        stockQuantityError: false,
         priceError: false,
         isConfirmationModalOpen: false,
         confirmationTitle: '',
@@ -353,7 +347,6 @@ export default class ProductModal extends React.Component {
       name === 'printBackColorCount' ||
       name === 'cutPunchCount' ||
       name === 'packQuantity' ||
-      name === 'stockQuantity' ||
       name === 'price'
     ) {
       if (isNaN(uncomma(value))) {
@@ -438,9 +431,7 @@ export default class ProductModal extends React.Component {
       packQuantity: uncomma(this.state.packQuantity),
       packDeliverAll: this.state.packDeliverAll,
       packMemo: this.state.packMemo,
-      stockQuantity: this.state.stockQuantity,
       price: this.state.price,
-      history: this.state.history,
       memo: this.state.memo
     };
   }
@@ -1054,52 +1045,9 @@ export default class ProductModal extends React.Component {
                       />
                     </div>
                   </div>
-
-                  {this.state.mode === 'EDIT' ? (
-                    <div className="form-element-container lg50">
-                      <div className="form-element__label">
-                        <label htmlFor="stockQuantity">재고수량</label>
-                      </div>
-                      <div className="form-elements">
-                        <TextInput
-                          className="form-element"
-                          inputType="text"
-                          id="stockQuantity"
-                          value={this.state.stockQuantity}
-                          onInputChange={this.onInputChange}
-                          errorMessage={
-                            this.state.stockQuantityError
-                              ? '숫자로 입력하세요.'
-                              : undefined
-                          }
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    undefined
-                  )}
                 </div>
 
                 <div className="form-element-group sm60 lg40">
-                  {this.state.mode === 'EDIT' ? (
-                    <div className="form-element-container">
-                      <div className="form-element__label">
-                        <label htmlFor="history">작업이력</label>
-                      </div>
-                      <div className="form-elements">
-                        <TextInput
-                          className="form-element"
-                          inputType="text"
-                          id="history"
-                          value={this.state.history}
-                          onInputChange={this.onInputChange}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    undefined
-                  )}
-
                   <div className="form-element-container">
                     <div className="form-element__label">
                       <label htmlFor="memo">메모</label>

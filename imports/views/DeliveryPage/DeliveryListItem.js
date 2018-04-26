@@ -5,6 +5,9 @@ import { comma, uncomma } from '../../api/comma';
 import { countWeekdays } from '../../api/countWeekdays';
 
 import Checkbox from '../../custom/Checkbox';
+import AccountName from '../components/AccountName';
+import ProductName from '../components/ProductName';
+import OrderName from '../components/OrderName';
 
 export default class DeliveryListItem extends React.Component {
   /*=========================================================================
@@ -15,9 +18,6 @@ export default class DeliveryListItem extends React.Component {
   product
   order
   onCheckboxChange
-  showAccountDetailView
-  showProductDetailView
-  showOrderDetailView
   showDeliveryOrderModal
   showConfirmationModal
   ==========================================================================*/
@@ -29,9 +29,6 @@ export default class DeliveryListItem extends React.Component {
       isManager: props.isManager
     };
 
-    this.onAccountNameClick = this.onAccountNameClick.bind(this);
-    this.onProductNameClick = this.onProductNameClick.bind(this);
-    this.onOrderIDClick = this.onOrderIDClick.bind(this);
     this.onCompleteDeliveryClick = this.onCompleteDeliveryClick.bind(this);
     this.onDeliveryOrderClick = this.onDeliveryOrderClick.bind(this);
   }
@@ -42,21 +39,6 @@ export default class DeliveryListItem extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager
     });
-  }
-
-  onAccountNameClick(e) {
-    const selectedAccountID = e.target.name;
-    this.props.showAccountDetailView(selectedAccountID);
-  }
-
-  onProductNameClick(e) {
-    const selectedProductID = e.target.name;
-    this.props.showProductDetailView(selectedProductID);
-  }
-
-  onOrderIDClick(e) {
-    const selectedOrderID = e.target.textContent;
-    this.props.showOrderDetailView(selectedOrderID);
   }
 
   onCompleteDeliveryClick(e) {
@@ -147,12 +129,10 @@ export default class DeliveryListItem extends React.Component {
               )}
             </div>
 
-            <a
-              className="delivery-list-item__text delivery-list-item__orderID"
-              onClick={this.onOrderIDClick}
-            >
-              {order._id}
-            </a>
+            <OrderName
+              className="delivery-list-item__orderID"
+              orderID={order._id}
+            />
           </div>
 
           <div className="delivery-list-item__dates-container">
@@ -163,20 +143,16 @@ export default class DeliveryListItem extends React.Component {
 
           <div className="delivery-list-item__product-details-container">
             <div className="delivery-list-item__names-container">
-              <a
-                name={account._id}
-                className="delivery-list-item__subtitle"
-                onClick={this.onAccountNameClick}
-              >
-                {account.name}
-              </a>
-              <a
-                name={product._id}
-                className="delivery-list-item__title"
-                onClick={this.onProductNameClick}
-              >
-                {product.name}
-              </a>
+              <AccountName
+                className="delivery-list-item__accountName"
+                accountID={account._id}
+                accountName={account.name}
+              />
+              <ProductName
+                className="delivery-list-item__productName"
+                productID={product._id}
+                productName={product.name}
+              />
             </div>
             <div className="delivery-list-item__size-container">
               <p className="delivery-list-item__text">{productSizeText}</p>

@@ -7,7 +7,7 @@ import { ProductsData } from "../../api/products";
 import { PlatesData } from "../../api/plates";
 import { comma, uncomma } from "../../api/comma";
 
-import PlateDetailView from "../PlatesPage/PlateDetailView";
+import PlateName from '../components/PlateName';
 import noImage from "../../assets/no-image.png";
 
 export default class ProductDetailView extends React.Component {
@@ -26,27 +26,11 @@ export default class ProductDetailView extends React.Component {
     };
 
     this.onClickOK = this.onClickOK.bind(this);
-    this.showPlateDetailView = this.showPlateDetailView.bind(this);
-    this.hidePlateDetailView = this.hidePlateDetailView.bind(this);
   }
 
   onClickOK(e) {
     e.preventDefault();
     this.props.onModalClose();
-  }
-
-  showPlateDetailView(selectedPlateID) {
-    this.setState({
-      isPlateDetailViewOpen: true,
-      selectedPlateID
-    });
-  }
-
-  hidePlateDetailView() {
-    this.setState({
-      isPlateDetailViewOpen: false,
-      selectedPlateID: ""
-    });
   }
 
   getProductDetails() {
@@ -141,6 +125,7 @@ export default class ProductDetailView extends React.Component {
     // display plate list
     const getPlateList = plateList => {
       return plateList.map((plate, index) => {
+        const plateSize = `${plate.round} x ${plate.length}`;
         const printContent = plate.forProductList.find(
           forProduct => forProduct.productID === product._id
         ).printContent;
@@ -148,13 +133,11 @@ export default class ProductDetailView extends React.Component {
         return (
           <li key={plate._id} className="product-detail__plateListItem">
             <span>동판 {index + 1}:</span>
-            <a
-              onClick={() => {
-                this.showPlateDetailView(plate._id);
-              }}
-            >
-              {plate.round} x {plate.length}
-            </a>
+            <PlateName
+              className="product-detail__plateSize"
+              plateID={plate._id}
+              plateName={plateSize}
+            />
             <span>{printContent}</span>
           </li>
         );
@@ -254,16 +237,6 @@ export default class ProductDetailView extends React.Component {
             확인
           </button>
         </div>
-
-        {this.state.isPlateDetailViewOpen ? (
-          <PlateDetailView
-            isOpen={this.state.isPlateDetailViewOpen}
-            plateID={this.state.selectedPlateID}
-            onModalClose={this.hidePlateDetailView}
-          />
-        ) : (
-          undefined
-        )}
       </Modal>
     );
   }

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import AccountName from '../components/AccountName';
+
 export default class AccountListItem extends React.Component {
   /*=========================================================================
   >> props <<
@@ -18,7 +20,6 @@ export default class AccountListItem extends React.Component {
       isManager: props.isManager
     };
 
-    this.onNameClick = this.onNameClick.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
   }
@@ -29,13 +30,6 @@ export default class AccountListItem extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager
     });
-  }
-
-  // show detail view modal
-  onNameClick(e) {
-    const selectedAccountID = e.target.parentNode.parentNode.parentNode.id;
-
-    this.props.showAccountDetailViewModal(selectedAccountID);
   }
 
   // show account modal (EDIT mode)
@@ -65,11 +59,11 @@ export default class AccountListItem extends React.Component {
     return (
       <li className="account" key={account._id} id={account._id}>
         <div className="account-details-container">
-          <div className="account-name-container">
-            <a className="account-name" onClick={this.onNameClick}>
-              {account.name}
-            </a>
-          </div>
+          <AccountName
+            className="account-name"
+            accountID={account._id}
+            accountName={account.name}
+          />
           <div className="account-contact-container">
             <a className="account-phone" href={`tel:${account.phone_1}`}>
               <i className="fa fa-phone" /> {account.phone_1}

@@ -1,6 +1,8 @@
 import React from 'react';
 
 import Checkbox from '../../custom/Checkbox';
+import AccountName from '../components/AccountName';
+import ProductName from '../components/ProductName';
 
 export default class ProductListItem extends React.Component {
   /*=========================================================================
@@ -10,8 +12,6 @@ export default class ProductListItem extends React.Component {
   account
   product
   onCheckboxChange
-  showAccountDetailView
-  showProductDetailView
   showProductOrderModal
   showProductModal
   showDeleteConfirmationModal
@@ -24,8 +24,6 @@ export default class ProductListItem extends React.Component {
       isManager: props.isManager
     };
 
-    this.onAccountNameClick = this.onAccountNameClick.bind(this);
-    this.onProductNameClick = this.onProductNameClick.bind(this);
     this.onProductOrderClick = this.onProductOrderClick.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
@@ -37,16 +35,6 @@ export default class ProductListItem extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager
     });
-  }
-
-  onAccountNameClick(e) {
-    selectedAccountID = e.target.name;
-    this.props.showAccountDetailView(selectedAccountID);
-  }
-
-  onProductNameClick(e) {
-    const selectedProductID = e.target.parentNode.parentNode.parentNode.id;
-    this.props.showProductDetailView(selectedProductID);
   }
 
   onProductOrderClick(e) {
@@ -98,16 +86,16 @@ export default class ProductListItem extends React.Component {
         ): undefined}
         <div className="product-container">
           <div className="product-name-container">
-            <a
-              name={account._id}
+            <AccountName
               className="product-accountName"
-              onClick={this.onAccountNameClick}
-            >
-              {account.name}
-            </a>
-            <a className="product-name" onClick={this.onProductNameClick}>
-              {product.name}
-            </a>
+              accountID={account._id}
+              accountName={account.name}
+            />
+            <ProductName
+              className="product-name"
+              productID={product._id}
+              productName={product.name}
+            />
           </div>
           <div className="product-details-container">
             <div className="product-size-container">

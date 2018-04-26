@@ -1,6 +1,8 @@
 import React from 'react';
 
 import Checkbox from '../../custom/Checkbox';
+import ProductName from '../components/ProductName';
+import PlateName from '../components/PlateName';
 
 export default class PlateListItem extends React.Component {
   /*=========================================================================
@@ -10,8 +12,6 @@ export default class PlateListItem extends React.Component {
   plate
   productsData
   onCheckboxChange
-  showPlateDetailView
-  showProductDetailView
   showPlateModal
   showDeleteConfirmationModal
   =========================================================================*/
@@ -23,8 +23,6 @@ export default class PlateListItem extends React.Component {
       isManager: props.isManager
     };
 
-    this.onPlateSizeClick = this.onPlateSizeClick.bind(this);
-    this.onProductNameClick = this.onProductNameClick.bind(this);
     this.onEditClick = this.onEditClick.bind(this);
     this.onDeleteClick = this.onDeleteClick.bind(this);
   }
@@ -35,16 +33,6 @@ export default class PlateListItem extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager
     });
-  }
-
-  onPlateSizeClick(e) {
-    const selectedPlateID = e.target.parentNode.parentNode.parentNode.id;
-    this.props.showPlateDetailView(selectedPlateID);
-  }
-
-  onProductNameClick(e) {
-    const selectedProductID = e.target.parentNode.id;
-    this.props.showProductDetailView(selectedProductID);
   }
 
   onEditClick(e) {
@@ -71,17 +59,18 @@ export default class PlateListItem extends React.Component {
       const product = this.props.productsData.find(
         product => product._id === productID
       );
-      const productSize = `
-        ${product.thick} x ${product.length} x ${product.width}
-      `;
+      const productSize = `${product.thick} x ${product.length} x ${product.width}`;
 
       return (
         <div
-          id={product._id}
           key={product._id}
           className="plate-list-item__forProductListItem"
         >
-          <a onClick={this.onProductNameClick}>{product.name}</a>
+          <ProductName
+            className="plate-list-item__forProductName"
+            productID={product._id}
+            productName={product.name}
+          />
           <span>{productSize}</span>
           <span>{printContent}</span>
         </div>
@@ -91,6 +80,7 @@ export default class PlateListItem extends React.Component {
 
   render() {
     const plate = this.props.plate;
+    const plateSize = `${plate.round} x ${plate.length}`;
 
     return (
       <li className="plate" key={plate._id} id={plate._id}>
@@ -103,14 +93,11 @@ export default class PlateListItem extends React.Component {
         </div>
         ): undefined}
         <div className="plate-list-item__container">
-          <div className="plate-list-item__size-container">
-            <a
-              className="plate-list-item__plateSize"
-              onClick={this.onPlateSizeClick}
-            >
-              {plate.round} x {plate.length}
-            </a>
-          </div>
+          <PlateName
+            className="plate-list-item__plateSize"
+            plateID={plate._id}
+            plateName={plateSize}
+          />
           <div className="plate-list-item__forProductList-container">
             {this.getForProductList()}
           </div>

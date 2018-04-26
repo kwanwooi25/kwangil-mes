@@ -93,15 +93,22 @@
 }
 
 .product-detail__plateListItem {
+  display: flex;
+  justify-content: flex-start;
   padding: $space-xs;
 
-  a,
   span {
     font-size: $font-size--md;
     margin-right: $space-md;
   }
+}
 
-  a:hover {
+.product-detail__plateSize {
+  font-size: $font-size--md;
+  margin-right: $space-xs;
+  width: auto;
+
+  &:hover {
     color: $color-primary--500;
     cursor: pointer;
     text-decoration: underline;

@@ -2,8 +2,6 @@ import React from 'react';
 
 import Checkbox from '../../custom/Checkbox';
 import PlateListItem from './PlateListItem';
-import PlateDetailView from './PlateDetailView';
-import ProductDetailView from '../ProductsPage/ProductDetailView';
 import PlateModal from './PlateModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -27,23 +25,15 @@ export default class PlateList extends React.Component {
       accountsData: props.accountsData,
       productsData: props.productsData,
       platesData: props.platesData,
-      isPlateDetailViewOpen: false,
-      isProductDetailViewOpen: false,
       isPlateModalOpen: false,
       isDeleteConfirmationModalOpen: false,
       selectedPlateID: '',
-      selectedProductID: '',
       confirmationDescription: [],
-      platesCount: props.platesData.length,
       isSelectedMulti: false,
       selectedPlates: []
     };
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
-    this.showPlateDetailView = this.showPlateDetailView.bind(this);
-    this.hidePlateDetailView = this.hidePlateDetailView.bind(this);
-    this.showProductDetailView = this.showProductDetailView.bind(this);
-    this.hideProductDetailView = this.hideProductDetailView.bind(this);
     this.showPlateModal = this.showPlateModal.bind(this);
     this.hidePlateModal = this.hidePlateModal.bind(this);
     this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
@@ -63,8 +53,7 @@ export default class PlateList extends React.Component {
       isManager: props.isManager,
       accountsData: props.accountsData,
       productsData: props.productsData,
-      platesData: props.platesData,
-      platesCount: props.platesData.length
+      platesData: props.platesData
     });
   }
 
@@ -95,28 +84,6 @@ export default class PlateList extends React.Component {
       this.setState({ isSelectedMulti: false });
     }
     this.setState({ selectedPlates });
-  }
-
-  showPlateDetailView(selectedPlateID) {
-    this.setState({
-      isPlateDetailViewOpen: true,
-      selectedPlateID
-    });
-  }
-
-  hidePlateDetailView() {
-    this.setState({ isPlateDetailViewOpen: false });
-  }
-
-  showProductDetailView(selectedProductID) {
-    this.setState({
-      isProductDetailViewOpen: true,
-      selectedProductID
-    });
-  }
-
-  hideProductDetailView() {
-    this.setState({ isProductDetailViewOpen: false });
   }
 
   // show plate modal (EDIT mode)
@@ -209,8 +176,6 @@ export default class PlateList extends React.Component {
             plate={plate}
             productsData={this.state.productsData}
             onCheckboxChange={this.onCheckboxChange}
-            showPlateDetailView={this.showPlateDetailView}
-            showProductDetailView={this.showProductDetailView}
             showPlateModal={this.showPlateModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
@@ -222,8 +187,7 @@ export default class PlateList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {this.state.platesCount > 0 &&
-          (this.state.isAdmin || this.state.isManager) ? (
+        {this.state.isAdmin || this.state.isManager ? (
             <div className="plate-list-header">
               <Checkbox
                 name="selectAll"
@@ -248,26 +212,6 @@ export default class PlateList extends React.Component {
         <ul id="plate-list" className="list">
           {this.getProductList(this.state.queryObj)}
         </ul>
-
-        {this.state.isPlateDetailViewOpen ? (
-          <PlateDetailView
-            isOpen={this.state.isPlateDetailViewOpen}
-            plateID={this.state.selectedPlateID}
-            onModalClose={this.hidePlateDetailView}
-          />
-        ) : (
-          undefined
-        )}
-
-        {this.state.isProductDetailViewOpen ? (
-          <ProductDetailView
-            isOpen={this.state.isProductDetailViewOpen}
-            productID={this.state.selectedProductID}
-            onModalClose={this.hideProductDetailView}
-          />
-        ) : (
-          undefined
-        )}
 
         {this.state.isPlateModalOpen ? (
           <PlateModal
