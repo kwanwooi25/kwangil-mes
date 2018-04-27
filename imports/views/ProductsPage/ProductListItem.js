@@ -113,7 +113,7 @@ export default class ProductListItem extends React.Component {
           </div>
         </div>
 
-        {this.state.isAdmin || this.state.isManager ? (
+        {(this.state.isAdmin || this.state.isManager) && (
           <div className="product-buttons-container">
             <button
               className="button button-with-icon-span product-button"
@@ -137,8 +137,6 @@ export default class ProductListItem extends React.Component {
               <span>삭제</span>
             </button>
           </div>
-        ) : (
-          undefined
         )}
       </li>
     );

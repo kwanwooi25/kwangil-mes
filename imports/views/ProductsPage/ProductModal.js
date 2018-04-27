@@ -30,12 +30,13 @@ export default class ProductModal extends React.Component {
     if (props.productID) {
       // EDIT mode
       const product = ProductsData.findOne({ _id: props.productID });
+      const account = AccountsData.findOne({ _id: product.accountID });
       initialState = {
         mode: 'EDIT',
         productID: product._id,
         accountList: [],
         accountID: product.accountID,
-        accountName: product.accountName,
+        accountName: account.name,
         name: product.name,
         thick: product.thick,
         length: product.length,
@@ -529,8 +530,8 @@ export default class ProductModal extends React.Component {
       >
         <div className="boxed-view__header">
           <h1>
-            {this.state.mode === 'ADDNEW' ? '제품 등록' : undefined}
-            {this.state.mode === 'EDIT' ? '제품 정보수정' : undefined}
+            {this.state.mode === 'ADDNEW' && '제품 등록'}
+            {this.state.mode === 'EDIT' && '제품 정보수정'}
           </h1>
         </div>
         <form className="boxed-view__content product-modal__content">
@@ -575,9 +576,7 @@ export default class ProductModal extends React.Component {
                       value={this.state.name}
                       onInputChange={this.onInputChange}
                       errorMessage={
-                        this.state.nameEmpty
-                          ? '제품명을 입력하세요.'
-                          : undefined
+                        this.state.nameEmpty && '제품명을 입력하세요.'
                       }
                     />
                   </div>
@@ -675,9 +674,7 @@ export default class ProductModal extends React.Component {
                       value={this.state.extColor}
                       onInputChange={this.onInputChange}
                       errorMessage={
-                        this.state.extColorEmpty
-                          ? '원단색상을 입력하세요.'
-                          : undefined
+                        this.state.extColorEmpty && '원단색상을 입력하세요.'
                       }
                     />
                   </div>
@@ -730,7 +727,7 @@ export default class ProductModal extends React.Component {
             </div>
           </div>
 
-          {this.state.isPrint ? (
+          {this.state.isPrint && (
             <div className="accordion-container">
               <Accordion title="인쇄" />
               <div className="accordion-panel open">
@@ -766,8 +763,7 @@ export default class ProductModal extends React.Component {
                         onInputChange={this.onInputChange}
                         errorMessage={
                           this.state.printFrontColorCountError
-                            ? '숫자로 입력하세요.'
-                            : undefined
+                          && '숫자로 입력하세요.'
                         }
                       />
                       <label htmlFor="printFrontColorCount">도, </label>
@@ -790,7 +786,7 @@ export default class ProductModal extends React.Component {
                     </div>
                   </div>
 
-                  {this.state.extPretreat === 'both' ? (
+                  {this.state.extPretreat === 'both' && (
                     <div className="form-element-container">
                       <div className="form-element__label">
                         <label>후면</label>
@@ -804,8 +800,7 @@ export default class ProductModal extends React.Component {
                           onInputChange={this.onInputChange}
                           errorMessage={
                             this.state.printBackColorCountError
-                              ? '숫자로 입력하세요.'
-                              : undefined
+                            && '숫자로 입력하세요.'
                           }
                         />
                         <label htmlFor="printBackColorCount">도, </label>
@@ -827,8 +822,6 @@ export default class ProductModal extends React.Component {
                         />
                       </div>
                     </div>
-                  ) : (
-                    undefined
                   )}
 
                   <div className="form-element-container">
@@ -847,8 +840,6 @@ export default class ProductModal extends React.Component {
                 </div>
               </div>
             </div>
-          ) : (
-            undefined
           )}
 
           <div className="accordion-container">
@@ -881,7 +872,7 @@ export default class ProductModal extends React.Component {
                   </div>
                 </div>
 
-                {this.state.cutPunches ? (
+                {this.state.cutPunches && (
                   <div className="form-element-container">
                     <div className="form-element__label">
                       <label>바람구멍</label>
@@ -895,8 +886,7 @@ export default class ProductModal extends React.Component {
                         onInputChange={this.onInputChange}
                         errorMessage={
                           this.state.cutPunchCountError
-                            ? '숫자로 입력하세요.'
-                            : undefined
+                          && '숫자로 입력하세요.'
                         }
                       />
                       <label htmlFor="cutPunchCount">개, </label>
@@ -918,8 +908,6 @@ export default class ProductModal extends React.Component {
                       />
                     </div>
                   </div>
-                ) : (
-                  undefined
                 )}
               </div>
               <div className="form-element-group sm50 md40">
@@ -985,8 +973,7 @@ export default class ProductModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.packQuantityError
-                          ? '숫자로 입력하세요.'
-                          : undefined
+                        && '숫자로 입력하세요.'
                       }
                     />
                   </div>
@@ -1021,7 +1008,7 @@ export default class ProductModal extends React.Component {
             </div>
           </div>
 
-          {this.props.isAdmin || this.props.isManager ? (
+          {(this.props.isAdmin || this.props.isManager) && (
             <div className="accordion-container">
               <Accordion title="관리자 참고사항" />
               <div className="accordion-panel open">
@@ -1038,9 +1025,7 @@ export default class ProductModal extends React.Component {
                         value={this.state.price}
                         onInputChange={this.onInputChange}
                         errorMessage={
-                          this.state.priceError
-                            ? '숫자로 입력하세요.'
-                            : undefined
+                          this.state.priceError && '숫자로 입력하세요.'
                         }
                       />
                     </div>
@@ -1064,14 +1049,10 @@ export default class ProductModal extends React.Component {
                 </div>
               </div>
             </div>
-          ) : (
-            undefined
           )}
 
-          {this.state.error ? (
+          {this.state.error && (
             <p className="product-modal__error">{this.state.error}</p>
-          ) : (
-            undefined
           )}
 
           <div className="button-group">
@@ -1086,15 +1067,13 @@ export default class ProductModal extends React.Component {
             </button>
           </div>
         </form>
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
-        ) : (
-          undefined
         )}
       </Modal>
     );

@@ -13,7 +13,8 @@
   overflow-y: auto;
   outline: none;
   width: 90%;
-  max-width: 24rem;
+  max-width: 16rem;
+  padding-bottom: $space-sm;
 }
 
 .boxed-view__header {

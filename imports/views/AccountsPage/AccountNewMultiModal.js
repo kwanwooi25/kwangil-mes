@@ -13,63 +13,52 @@ export default class AccountNewMultiModal extends React.Component {
     super(props);
 
     this.state = {
-      isConfirmationModalOpen: false
+      isConfirmationModalOpen: false,
+      json: [],
+      error: ''
     };
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onClickOK = this.onClickOK.bind(this);
     this.onConfirmationModalClose = this.onConfirmationModalClose.bind(this);
-    this.onClickCancel = this.onClickCancel.bind(this);
   }
 
   onInputChange(e) {
-    if (e.target.id === "accountsJSON") {
-      if (e.target.value === "") {
-        const message = document.getElementById("message");
-        message.textContent = "입력된 내용이 없습니다.";
-        message.classList.add("error");
-        this.refs.accountsJSON.classList.add("error");
-      } else {
-        const message = document.getElementById("message");
-        message.textContent =
-          "등록하고자 하는 업체 리스트를 JSON 형태로 입력합니다.";
-        message.classList.remove("error");
-        this.refs.accountsJSON.classList.remove("error");
-      }
+    if (e.target.files.length > 0 && e.target.files[0].type === 'application/json') {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const json = JSON.parse(reader.result);
+        this.setState({ json, error: '' });
+      };
+      reader.readAsText(file);
+    } else {
+      e.target.value = '';
+      this.setState({
+        json: [],
+        error: '파일타입 에러! JSON 파일만 가능합니다.'
+      });
     }
   }
 
   onClickOK(e) {
-    if (this.refs.accountsJSON.value === "") {
-      const message = document.getElementById("message");
-      message.textContent = "입력된 내용이 없습니다.";
-      message.classList.add("error");
-      this.refs.accountsJSON.classList.add("error");
+    if (this.state.json.length === 0) {
+      this.setState({ error: '선택된 파일이 없습니다.' });
     } else {
-      const message = document.getElementById("message");
-      message.textContent =
-        "등록하고자 하는 업체 리스트를 JSON 형태로 입력합니다.";
-      message.classList.remove("error");
-      this.refs.accountsJSON.classList.remove("error");
-      this.setState({ isConfirmationModalOpen: true });
+      this.setState({ isConfirmationModalOpen: true, error: '' });
     }
   }
 
   onConfirmationModalClose(answer) {
     this.setState({ isConfirmationModalOpen: false });
-    console.log(answer);
     if (answer) {
-      const json = JSON.parse(this.refs.accountsJSON.value);
-      Meteor.call("accounts.insertmany", json, (err, res) => {
+      Meteor.call("accounts.insertmany", this.state.json, (err, res) => {
         if (!err) {
           this.props.onModalClose();
         }
       });
     }
-  }
-
-  onClickCancel(e) {
-    this.props.onModalClose();
   }
 
   render() {
@@ -85,38 +74,38 @@ export default class AccountNewMultiModal extends React.Component {
           <h1>거래처 대량등록</h1>
         </div>
         <div className="boxed-view__content">
-          <textarea
-            className="add-new-multi-modal__textarea"
-            id="accountsJSON"
-            ref="accountsJSON"
-            name="accountsJSON"
+          <input
+            className="input"
+            ref="json"
+            type="file"
+            accept=".json"
             onChange={this.onInputChange}
           />
-          <p id="message" className="add-new-multi-modal__message">
-            등록하고자 하는 업체 리스트를 JSON 형태로 입력합니다.
-          </p>
+
+          {this.state.error && (
+            <p className="product-modal__error">{this.state.error}</p>
+          )}
+
           <div className="button-group">
             <button className="button" onClick={this.onClickOK}>
               등록
             </button>
             <button
               className="button button-cancel"
-              onClick={this.onClickCancel}
+              onClick={() => { this.props.onModalClose() }}
             >
               취소
             </button>
           </div>
         </div>
 
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title="거래처 대량등록"
             descriptionArray={["계속 하시겠습니까?"]}
             onModalClose={this.onConfirmationModalClose}
           />
-        ) : (
-          undefined
         )}
       </Modal>
     );

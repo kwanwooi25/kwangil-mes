@@ -66,23 +66,22 @@ export default class AccountListItem extends React.Component {
           />
           <div className="account-contact-container">
             <a className="account-phone" href={`tel:${account.phone_1}`}>
-              <i className="fa fa-phone" /> {account.phone_1}
+              {account.phone_1 && <i className="fa fa-phone" />}
+              {account.phone_1}
             </a>
             <a className="account-fax">
-              {account.fax ? <i className="fa fa-fax" /> : undefined}
+              {account.fax && <i className="fa fa-fax" />}
               {account.fax}
             </a>
-            {account.email_1 ? (
+            {account.email_1 && (
               <a className="account-email" href={`mailto:${account.email_1}`}>
                 <i className="fa fa-envelope" /> {account.email_1}
               </a>
-            ) : (
-              undefined
             )}
           </div>
         </div>
 
-        {this.state.isAdmin || this.state.isManager ? (
+        {(this.state.isAdmin || this.state.isManager) && (
           <div className="account-buttons-container">
             <button
               className="button button-with-icon-span account-button"
@@ -99,8 +98,6 @@ export default class AccountListItem extends React.Component {
               <span>삭제</span>
             </button>
           </div>
-        ) : (
-          undefined
         )}
       </li>
     );

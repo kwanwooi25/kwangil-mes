@@ -48,12 +48,10 @@ export default class LoginPage extends React.Component {
               id="password"
               name="password"
             />
-            {this.state.error ? (
+            {this.state.error && (
               <p className="boxed-view__content__error">
                 {this.state.error}
               </p>
-            ) : (
-              undefined
             )}
             <button
               className="boxed-view__content__button"

@@ -112,17 +112,15 @@ export default class AccountList extends React.Component {
           {this.getAccountList(this.state.query)}
         </ul>
 
-        {this.state.isAccountModalOpen ? (
+        {this.state.isAccountModalOpen && (
           <AccountModal
             isOpen={this.state.isAccountModalOpen}
             accountID={this.state.selectedAccountID}
             onModalClose={this.hideEditAccountModal}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isDeleteConfirmationModalOpen ? (
+        {this.state.isDeleteConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmationModalOpen}
             title="거래처 삭제"
@@ -132,8 +130,6 @@ export default class AccountList extends React.Component {
             ]}
             onModalClose={this.hideDeleteConfirmationModal}
           />
-        ) : (
-          undefined
         )}
       </div>
     );

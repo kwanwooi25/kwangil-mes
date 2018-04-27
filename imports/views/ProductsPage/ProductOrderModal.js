@@ -181,28 +181,20 @@ export default class ProductOrderModal extends React.Component {
         <p className="product-order-modal__productName">{product.name}</p>
         <p className="product-order-modal__description">{sizeText}</p>
         <p className="product-order-modal__description">{extPrintText}</p>
-        {printDetailText ? (
+        {printDetailText && (
           <p className="product-order-modal__description">{printDetailText}</p>
-        ) : (
-          undefined
         )}
-        {cutDetailText ? (
+        {cutDetailText && (
           <p className="product-order-modal__description">{cutDetailText}</p>
-        ) : (
-          undefined
         )}
-        {packDetailText ? (
+        {packDetailText && (
           <p className="product-order-modal__description">{packDetailText}</p>
-        ) : (
-          undefined
         )}
-        {product.isPrint ? (
+        {product.isPrint && (
           <img
             className="product-order-modal__print-image"
             src={product.printImageURL || noImage}
           />
-        ) : (
-          undefined
         )}
       </div>
     );
@@ -381,7 +373,7 @@ export default class ProductOrderModal extends React.Component {
           <h1>
             {this.state.mode === 'ADDNEW'
               ? '작업지시 작성'
-              : this.state.mode === 'EDIT' ? '작업지시 수정' : undefined}
+              : this.state.mode === 'EDIT' && '작업지시 수정'}
           </h1>
         </div>
         <form className="boxed-view__content product-order-modal__content">
@@ -411,8 +403,7 @@ export default class ProductOrderModal extends React.Component {
                       disabled={this.state.mode === 'EDIT'}
                       errorMessage={
                         this.state.orderedAtEmpty
-                          ? '발주일을 입력하세요.'
-                          : undefined
+                        && '발주일을 입력하세요.'
                       }
                     />
                   </div>
@@ -430,8 +421,7 @@ export default class ProductOrderModal extends React.Component {
                       }}
                       errorMessage={
                         this.state.deliverBeforeEmpty
-                          ? '납기일을 입력하세요.'
-                          : undefined
+                        && '납기일을 입력하세요.'
                       }
                     />
                   </div>
@@ -449,8 +439,7 @@ export default class ProductOrderModal extends React.Component {
                       onInputChange={this.onInputChange}
                       errorMessage={
                         this.state.orderQuantityEmpty
-                          ? '발주수량을 입력하세요.'
-                          : undefined
+                        && '발주수량을 입력하세요.'
                       }
                     />
                   </div>
@@ -476,7 +465,7 @@ export default class ProductOrderModal extends React.Component {
                   </div>
                 </div>
 
-                {this.state.product.isPrint ? (
+                {this.state.product.isPrint && (
                   <div className="form-element-container">
                     <div className="form-element__label">
                       <label>동판</label>
@@ -514,8 +503,6 @@ export default class ProductOrderModal extends React.Component {
                       />
                     </div>
                   </div>
-                ) : (
-                  undefined
                 )}
               </div>
 
@@ -554,7 +541,7 @@ export default class ProductOrderModal extends React.Component {
             <button className="button" onClick={this.onClickOK}>
               {this.state.mode === 'ADDNEW'
                 ? '발주'
-                : this.state.mode === 'EDIT' ? '수정' : undefined}
+                : this.state.mode === 'EDIT' && '수정'}
             </button>
             <button
               className="button button-cancel"
@@ -565,15 +552,13 @@ export default class ProductOrderModal extends React.Component {
           </div>
         </form>
 
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
-        ) : (
-          undefined
         )}
       </Modal>
     );

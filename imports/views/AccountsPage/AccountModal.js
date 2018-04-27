@@ -265,8 +265,8 @@ export default class AccountModal extends React.Component {
       >
         <div className="boxed-view__header">
           <h1>
-            {this.state.mode === 'ADDNEW' ? '거래처 등록' : undefined}
-            {this.state.mode === 'EDIT' ? '거래처 정보수정' : undefined}
+            {this.state.mode === 'ADDNEW' && '거래처 등록'}
+            {this.state.mode === 'EDIT' && '거래처 정보수정'}
           </h1>
         </div>
         <form className="boxed-view__content">
@@ -282,7 +282,7 @@ export default class AccountModal extends React.Component {
                 value={this.state.name}
                 onInputChange={this.onInputChange}
                 errorMessage={
-                  this.state.nameEmpty ? '업체명을 입력하세요.' : undefined
+                  this.state.nameEmpty && '업체명을 입력하세요.'
                 }
               />
             </div>
@@ -320,9 +320,7 @@ export default class AccountModal extends React.Component {
                 value={this.state.phone_2}
                 onInputChange={this.onInputChange}
                 errorMessage={
-                  this.state.phone_2Error
-                    ? '숫자만 입력 가능합니다.'
-                    : undefined
+                  this.state.phone_2Error && '숫자만 입력 가능합니다.'
                 }
               />
             </div>
@@ -339,7 +337,7 @@ export default class AccountModal extends React.Component {
                 value={this.state.fax}
                 onInputChange={this.onInputChange}
                 errorMessage={
-                  this.state.faxError ? '숫자만 입력 가능합니다.' : undefined
+                  this.state.faxError && '숫자만 입력 가능합니다.'
                 }
               />
             </div>
@@ -356,9 +354,7 @@ export default class AccountModal extends React.Component {
                 value={this.state.email_1}
                 onInputChange={this.onInputChange}
                 errorMessage={
-                  this.state.email_1Error
-                    ? '올바른 이메일 형식이 아닙니다.'
-                    : undefined
+                  this.state.email_1Error && '올바른 이메일 형식이 아닙니다.'
                 }
               />
             </div>
@@ -375,9 +371,7 @@ export default class AccountModal extends React.Component {
                 value={this.state.email_2}
                 onInputChange={this.onInputChange}
                 errorMessage={
-                  this.state.email_2Error
-                    ? '올바른 이메일 형식이 아닙니다.'
-                    : undefined
+                  this.state.email_2Error && '올바른 이메일 형식이 아닙니다.'
                 }
               />
             </div>
@@ -410,10 +404,8 @@ export default class AccountModal extends React.Component {
             </div>
           </div>
 
-          {this.state.error ? (
+          {this.state.error && (
             <p className="account-modal__error">{this.state.error}</p>
-          ) : (
-            undefined
           )}
 
           <div className="button-group">
@@ -428,15 +420,13 @@ export default class AccountModal extends React.Component {
             </button>
           </div>
         </form>
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
-        ) : (
-          undefined
         )}
       </Modal>
     );

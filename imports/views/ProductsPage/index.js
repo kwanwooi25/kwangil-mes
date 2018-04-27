@@ -28,7 +28,8 @@ export default class ProductsPage extends React.Component {
         width: '',
         extColor: '',
         printColor: ''
-      }
+      },
+      limit: 20
     };
 
     this.onInputSearchChange = this.onInputSearchChange.bind(this);
@@ -49,6 +50,21 @@ export default class ProductsPage extends React.Component {
         }, 0);
       });
 
+    // infinite scroll
+    const list = document.querySelector('.list');
+    list.addEventListener('scroll', (e) => {
+      if (list.scrollTop + list.offsetHeight >= list.scrollHeight) {
+        let limit = this.state.limit;
+        limit += 20;
+        this.setState({ limit }, () => {
+          Meteor.subscribe('products', this.state.limit);
+        });
+      }
+      // console.log('list.scrollTop', list.scrollTop);
+      // console.log('list.offsetHeight', list.offsetHeight);
+      // console.log('list.scrollHeight', list.scrollHeight);
+    })
+
     // tracks if the user logged in is admin or manager
     this.authTracker = Tracker.autorun(() => {
       if (Meteor.user()) {
@@ -62,10 +78,10 @@ export default class ProductsPage extends React.Component {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
       Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
+      Meteor.subscribe('products', this.state.limit);
       Meteor.subscribe('plates');
       const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
-      const productsData = ProductsData.find({}, { sort: { name: 1 } }).fetch();
+      const productsData = ProductsData.find().fetch();
       const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
 
       this.setState({ accountsData, productsData, platesData });

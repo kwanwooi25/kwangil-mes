@@ -106,7 +106,7 @@ export default class AccountPageHeaderButtons extends React.Component {
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>
         </button>
-        {this.state.isAdmin ? (
+        {this.state.isAdmin && (
           <button
             className="button button-with-icon-span page-header__button"
             onClick={this.onClickNewMulti}
@@ -114,10 +114,8 @@ export default class AccountPageHeaderButtons extends React.Component {
             <i className="fa fa-plus-square fa-lg" />
             <span>대량등록</span>
           </button>
-        ) : (
-          undefined
         )}
-        {this.state.isAdmin || this.state.isManager ? (
+        {(this.state.isAdmin || this.state.isManager) && (
           <button
             className="button button-with-icon-span page-header__button"
             onClick={this.onClickNew}
@@ -125,26 +123,20 @@ export default class AccountPageHeaderButtons extends React.Component {
             <i className="fa fa-plus fa-lg" />
             <span>신규</span>
           </button>
-        ) : (
-          undefined
         )}
 
-        {this.state.isModalNewOpen ? (
+        {this.state.isModalNewOpen && (
           <AccountModal
             isOpen={this.state.isModalNewOpen}
             onModalClose={this.onModalClose}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isModalNewMultiOpen ? (
+        {this.state.isModalNewMultiOpen && (
           <AccountNewMultiModal
             isOpen={this.state.isModalNewMultiOpen}
             onModalClose={this.onModalClose}
           />
-        ) : (
-          undefined
         )}
       </div>
     );

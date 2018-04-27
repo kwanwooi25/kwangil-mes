@@ -163,17 +163,15 @@ export default class ProductDetailView extends React.Component {
           <p className="product-detail__description">{product.extMemo}</p>
         </div>
 
-        {product.isPrint ? (
+        {product.isPrint && (
           <div className="product-detail__subsection">
             <h3 className="product-detail__subtitle">인쇄</h3>
             <p className="product-detail__description">{printFrontText}</p>
             <p className="product-detail__description">{printBackText}</p>
-            {plateList ? (
+            {plateList && (
               <ul className="product-detail__plateList">
                 {getPlateList(plateList)}
               </ul>
-            ) : (
-              undefined
             )}
             <p className="product-detail__description">{product.printMemo}</p>
             <div className="product-detail__print-image">
@@ -192,8 +190,6 @@ export default class ProductDetailView extends React.Component {
               </div>
             </div>
           </div>
-        ) : (
-          undefined
         )}
 
         <div className="product-detail__subsection">

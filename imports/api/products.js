@@ -5,8 +5,8 @@ import SimpleSchema from 'simpl-schema';
 export const ProductsData = new Mongo.Collection('products');
 
 if (Meteor.isServer) {
-  Meteor.publish('products', function() {
-    return ProductsData.find();
+  Meteor.publish('products', function(limit) {
+    return ProductsData.find({}, { limit: limit });
   });
 }
 
@@ -41,14 +41,16 @@ Meteor.methods({
   },
 
   'products.insertmany'(json) {
-    console.log(json);
     if (!this.userId) {
       throw new Meteor.Error('User not logged in!');
     }
-    json.map(product => {
-      console.log(product);
-      ProductsData.insert(product);
-    });
+    const user = Meteor.users.findOne(this.userId);
+
+    if (user.profile.isAdmin || user.profile.isManager ) {
+      json.map(product => {
+        ProductsData.insert(product);
+      });
+    }
   },
 
   'products.update'(productID, data) {

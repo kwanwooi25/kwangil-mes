@@ -237,7 +237,7 @@ export default class ProductList extends React.Component {
           {this.getProductList(this.state.queryObj)}
         </ul>
 
-        {this.state.isProductOrderModalOpen ? (
+        {this.state.isProductOrderModalOpen && (
           <ProductOrderModal
             isOpen={this.state.isProductOrderModalOpen}
             productID={this.state.selectedProductID}
@@ -245,11 +245,9 @@ export default class ProductList extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isProductModalOpen ? (
+        {this.state.isProductModalOpen && (
           <ProductModal
             isOpen={this.state.isProductModalOpen}
             productID={this.state.selectedProductID}
@@ -257,19 +255,15 @@ export default class ProductList extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isDeleteConfirmationModalOpen ? (
+        {this.state.isDeleteConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmationModalOpen}
             title="품목 삭제"
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.hideDeleteConfirmationModal}
           />
-        ) : (
-          undefined
         )}
       </div>
     );
