@@ -366,7 +366,7 @@ export default class ProductOrderModal extends React.Component {
         }}
         onRequestClose={this.props.onModalClose}
         ariaHideApp={false}
-        className="boxed-view__box product-modal"
+        className="boxed-view__box product-order-modal"
         overlayClassName="react-modal__bg"
       >
         <div className="boxed-view__header">

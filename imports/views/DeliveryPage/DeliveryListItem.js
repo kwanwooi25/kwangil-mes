@@ -98,7 +98,7 @@ export default class DeliveryListItem extends React.Component {
 
     return (
       <li className={listClassName} key={order._id} id={order._id}>
-        {this.state.isAdmin || this.state.isManager ? (
+        {(this.state.isAdmin || this.state.isManager) && (
           <div className="delivery-list-item__checkbox-container">
             <Checkbox
               name={order._id}
@@ -106,26 +106,20 @@ export default class DeliveryListItem extends React.Component {
               disabled={order.data.isDelivered}
             />
           </div>
-        ) : (
-          undefined
         )}
 
         <div className="delivery-list-item-container">
           <div className="delivery-list-item__id-container">
             <div className="delivery-list-item__remark-container">
-              {order.data.deliverFast ? (
+              {order.data.deliverFast && (
                 <span className="delivery-list-item__text">
                   <i className="fa fa-star" /> 지급
                 </span>
-              ) : (
-                undefined
               )}
-              {order.data.deliverDateStrict ? (
+              {order.data.deliverDateStrict && (
                 <span className="delivery-list-item__text">
                   <i className="fa fa-star" /> 납기엄수
                 </span>
-              ) : (
-                undefined
               )}
             </div>
 
@@ -163,7 +157,7 @@ export default class DeliveryListItem extends React.Component {
           </div>
         </div>
 
-        {this.state.isAdmin || this.state.isManager ? (
+        {(this.state.isAdmin || this.state.isManager) && (
           <div className="delivery-list-item__buttons-container">
             <button
               className="button button-with-icon-span delivery-list-item__button"
@@ -182,8 +176,6 @@ export default class DeliveryListItem extends React.Component {
               <span>완료</span>
             </button>
           </div>
-        ) : (
-          undefined
         )}
       </li>
     );

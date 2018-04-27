@@ -139,7 +139,7 @@ export default class Header extends React.Component {
           >
             납품관리
           </NavLink>
-          {this.state.isAdmin ? (
+          {this.state.isAdmin && (
             <NavLink
               className="nav--item"
               activeClassName="nav--item--active"
@@ -148,7 +148,7 @@ export default class Header extends React.Component {
             >
               사용자관리
             </NavLink>
-          ): undefined}
+          )}
         </nav>
       </header>
     );

@@ -1,12 +1,10 @@
 .user-modal {
-  .form-element-container {
-    align-items: flex-start;
-    flex-direction: column;
-    margin: 0;
-  }
+  width: 95%;
+  max-width: 440px;
 
   .form-element__label {
-    margin-bottom: $space-xs;
+    margin-right: $space-xs;
+    width: 4rem;
   }
 
   .form-element span {

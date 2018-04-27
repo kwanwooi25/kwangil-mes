@@ -190,8 +190,8 @@ export default class UserModal extends React.Component {
       >
         <div className="boxed-view__header">
           <h1>
-            {this.state.mode === 'ADDNEW' ? '사용자 등록' : undefined}
-            {this.state.mode === 'EDIT' ? '거래처 정보수정' : undefined}
+            {this.state.mode === 'ADDNEW' && '사용자 등록'}
+            {this.state.mode === 'EDIT' && '거래처 정보수정'}
           </h1>
         </div>
         <form className="boxed-view__content">
@@ -206,9 +206,7 @@ export default class UserModal extends React.Component {
                 id="username"
                 value={this.state.username}
                 onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.usernameEmpty ? '아이디를 입력하세요.' : undefined
-                }
+                errorMessage={this.state.usernameEmpty && '아이디를 입력하세요.'}
               />
             </div>
           </div>
@@ -223,9 +221,7 @@ export default class UserModal extends React.Component {
                 id="password"
                 value={this.state.password}
                 onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.passwordEmpty ? '비밀번호를 입력하세요.' : undefined
-                }
+                errorMessage={this.state.passwordEmpty && '비밀번호를 입력하세요.'}
               />
             </div>
           </div>
@@ -241,7 +237,7 @@ export default class UserModal extends React.Component {
                 value={this.state.passwordConf}
                 onInputChange={this.onInputChange}
                 errorMessage={
-                  this.state.passwordConfError ? '비밀번호가 일치하지 않습니다.' : undefined
+                  this.state.passwordConfError && '비밀번호가 일치하지 않습니다.'
                 }
               />
             </div>
@@ -257,9 +253,7 @@ export default class UserModal extends React.Component {
                 id="displayName"
                 value={this.state.displayName}
                 onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.displayNameEmpty ? '이름을 입력하세요.' : undefined
-                }
+                errorMessage={this.state.displayNameEmpty && '이름을 입력하세요.'}
               />
             </div>
           </div>
@@ -309,10 +303,8 @@ export default class UserModal extends React.Component {
             </div>
           </div>
 
-          {this.state.error ? (
+          {this.state.error && (
             <p className="user-modal__error">{this.state.error}</p>
-          ) : (
-            undefined
           )}
 
           <div className="button-group">
@@ -328,15 +320,13 @@ export default class UserModal extends React.Component {
           </div>
         </form>
 
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
-        ) : (
-          undefined
         )}
       </Modal>
     );

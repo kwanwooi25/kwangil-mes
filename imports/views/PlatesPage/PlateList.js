@@ -187,33 +187,31 @@ export default class PlateList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {this.state.isAdmin || this.state.isManager ? (
-            <div className="plate-list-header">
-              <Checkbox
-                name="selectAll"
-                label="전체선택"
-                onInputChange={this.onCheckboxChange}
-              />
-              <div className="plate-buttons-container">
-                <button
-                  className="button button-with-icon-span plate-list-item__button"
-                  onClick={this.onDeleteMultiClick}
-                  disabled={!this.state.isSelectedMulti}
-                >
-                  <i className="fa fa-trash fa-lg" />
-                  <span>삭제</span>
-                </button>
-              </div>
+        {(this.state.isAdmin || this.state.isManager) && (
+          <div className="plate-list-header">
+            <Checkbox
+              name="selectAll"
+              label="전체선택"
+              onInputChange={this.onCheckboxChange}
+            />
+            <div className="plate-buttons-container">
+              <button
+                className="button button-with-icon-span plate-list-item__button"
+                onClick={this.onDeleteMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-trash fa-lg" />
+                <span>삭제</span>
+              </button>
             </div>
-          ) : (
-            undefined
-          )}
+          </div>
+        )}
 
         <ul id="plate-list" className="list">
           {this.getProductList(this.state.queryObj)}
         </ul>
 
-        {this.state.isPlateModalOpen ? (
+        {this.state.isPlateModalOpen && (
           <PlateModal
             isOpen={this.state.isPlateModalOpen}
             plateID={this.state.selectedPlateID}
@@ -221,19 +219,15 @@ export default class PlateList extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isDeleteConfirmationModalOpen ? (
+        {this.state.isDeleteConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmationModalOpen}
             title="동판 삭제"
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.hideDeleteConfirmationModal}
           />
-        ) : (
-          undefined
         )}
       </div>
     );

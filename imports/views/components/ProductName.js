@@ -39,14 +39,12 @@ export default class ProductName extends React.Component {
           {this.props.productName}
         </a>
 
-        {this.state.isDetailViewOpen ? (
+        {this.state.isDetailViewOpen && (
           <ProductDetailView
             isOpen={this.state.isDetailViewOpen}
             productID={this.state.productID}
             onModalClose={this.onModalClose}
           />
-        ) : (
-          undefined
         )}
       </div>
     )

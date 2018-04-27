@@ -14,9 +14,9 @@
 .form-element-container {
   align-items: center;
   display: flex;
-  margin: 0 auto;
-  padding: $space-xs;
-  width: 95%;
+  // margin: 0 auto;
+  padding: $space-sm;
+  width: 100%;
 }
 
 .form-element__label {
@@ -46,7 +46,7 @@
   color: $color-primary--500;
   font-size: $font-size--md;
   outline: none;
-  padding: $space-xs;
+  padding: $space-sm;
 
   &:focus {
     border-color: $color-primary--500;

@@ -19,15 +19,26 @@
   flex-grow: 1;
   justify-content: space-between;
   padding: 0 $space-sm;
+
+  span:first-child {
+    font-size: $font-size--lg;
+    font-weight: $font-weight--bold;
+  }
 }
 
 .user-list-item__buttons-container {
   display: flex;
-  flex-direction: column;
+  margin-left: $space-lg;
 }
 
 .user-list-item__button {
   height: 2.3rem;
   width: 2.8rem;
   margin: $space-xs;
+}
+
+@media (min-width: $break--sm) {
+  .user-list-item__user-detail-container {
+    max-width: 50%;
+  }
 }

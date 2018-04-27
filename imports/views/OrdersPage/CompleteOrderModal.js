@@ -156,9 +156,7 @@ export default class CompleteOrderModal extends React.Component {
       );
       for (let i = 0; i < lis.length; i++) {
         const order = OrdersData.findOne({ _id: lis[i].id });
-        order.data.completedAt = this.state.completedAt.format(
-          'YYYY-MM-DD'
-        );
+        order.data.completedAt = this.state.completedAt.format('YYYY-MM-DD');
         order.data.completedQuantity = uncomma(
           this.state.completedQuantityArray[i]
         );
@@ -181,7 +179,9 @@ export default class CompleteOrderModal extends React.Component {
       const order = OrdersData.findOne({ _id: orderID });
       const product = ProductsData.findOne({ _id: order.data.productID });
 
-      const productSizeText = `${product.thick} x ${product.length} x ${product.width}`;
+      const productSizeText = `${product.thick} x ${product.length} x ${
+        product.width
+      }`;
 
       return (
         <li
@@ -222,9 +222,8 @@ export default class CompleteOrderModal extends React.Component {
                 value={this.state.completedQuantityArray[index]}
                 onInputChange={this.onInputChange}
                 errorMessage={
-                  this.state.completedQuantityEmptyArray[index]
-                    ? '완성수량을 입력하세요.'
-                    : undefined
+                  this.state.completedQuantityEmptyArray[index] &&
+                  '완성수량을 입력하세요.'
                 }
               />
             </div>
@@ -280,10 +279,9 @@ export default class CompleteOrderModal extends React.Component {
                 this.setState({ completedAt });
               }}
               isOutsideRange={() => {
-                  return false;
+                return false;
               }}
-              openDirection="up"
-              anchorDirection="right"
+              withPortal={true}
             />
           </div>
 
@@ -301,15 +299,13 @@ export default class CompleteOrderModal extends React.Component {
             </button>
           </div>
         </div>
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
-        ) : (
-          undefined
         )}
       </Modal>
     );

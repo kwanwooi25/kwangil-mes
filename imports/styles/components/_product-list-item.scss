@@ -48,7 +48,7 @@
 
 .product-accountName-container,
 .product-productName-container {
-  padding: $space-xs;  
+  padding: $space-xs;
 }
 
 .product-accountName {
@@ -89,7 +89,7 @@
   padding: $space-xs $space-sm;
 }
 
-@media (min-width: $break--md) {
+@media (min-width: $break--sm) {
   .product-container {
     flex-direction: row;
   }
@@ -112,7 +112,7 @@
   }
 }
 
-@media (min-width: $break--lg) {
+@media (min-width: $break--md) {
   .product-name-container {
     flex-direction: row;
     width: 55%;

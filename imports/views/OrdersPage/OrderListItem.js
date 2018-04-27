@@ -142,31 +142,27 @@ export default class OrderListItem extends React.Component {
 
     return (
       <li className={listClassName} key={order._id} id={order._id}>
-        {this.state.isAdmin || this.state.isManager ? (
-        <div className="order-checkbox-container">
-          <Checkbox
-            name={order._id}
-            onInputChange={this.props.onCheckboxChange}
-            disabled={order.data.isCompleted}
-          />
-        </div>
-        ): undefined}
+        {(this.state.isAdmin || this.state.isManager) && (
+          <div className="order-checkbox-container">
+            <Checkbox
+              name={order._id}
+              onInputChange={this.props.onCheckboxChange}
+              disabled={order.data.isCompleted}
+            />
+          </div>
+        )}
 
         <div className="order-container">
           <div className="order-id-container">
-            {order.data.deliverFast ? (
+            {order.data.deliverFast && (
               <span className="order-list__text">
                 <i className="fa fa-star" /> 지급
               </span>
-            ) : (
-              undefined
             )}
-            {order.data.deliverDateStrict ? (
+            {order.data.deliverDateStrict && (
               <span className="order-list__text">
                 <i className="fa fa-star" /> 납기엄수
               </span>
-            ) : (
-              undefined
             )}
 
             <OrderName
@@ -182,7 +178,7 @@ export default class OrderListItem extends React.Component {
             </p>
           </div>
 
-          <div className={product._id + ' order-product-details-container'}>
+          <div className='order-product-details-container'>
             <div className="order-names-container">
               <AccountName
                 className="order-list__accountName"
@@ -223,7 +219,7 @@ export default class OrderListItem extends React.Component {
             </select>
           </div>
 
-          {this.state.isAdmin || this.state.isManager ? (
+          {(this.state.isAdmin || this.state.isManager) && (
             <div className="order-buttons-container">
               <button
                 className="button button-with-icon-span order-button"
@@ -258,8 +254,6 @@ export default class OrderListItem extends React.Component {
                 <span>삭제</span>
               </button>
             </div>
-          ) : (
-            undefined
           )}
         </div>
       </li>

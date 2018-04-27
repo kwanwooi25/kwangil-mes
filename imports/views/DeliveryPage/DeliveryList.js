@@ -193,41 +193,35 @@ export default class DeliveryList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {this.state.isAdmin || this.state.isManager ? (
-            <DeliveryListHeader
-              onCheckboxChange={this.onCheckboxChange}
-              isSelectedMulti={this.state.isSelectedMulti}
-              selectedOrders={this.state.selectedOrders}
-              showDeliveryOrderModal={this.showDeliveryOrderModal}
-              showConfirmationModal={this.showConfirmationModal}
-            />
-          ) : (
-            undefined
-          )}
+        {(this.state.isAdmin || this.state.isManager) && (
+          <DeliveryListHeader
+            onCheckboxChange={this.onCheckboxChange}
+            isSelectedMulti={this.state.isSelectedMulti}
+            selectedOrders={this.state.selectedOrders}
+            showDeliveryOrderModal={this.showDeliveryOrderModal}
+            showConfirmationModal={this.showConfirmationModal}
+          />
+        )}
 
         <ul id="delivery-list" className="list">
           {this.getDeliveryList(this.state.query)}
         </ul>
 
-        {this.state.isDeliveryOrderModalOpen ? (
+        {this.state.isDeliveryOrderModalOpen && (
           <DeliveryOrderModal
             isOpen={this.state.isDeliveryOrderModalOpen}
             selectedOrders={this.state.selectedOrders}
             onModalClose={this.hideDeliveryOrderModal}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.hideConfirmationModal}
           />
-        ) : (
-          undefined
         )}
       </div>
     );

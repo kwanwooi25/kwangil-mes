@@ -174,15 +174,13 @@ export default class PlatePageHeaderButtons extends React.Component {
           undefined
         )}
 
-        {this.state.isModalNewOpen ? (
+        {this.state.isModalNewOpen && (
           <PlateModal
             isOpen={this.state.isModalNewOpen}
             onModalClose={this.onModalClose}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
-        ) : (
-          undefined
         )}
       </div>
     );

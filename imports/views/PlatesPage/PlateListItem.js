@@ -84,14 +84,14 @@ export default class PlateListItem extends React.Component {
 
     return (
       <li className="plate" key={plate._id} id={plate._id}>
-        {this.state.isAdmin || this.state.isManager ? (
-        <div className="plate-list-item__checkbox-container">
-          <Checkbox
-            name={plate._id}
-            onInputChange={this.props.onCheckboxChange}
-          />
-        </div>
-        ): undefined}
+        {(this.state.isAdmin || this.state.isManager) && (
+          <div className="plate-list-item__checkbox-container">
+            <Checkbox
+              name={plate._id}
+              onInputChange={this.props.onCheckboxChange}
+            />
+          </div>
+        )}
         <div className="plate-list-item__container">
           <PlateName
             className="plate-list-item__plateSize"
@@ -103,7 +103,7 @@ export default class PlateListItem extends React.Component {
           </div>
         </div>
 
-        {this.state.isAdmin || this.state.isManager ? (
+        {(this.state.isAdmin || this.state.isManager) && (
           <div className="plate-list-item__buttons-container">
             <button
               className="button button-with-icon-span plate-list-item__button"
@@ -120,8 +120,6 @@ export default class PlateListItem extends React.Component {
               <span>삭제</span>
             </button>
           </div>
-        ) : (
-          undefined
         )}
       </li>
     );

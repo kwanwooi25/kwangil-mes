@@ -1,3 +1,9 @@
+.confirmation-modal {
+  width: 90%;
+  max-width: 480px;
+  overflow-y: auto;
+}
+
 .confirmation-modal__description {
   color: $color-primary--900;
   font-size: $font-size--md;

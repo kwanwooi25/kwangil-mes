@@ -17,6 +17,7 @@ export default class DatePicker extends React.Component {
   disabled
   anchorDirection
   openDirection
+  withPortal
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -38,6 +39,7 @@ export default class DatePicker extends React.Component {
         disabled={this.props.disabled}
         anchorDirection={this.props.anchorDirection}
         openDirection={this.props.openDirection}
+        withPortal={this.props.withPortal}
         noBorder
         numberOfMonths={1}
         verticalSpacing={0}

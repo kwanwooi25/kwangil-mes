@@ -244,8 +244,7 @@ export default class DeliveryOrderModal extends React.Component {
                 if (deliverAt === null) deliverAt = moment();
                 this.setState({ deliverAt });
               }}
-              openDirection="up"
-              anchorDirection="right"
+              withPortal={true}
             />
           </div>
           <div className="confirmation-modal__button-group">
@@ -262,15 +261,13 @@ export default class DeliveryOrderModal extends React.Component {
             </button>
           </div>
         </div>
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
-        ) : (
-          undefined
         )}
       </Modal>
     );

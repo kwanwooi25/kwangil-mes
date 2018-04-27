@@ -38,14 +38,12 @@ export default class OrderName extends React.Component {
           {this.props.orderID}
         </a>
 
-        {this.state.isDetailViewOpen ? (
+        {this.state.isDetailViewOpen && (
           <OrderDetailView
             isOpen={this.state.isDetailViewOpen}
             orderID={this.state.orderID}
             onModalClose={this.onModalClose}
           />
-        ) : (
-          undefined
         )}
       </div>
     )

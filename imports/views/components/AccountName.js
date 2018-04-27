@@ -39,14 +39,12 @@ export default class AccountName extends React.Component {
           {this.props.accountName}
         </a>
 
-        {this.state.isDetailViewOpen ? (
+        {this.state.isDetailViewOpen && (
           <AccountDetailView
             isOpen={this.state.isDetailViewOpen}
             accountID={this.state.accountID}
             onModalClose={this.onModalClose}
           />
-        ) : (
-          undefined
         )}
       </div>
     );

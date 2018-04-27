@@ -39,14 +39,12 @@ export default class PlateName extends React.Component {
           {this.props.plateName}
         </a>
 
-        {this.state.isDetailViewOpen ? (
+        {this.state.isDetailViewOpen && (
           <PlateDetailView
             isOpen={this.state.isDetailViewOpen}
             plateID={this.state.plateID}
             onModalClose={this.onModalClose}
           />
-        ) : (
-          undefined
         )}
       </div>
     )

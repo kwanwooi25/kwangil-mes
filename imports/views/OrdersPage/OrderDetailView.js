@@ -179,12 +179,10 @@ export default class OrderDetailView extends React.Component {
               {productPrintSummaryText}
             </p>
             <p className="order-detail__description">{productPrintFrontText}</p>
-            {productPrintBackText ? (
+            {productPrintBackText && (
               <p className="order-detail__description">
                 {productPrintBackText}
               </p>
-            ) : (
-              undefined
             )}
             <p className="order-detail__description">{product.printMemo}</p>
             <img

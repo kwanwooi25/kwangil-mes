@@ -24,7 +24,7 @@ export default class PlateModal extends React.Component {
 
     if (props.plateID) {
       // EDIT mode
-      const plate = PlatesData.findOne({_id: props.plateID});
+      const plate = PlatesData.findOne({ _id: props.plateID });
       initialState = {
         isAdmin: props.isAdmin,
         isManager: props.isManager,
@@ -46,7 +46,7 @@ export default class PlateModal extends React.Component {
         confirmationDescription: [],
         isAddProductModalOpen: false,
         error: ''
-      }
+      };
     } else {
       // ADDNEW mode
       initialState = {
@@ -70,7 +70,7 @@ export default class PlateModal extends React.Component {
         confirmationDescription: [],
         isAddProductModalOpen: false,
         error: ''
-      }
+      };
     }
 
     this.state = initialState;
@@ -163,10 +163,14 @@ export default class PlateModal extends React.Component {
         changedText += ` (기장: ${initialState.length} > ${this.state.length})`;
       }
       if (initialState.material !== this.state.material) {
-        changedText += ` (구분: ${initialState.material} > ${this.state.material})`;
+        changedText += ` (구분: ${initialState.material} > ${
+          this.state.material
+        })`;
       }
       if (initialState.location !== this.state.location) {
-        changedText += ` (위치: ${initialState.location} > ${this.state.location})`;
+        changedText += ` (위치: ${initialState.location} > ${
+          this.state.location
+        })`;
       }
       if (initialState.forProductList !== this.state.forProductList) {
         changedText += ` (사용품목 변경)`;
@@ -314,8 +318,8 @@ export default class PlateModal extends React.Component {
       >
         <div className="boxed-view__header">
           <h1>
-            {this.state.mode === 'ADDNEW' ? '동판 등록' : undefined}
-            {this.state.mode === 'EDIT' ? '동판 정보수정' : undefined}
+            {this.state.mode === 'ADDNEW' && '동판 등록'}
+            {this.state.mode === 'EDIT' && '동판 정보수정'}
           </h1>
         </div>
         <form className="boxed-view__content">
@@ -333,9 +337,7 @@ export default class PlateModal extends React.Component {
                 errorMessage={
                   this.state.roundEmpty
                     ? '둘레를 입력하세요.'
-                    : this.state.roundError
-                      ? '숫자만 입력 가능합니다.'
-                      : undefined
+                    : this.state.roundError && '숫자만 입력 가능합니다.'
                 }
               />
               <i
@@ -351,9 +353,7 @@ export default class PlateModal extends React.Component {
                 errorMessage={
                   this.state.lengthEmpty
                     ? '기장을 입력하세요.'
-                    : this.state.lengthError
-                      ? '숫자만 입력 가능합니다.'
-                      : undefined
+                    : this.state.lengthError && '숫자만 입력 가능합니다.'
                 }
               />
             </div>
@@ -389,7 +389,7 @@ export default class PlateModal extends React.Component {
               </select>
             </div>
           </div>
-          {this.state.forProductList.length > 0 ? (
+          {this.state.forProductList.length > 0 && (
             <div className="form-element-container plate-modal__forProductList-container">
               <div className="form-element__label plate-modal__label">
                 <label>품목</label>
@@ -402,8 +402,6 @@ export default class PlateModal extends React.Component {
                 {this.getForProductList()}
               </ul>
             </div>
-          ) : (
-            undefined
           )}
           <button
             className="button product-modal__addProductButton"
@@ -425,10 +423,8 @@ export default class PlateModal extends React.Component {
             </div>
           </div>
 
-          {this.state.error ? (
+          {this.state.error && (
             <p className="plate-modal__error">{this.state.error}</p>
-          ) : (
-            undefined
           )}
 
           <div className="button-group">
@@ -444,24 +440,20 @@ export default class PlateModal extends React.Component {
           </div>
         </form>
 
-        {this.state.isAddProductModalOpen ? (
+        {this.state.isAddProductModalOpen && (
           <AddProductModal
             isOpen={this.state.isAddProductModalOpen}
             onModalClose={this.onAddProductModalClose}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isConfirmationModalOpen ? (
+        {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
             title={this.state.confirmationTitle}
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.onConfirmationModalClose}
           />
-        ) : (
-          undefined
         )}
       </Modal>
     );

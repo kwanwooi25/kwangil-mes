@@ -38,7 +38,7 @@ export default class PlateDetailView extends React.Component {
     plateSizeText +=
       plate.material === 'brass'
         ? ' (신주판)'
-        : plate.material === 'iron' ? ' (데스판)' : '';
+        : plate.material === 'iron' && ' (데스판)';
     plateLocationText = `동판 보관위치: ${plate.location}`;
 
     const getForProductList = () => {
@@ -62,10 +62,8 @@ export default class PlateDetailView extends React.Component {
       <div className="plate-detail__container">
         <div className="plate-detail__subsection">
           <h2 className="plate-detail__plateSize">{plateSizeText}</h2>
-          {plate.location ? (
+          {plate.location && (
             <p className="plate-detail__description">{plateLocationText}</p>
-          ) : (
-            undefined
           )}
         </div>
 

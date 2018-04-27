@@ -86,7 +86,7 @@ export default class ProductNewMultiModal extends React.Component {
             <p className="product-modal__error">{this.state.error}</p>
           )}
 
-          <div className="add-new-multi-modal__button-group">
+          <div className="button-group">
             <button className="button" onClick={this.onClickOK}>
               등록
             </button>

@@ -229,33 +229,29 @@ export default class OrderList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {this.state.isAdmin || this.state.isManager ? (
-            <OrderListHeader
-              onCheckboxChange={this.onCheckboxChange}
-              isSelectedMulti={this.state.isSelectedMulti}
-              selectedOrders={this.state.selectedOrders}
-              showCompleteOrderModal={this.showCompleteOrderModal}
+        {(this.state.isAdmin || this.state.isManager) && (
+          <OrderListHeader
+            onCheckboxChange={this.onCheckboxChange}
+            isSelectedMulti={this.state.isSelectedMulti}
+            selectedOrders={this.state.selectedOrders}
+            showCompleteOrderModal={this.showCompleteOrderModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
-        ) : (
-          undefined
         )}
 
         <ul id="order-list" className="list">
           {this.getOrderList(this.state.queryObj)}
         </ul>
 
-        {this.state.isCompleteOrderModalOpen ? (
+        {this.state.isCompleteOrderModalOpen && (
           <CompleteOrderModal
             isOpen={this.state.isCompleteOrderModalOpen}
             selectedOrders={this.state.selectedOrders}
             onModalClose={this.hideCompleteOrderModal}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isProductOrderModalOpen ? (
+        {this.state.isProductOrderModalOpen && (
           <ProductOrderModal
             isOpen={this.state.isProductOrderModalOpen}
             orderID={this.state.selectedOrderID}
@@ -263,19 +259,15 @@ export default class OrderList extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
           />
-        ) : (
-          undefined
         )}
 
-        {this.state.isDeleteConfirmationModalOpen ? (
+        {this.state.isDeleteConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmationModalOpen}
             title="작업지시 취소"
             descriptionArray={this.state.confirmationDescription}
             onModalClose={this.hideDeleteConfirmationModal}
           />
-        ) : (
-          undefined
         )}
       </div>
     );
