@@ -8,6 +8,19 @@ export default class ProductSearchExpand extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      queryObj: {
+        accountName: '',
+        name: '',
+        thick: '',
+        length: '',
+        width: '',
+        extColor: '',
+        printColor: ''
+      },
+      error: '하나 이상의 검색 조건을 입력해야 합니다.'
+    }
+
     this.onChange = this.onChange.bind(this);
     this.onReset = this.onReset.bind(this);
   }
@@ -23,7 +36,26 @@ export default class ProductSearchExpand extends React.Component {
       printColor: this.refs.searchByPrintColor.value.trim().toLowerCase()
     };
 
-    this.props.onProductSearchChange(queryObj);
+    let error = '';
+
+    if (
+      queryObj.accountName === '' &&
+      queryObj.name === '' &&
+      queryObj.thick === '' &&
+      queryObj.length === '' &&
+      queryObj.width === '' &&
+      queryObj.extColor === '' &&
+      queryObj.printColor === ''
+    ) {
+      error = '하나 이상의 검색 조건을 입력해야 합니다.';
+      this.setState({ queryObj, error }, () => {
+        this.props.onProductSearchChange(this.state.queryObj);
+      });
+    } else {
+      this.setState({ queryObj, error }, () => {
+        this.props.onProductSearchChange(this.state.queryObj);
+      });
+    }
   }
 
   onReset() {
@@ -39,7 +71,7 @@ export default class ProductSearchExpand extends React.Component {
 
   render() {
     return (
-      <div id="product-search-expand" className="page-header__row hidden">
+      <div id="product-search-expand" className="page-header__row">
         <div className="product-search__input-container">
           <input
             className="input search-by-account-name"
@@ -127,6 +159,10 @@ export default class ProductSearchExpand extends React.Component {
             초기화
           </button>
         </div>
+
+        {this.state.error && (
+          <p className="product-search-error">{this.state.error}</p>
+        )}
       </div>
     )
   }

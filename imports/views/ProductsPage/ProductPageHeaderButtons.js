@@ -23,7 +23,6 @@ export default class ProductPageHeaderButtons extends React.Component {
       isModalNewMultiOpen: false
     };
 
-    this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
@@ -36,15 +35,6 @@ export default class ProductPageHeaderButtons extends React.Component {
       isManager: props.isManager,
       productsData: props.productsData
     });
-  }
-
-  onSearchExpandClick() {
-    const productSearch = document.getElementById('product-search');
-    const productSearchExpand = document.getElementById(
-      'product-search-expand'
-    );
-    productSearch.classList.toggle('hidden');
-    productSearchExpand.classList.toggle('hidden');
   }
 
   onClickNew() {
@@ -140,14 +130,6 @@ export default class ProductPageHeaderButtons extends React.Component {
   render() {
     return (
       <div className="page-header__buttons">
-        <button
-          id="product-search-toggle"
-          className="button button-with-icon-span page-header__button"
-          onClick={this.onSearchExpandClick}
-        >
-          <i className="fa fa-search-plus" />
-          <span>확장검색</span>
-        </button>
         <button
           className="button button-with-icon-span page-header__button"
           onClick={this.onClickExportExcel}

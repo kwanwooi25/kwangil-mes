@@ -152,6 +152,19 @@ export default class ProductList extends React.Component {
   }
 
   getProductList(queryObj) {
+    let queryExist = false;
+    if (
+      queryObj.accountName !== '' ||
+      queryObj.name !== '' ||
+      queryObj.thick !== '' ||
+      queryObj.length !== '' ||
+      queryObj.width !== '' ||
+      queryObj.extColor !== '' ||
+      queryObj.printColor !== ''
+    ) {
+      queryExist = true;
+    }
+
     return this.state.productsData.map(product => {
       const account = this.state.accountsData.find(
         account => account._id === product.accountID
@@ -161,17 +174,17 @@ export default class ProductList extends React.Component {
 
       if (
         account.name &&
-        account.name.indexOf(queryObj.accountName) > -1 &&
+        account.name.toLowerCase().indexOf(queryObj.accountName) > -1 &&
         product.name &&
-        product.name.indexOf(queryObj.name) > -1 &&
+        product.name.toLowerCase().indexOf(queryObj.name) > -1 &&
         product.thick &&
-        product.thick.indexOf(queryObj.thick) > -1 &&
+        String(product.thick).indexOf(queryObj.thick) > -1 &&
         product.length &&
-        product.length.indexOf(queryObj.length) > -1 &&
+        String(product.length).indexOf(queryObj.length) > -1 &&
         product.width &&
-        product.width.indexOf(queryObj.width) > -1 &&
+        String(product.width).indexOf(queryObj.width) > -1 &&
         product.extColor &&
-        product.extColor.indexOf(queryObj.extColor) > -1
+        product.extColor.toLowerCase().indexOf(queryObj.extColor) > -1
       ) {
         if (queryObj.printColor) {
           if (product.isPrint) {
@@ -190,7 +203,7 @@ export default class ProductList extends React.Component {
       }
 
       // only show product that has matching query text
-      if (matchQuery) {
+      if (matchQuery && queryExist) {
         return (
           <ProductListItem
             key={product._id}

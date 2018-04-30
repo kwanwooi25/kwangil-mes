@@ -4,19 +4,12 @@
   flex-wrap: wrap;
   justify-content: space-between;
   width: 80%;
-
-  @media (min-width: $break--sm) {
-    width: 85%;
-  }
-
-  @media (min-width: $break--lg) {
-    width: 90%;
-  }
 }
 
 .product-search__button-container {
   align-self: stretch;
   display: flex;
+  flex-grow: 1;
   flex-wrap: wrap;
   width: 20%;
 
@@ -24,12 +17,25 @@
     width: 15%;
   }
 
-  @media (min-width: $break--lg) {
+  @media (min-width: $break--md) {
     width: 10%;
+  }
+
+  @media (min-width: $break--lg) {
+    width: 5%;
   }
 }
 
 .product-search-button {
+  flex-grow: 1;
+  font-size: $font-size--md;
+}
+
+.product-search-error {
+  color: $color-error--500;
+  font-weight: $font-weight--bold;
+  margin: 0;
+  text-align: center;
   width: 100%;
 }
 
