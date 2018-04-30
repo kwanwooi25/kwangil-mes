@@ -185,8 +185,8 @@ export default class PlateModal extends React.Component {
       });
     }
     return {
-      round: this.state.round,
-      length: this.state.length,
+      round: Number(this.state.round),
+      length: Number(this.state.length),
       material: this.state.material,
       location: this.state.location,
       forProductList: this.state.forProductList, // [ productID, content ],

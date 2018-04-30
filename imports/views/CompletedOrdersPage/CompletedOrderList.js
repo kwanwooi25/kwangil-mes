@@ -3,12 +3,13 @@ import moment from 'moment';
 
 import { comma } from '../../api/comma';
 
-import DeliveryListHeader from './DeliveryListHeader';
-import DeliveryListItem from './DeliveryListItem';
+import Spinner from '../../custom/Spinner';
+import CompletedOrderListHeader from './CompletedOrderListHeader';
+import CompletedOrderListItem from './CompletedOrderListItem';
 import DeliveryOrderModal from './DeliveryOrderModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
-export default class DeliveryList extends React.Component {
+export default class CompletedOrderList extends React.Component {
   /*=========================================================================
   >> props <<
   query : query string to filter list
@@ -17,6 +18,7 @@ export default class DeliveryList extends React.Component {
   accountsData
   productsData
   ordersData
+  isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -28,8 +30,8 @@ export default class DeliveryList extends React.Component {
       accountsData: props.accountsData,
       productsData: props.productsData,
       ordersData: props.ordersData,
+      isDataReady: props.isDataReady,
       isDeliveryOrderModalOpen: false,
-      isMultiDeliveryOrderModalOpen: false,
       isConfirmationModalOpen: false,
       selectedOrders: [],
       confirmationTitle: '',
@@ -52,7 +54,8 @@ export default class DeliveryList extends React.Component {
       isManager: props.isManager,
       accountsData: props.accountsData,
       productsData: props.productsData,
-      ordersData: props.ordersData
+      ordersData: props.ordersData,
+      isDataReady: props.isDataReady
     });
   }
 
@@ -61,7 +64,7 @@ export default class DeliveryList extends React.Component {
     if (e.target.name === 'selectAll') {
       selectedOrders = [];
       const checkboxes = document.querySelectorAll(
-        '#delivery-list input[type="checkbox"]'
+        '#completed-order-list input[type="checkbox"]:not(:disabled)'
       );
 
       for (let i = 0; i < checkboxes.length; i++) {
@@ -143,7 +146,7 @@ export default class DeliveryList extends React.Component {
     });
   }
 
-  getDeliveryList(query) {
+  getCompletedOrderList(query) {
     return this.state.ordersData
       .sort((a, b) => {
         const a_deliverBefore = a.data.deliverBefore;
@@ -174,7 +177,7 @@ export default class DeliveryList extends React.Component {
         // only show product that has matching query text
         if (matchQuery) {
           return (
-            <DeliveryListItem
+            <CompletedOrderListItem
               key={order._id}
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
@@ -194,7 +197,7 @@ export default class DeliveryList extends React.Component {
     return (
       <div className="list-container">
         {(this.state.isAdmin || this.state.isManager) && (
-          <DeliveryListHeader
+          <CompletedOrderListHeader
             onCheckboxChange={this.onCheckboxChange}
             isSelectedMulti={this.state.isSelectedMulti}
             selectedOrders={this.state.selectedOrders}
@@ -203,8 +206,12 @@ export default class DeliveryList extends React.Component {
           />
         )}
 
-        <ul id="delivery-list" className="list">
-          {this.getDeliveryList(this.state.query)}
+        <ul id="completed-order-list" className="list">
+          {this.state.isDataReady ? (
+            this.getCompletedOrderList(this.state.query)
+          ) : (
+            <Spinner />
+          )}
         </ul>
 
         {this.state.isDeliveryOrderModalOpen && (

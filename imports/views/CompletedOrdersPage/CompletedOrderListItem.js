@@ -9,7 +9,7 @@ import AccountName from '../components/AccountName';
 import ProductName from '../components/ProductName';
 import OrderName from '../components/OrderName';
 
-export default class DeliveryListItem extends React.Component {
+export default class CompletedOrderListItem extends React.Component {
   /*=========================================================================
   >> props <<
   isAdmin
@@ -71,7 +71,7 @@ export default class DeliveryListItem extends React.Component {
     let orderQuantityText = '';
     let completedQuantityText = '';
 
-    listClassName = 'delivery';
+    listClassName = 'completed-order';
     if (order.data.isDelivered) {
       listClassName += ' delivered';
     } else if (daysCount <= 1) {
@@ -99,7 +99,7 @@ export default class DeliveryListItem extends React.Component {
     return (
       <li className={listClassName} key={order._id} id={order._id}>
         {(this.state.isAdmin || this.state.isManager) && (
-          <div className="delivery-list-item__checkbox-container">
+          <div className="completed-order-list-item__checkbox-container">
             <Checkbox
               name={order._id}
               onInputChange={this.props.onCheckboxChange}
@@ -108,49 +108,49 @@ export default class DeliveryListItem extends React.Component {
           </div>
         )}
 
-        <div className="delivery-list-item-container">
-          <div className="delivery-list-item__id-container">
-            <div className="delivery-list-item__remark-container">
+        <div className="completed-order-list-item-container">
+          <div className="completed-order-list-item__id-container">
+            <div className="completed-order-list-item__remark-container">
               {order.data.deliverFast && (
-                <span className="delivery-list-item__text">
+                <span className="completed-order-list-item__text">
                   <i className="fa fa-star" /> 지급
                 </span>
               )}
               {order.data.deliverDateStrict && (
-                <span className="delivery-list-item__text">
+                <span className="completed-order-list-item__text">
                   <i className="fa fa-star" /> 납기엄수
                 </span>
               )}
             </div>
 
             <OrderName
-              className="delivery-list-item__orderID"
+              className="completed-order-list-item__orderID"
               orderID={order._id}
             />
           </div>
 
-          <div className="delivery-list-item__dates-container">
-            <p className="delivery-list-item__text">
+          <div className="completed-order-list-item__dates-container">
+            <p className="completed-order-list-item__text">
               납기일: {order.data.deliverBefore}
             </p>
           </div>
 
-          <div className="delivery-list-item__product-details-container">
-            <div className="delivery-list-item__names-container">
+          <div className="completed-order-list-item__product-details-container">
+            <div className="completed-order-list-item__names-container">
               <AccountName
-                className="delivery-list-item__accountName"
+                className="completed-order-list-item__accountName"
                 accountID={account._id}
                 accountName={account.name}
               />
               <ProductName
-                className="delivery-list-item__productName"
+                className="completed-order-list-item__productName"
                 productID={product._id}
                 productName={product.name}
               />
             </div>
-            <div className="delivery-list-item__size-container">
-              <p className="delivery-list-item__text">{productSizeText}</p>
-              <p className="delivery-list-item__text">
+            <div className="completed-order-list-item__size-container">
+              <p className="completed-order-list-item__text">{productSizeText}</p>
+              <p className="completed-order-list-item__text">
                 {completedQuantityText}
               </p>
             </div>
@@ -158,9 +158,9 @@ export default class DeliveryListItem extends React.Component {
         </div>
 
         {(this.state.isAdmin || this.state.isManager) && (
-          <div className="delivery-list-item__buttons-container">
+          <div className="completed-order-list-item__buttons-container">
             <button
-              className="button button-with-icon-span delivery-list-item__button"
+              className="button button-with-icon-span completed-order-list-item__button"
               onClick={this.onDeliveryOrderClick}
               disabled={order.data.isDelivered}
             >
@@ -168,7 +168,7 @@ export default class DeliveryListItem extends React.Component {
               <span>출고등록</span>
             </button>
             <button
-              className="button button-with-icon-span delivery-list-item__button"
+              className="button button-with-icon-span completed-order-list-item__button"
               onClick={this.onCompleteDeliveryClick}
               disabled={order.data.isDelivered}
             >

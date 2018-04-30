@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import SimpleSchema from 'simpl-schema';
 
 export const OrdersData = new Mongo.Collection('orders');
 export const OrderCounter = new Mongo.Collection('orderCounter');
 
 if (Meteor.isServer) {
   Meteor.publish('orders', function() {
-    return OrdersData.find();
+    return OrdersData.find({}, { sort: { _id: 1 } });
   });
   Meteor.publish('orderCounter', function() {
     return OrderCounter.find();
@@ -55,6 +56,28 @@ Meteor.methods({
       throw new Meteor.Error('User not logged in!');
     }
 
-    OrdersData.remove({ _id: orderID });
+    const user = Meteor.users.findOne(this.userId);
+
+    if (user.profile.isAdmin || user.profile.isManager) {
+      OrdersData.remove({ _id: orderID });
+    }
   }
+});
+
+OrdersData.schema = new SimpleSchema({
+  productID: { type: String },
+  orderedAt: { type: String },
+  deliverBefore: { type: String },
+  orderQuantity: { type: Number },
+  deliverDateStrict: { type: Boolean, defaultValue: false },
+  deliverFast: { type: Boolean, defaultValue: false },
+  plateStatus: { type: String, defaultValue: '' },
+  workMemo: { type: String, optional: true },
+  deliverMemo: { type: String, optional: true },
+  status: { type: String, defaultValue: 'extruding' }, // 'extruding' > 'printing' > 'cutting' > 'completed'
+  isCompleted: { type: Boolean, defaultValue: false },
+  isDelivered: { type: Boolean, defaultValue: false },
+  completedQuantity: { type: Number, defaultValue: 0 },
+  completedAt: { type: String, defaultValue: '' },
+  deliveredAt: { type: String, defaultValue: '' }
 });

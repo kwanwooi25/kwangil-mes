@@ -3,6 +3,8 @@ import Modal from 'react-modal';
 
 import { ProductsData } from '../../api/products';
 
+import Spinner from '../../custom/Spinner';
+
 export default class AddProductModal extends React.Component {
   /*========================================================================
   >> props <<
@@ -17,6 +19,7 @@ export default class AddProductModal extends React.Component {
       isManager: props.isManager,
       productsData: [],
       filteredProducts: [],
+      isDataReady: false,
       selectedProductID: '',
       printContent: ''
     };
@@ -30,13 +33,15 @@ export default class AddProductModal extends React.Component {
   componentDidMount() {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('products');
-      const productsData = ProductsData.find(
-        { isPrint: true },
-        { sort: { name: 1 } }
-      ).fetch();
+      const productsSubscription = Meteor.subscribe('products');
+      const productsData = ProductsData.find({ isPrint: true }).fetch();
+      const isDataReady = productsSubscription.ready();
 
-      this.setState({ productsData, filteredProducts: productsData });
+      this.setState({
+        productsData,
+        filteredProducts: productsData,
+        isDataReady
+      });
     });
   }
 
@@ -163,7 +168,7 @@ export default class AddProductModal extends React.Component {
             id="plate-addProduct-modal__productList"
             className="plate-addProduct-modal__productList"
           >
-            {this.displayProducts()}
+            {this.state.isDataReady ? this.displayProducts() : <Spinner />}
           </ul>
 
           <input

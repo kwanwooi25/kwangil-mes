@@ -11,6 +11,7 @@
 @import './custom/accordion';
 @import './custom/form-element';
 @import './custom/datepicker';
+@import './custom/spinner';
 @import './components/header';
 @import './components/page-header-search';
 @import './components/page-header-buttons';
@@ -38,8 +39,8 @@
 @import './components/order-list-item';
 @import './components/order-detail-view';
 @import './components/complete-order-modal';
-@import './components/delivery-list';
-@import './components/delivery-list-item';
+@import './components/completed-order-list';
+@import './components/completed-order-list-item';
 @import './components/delivery-order-modal';
 @import './components/user-modal';
 @import './components/user-list';

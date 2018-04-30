@@ -2,7 +2,7 @@ import React from 'react';
 
 import { exportCSV } from '../../api/exportCSV';
 
-export default class DeliveryPageHeaderButtons extends React.Component {
+export default class CompletedOrdersPageHeaderButtons extends React.Component {
   /*=========================================================================
   >> props <<
   isAdmin

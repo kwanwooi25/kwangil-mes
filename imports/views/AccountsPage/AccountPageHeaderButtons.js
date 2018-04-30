@@ -3,7 +3,7 @@ import React from 'react';
 import { exportCSV } from '../../api/exportCSV';
 
 import AccountModal from './AccountModal';
-import AccountNewMultiModal from './AccountNewMultiModal';
+import AddNewMultiModal from '../components/AddNewMultiModal';
 
 export default class AccountPageHeaderButtons extends React.Component {
   /*=========================================================================
@@ -133,9 +133,11 @@ export default class AccountPageHeaderButtons extends React.Component {
         )}
 
         {this.state.isModalNewMultiOpen && (
-          <AccountNewMultiModal
+          <AddNewMultiModal
             isOpen={this.state.isModalNewMultiOpen}
             onModalClose={this.onModalClose}
+            title="업체 대량등록"
+            method="accounts.insertmany"
           />
         )}
       </div>

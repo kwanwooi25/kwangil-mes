@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Spinner from '../../custom/Spinner';
 import AccountListItem from './AccountListItem';
 import AccountModal from './AccountModal';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -11,6 +12,7 @@ export default class AccountList extends React.Component {
   isAdmin
   isManager
   accountsData
+  isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -20,6 +22,8 @@ export default class AccountList extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager,
       accountsData: props.accountsData,
+      isDataReady: props.isDataReady,
+      itemsToShow: 9999,
       isAccountModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -27,6 +31,7 @@ export default class AccountList extends React.Component {
       selectedAccountName: ''
     };
 
+    this.onListScroll = this.onListScroll.bind(this);
     this.showEditAccountModal = this.showEditAccountModal.bind(this);
     this.hideEditAccountModal = this.hideEditAccountModal.bind(this);
     this.showDeleteConfirmationModal = this.showDeleteConfirmationModal.bind(
@@ -43,8 +48,21 @@ export default class AccountList extends React.Component {
       query: props.query,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
-      accountsData: props.accountsData
+      accountsData: props.accountsData,
+      isDataReady: props.isDataReady
     });
+  }
+
+  onListScroll(e) {
+    const list = e.target;
+    console.log('account-list scrolling...');
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
+      let itemsToShow = this.state.itemsToShow;
+      itemsToShow += 20;
+      this.setState({ itemsToShow }, () => {
+        this.getAccountList(this.state.query);
+      });
+    }
   }
 
   showEditAccountModal(selectedAccountID) {
@@ -80,7 +98,10 @@ export default class AccountList extends React.Component {
   }
 
   getAccountList(query) {
-    return this.state.accountsData.map(account => {
+    let filteredAccountsData = [];
+
+    // filter data
+    this.state.accountsData.map(account => {
       let matchQuery = false;
       for (let key in account) {
         if (key !== '_id' && account[key].indexOf(query) > -1) {
@@ -88,8 +109,13 @@ export default class AccountList extends React.Component {
         }
       }
 
-      // only show account that has matching query text
-      if (matchQuery) {
+      if (matchQuery) filteredAccountsData.push(account);
+    });
+
+    // render filtered accounts
+    return filteredAccountsData
+      .slice(0, this.state.itemsToShow)
+      .map(account => {
         return (
           <AccountListItem
             key={account._id}
@@ -101,15 +127,18 @@ export default class AccountList extends React.Component {
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
         );
-      }
-    });
+      });
   }
 
   render() {
     return (
       <div className="list-container">
-        <ul id="account-list" className="list">
-          {this.getAccountList(this.state.query)}
+        <ul id="account-list" className="list" onScroll={this.onListScroll}>
+          {this.state.isDataReady ? (
+            this.getAccountList(this.state.query)
+          ) : (
+            <Spinner />
+          )}
         </ul>
 
         {this.state.isAccountModalOpen && (

@@ -19,6 +19,7 @@ export default class ProductsPage extends React.Component {
       accountsData: [],
       productsData: [],
       platesData: [],
+      isDataReady: false,
       queryObj: {
         accountName: '',
         name: '',
@@ -53,12 +54,13 @@ export default class ProductsPage extends React.Component {
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
       Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
+      const productsSubscription = Meteor.subscribe('products');
       Meteor.subscribe('plates');
       const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
       const productsData = ProductsData.find().fetch();
       const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
-      this.setState({ accountsData, productsData, platesData });
+      const isDataReady = productsSubscription.ready();
+      this.setState({ accountsData, productsData, platesData, isDataReady });
     });
   }
 
@@ -97,6 +99,7 @@ export default class ProductsPage extends React.Component {
             accountsData={this.state.accountsData}
             productsData={this.state.productsData}
             platesData={this.state.platesData}
+            isDataReady={this.state.isDataReady}
           />
         </div>
       </div>

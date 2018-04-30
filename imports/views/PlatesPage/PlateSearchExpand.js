@@ -34,7 +34,7 @@ export default class PlateSearchExpand extends React.Component {
 
   render() {
     return (
-      <div id="plate-search-expand" className="page-header__row hidden">
+      <div id="plate-search-expand" className="page-header__row">
         <div className="plate-search__input-container">
           <input
             className="input search-by-product-name"

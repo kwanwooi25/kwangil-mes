@@ -40,7 +40,7 @@
 }
 
 .list {
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 @media (min-width: $break--sm) {

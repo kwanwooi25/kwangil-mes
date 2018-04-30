@@ -297,7 +297,7 @@ export default class ProductOrderModal extends React.Component {
         productID: this.state.product._id,
         orderedAt: this.state.orderedAt.format('YYYY-MM-DD'),
         deliverBefore: this.state.deliverBefore.format('YYYY-MM-DD'),
-        orderQuantity: uncomma(this.state.orderQuantity),
+        orderQuantity: Number(uncomma(this.state.orderQuantity)),
         deliverDateStrict: this.state.deliverDateStrict,
         deliverFast: this.state.deliverFast,
         plateStatus: this.state.product.isPrint ? this.state.plateStatus : '',

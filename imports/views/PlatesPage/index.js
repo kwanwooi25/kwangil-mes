@@ -5,7 +5,6 @@ import { ProductsData } from '../../api/products';
 import { PlatesData } from '../../api/plates';
 import { setLayout } from '../../api/setLayout';
 
-import PageHeaderSearch from '../components/PageHeaderSearch';
 import PlatePageHeaderButtons from './PlatePageHeaderButtons';
 import PlateSearchExpand from './PlateSearchExpand';
 import PlateList from './PlateList';
@@ -28,7 +27,6 @@ export default class PlatesPage extends React.Component {
       }
     };
 
-    this.onInputSearchChange = this.onInputSearchChange.bind(this);
     this.onPlateSearchChange = this.onPlateSearchChange.bind(this);
   }
 
@@ -60,32 +58,19 @@ export default class PlatesPage extends React.Component {
     this.databaseTracker = Tracker.autorun(() => {
       Meteor.subscribe('accounts');
       Meteor.subscribe('products');
-      Meteor.subscribe('plates');
-      const accountsData = AccountsData.find({}, { sort: { name: 1 }}).fetch();
-      const productsData = ProductsData.find({}, { sort: { name: 1 }}).fetch();
-      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
+      const platesSubscription = Meteor.subscribe('plates');
+      const accountsData = AccountsData.find().fetch();
+      const productsData = ProductsData.find().fetch();
+      const platesData = PlatesData.find().fetch();
+      const isDataReady = platesSubscription.ready();
 
-      this.setState({
-        accountsData,
-        productsData,
-        platesData
-      });
+      this.setState({ accountsData, productsData, platesData, isDataReady });
     });
   }
 
   componentWillUnmount() {
     this.authTracker.stop();
     this.databaseTracker.stop();
-  }
-
-  onInputSearchChange(query) {
-    const queryObj = {
-      productName: query,
-      plateMaterial: '',
-      round: '',
-      length: ''
-    };
-    this.setState({ queryObj });
   }
 
   onPlateSearchChange(queryObj) {
@@ -98,11 +83,6 @@ export default class PlatesPage extends React.Component {
         <div className="page-header">
           <div className="page-header__row">
             <h1 className="page-header__title">동판목록</h1>
-            <PageHeaderSearch
-              id="plate-search"
-              onInputSearchChange={this.onInputSearchChange}
-            />
-
             <PlatePageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
@@ -111,9 +91,7 @@ export default class PlatesPage extends React.Component {
             />
           </div>
 
-          <PlateSearchExpand
-            onPlateSearchChange={this.onPlateSearchChange}
-          />
+          <PlateSearchExpand onPlateSearchChange={this.onPlateSearchChange} />
         </div>
 
         <div className="page-content">
@@ -124,6 +102,7 @@ export default class PlatesPage extends React.Component {
             accountsData={this.state.accountsData}
             productsData={this.state.productsData}
             platesData={this.state.platesData}
+            isDataReady={this.state.isDataReady}
           />
         </div>
       </div>

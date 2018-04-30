@@ -8,10 +8,10 @@ import { DeliveryData } from '../../api/delivery';
 import { setLayout } from '../../api/setLayout';
 
 import PageHeaderSearch from '../components/PageHeaderSearch';
-import DeliveryPageHeaderButtons from './DeliveryPageHeaderButtons';
-import DeliveryList from './DeliveryList';
+import CompletedOrdersPageHeaderButtons from './CompletedOrdersPageHeaderButtons';
+import CompletedOrderList from './CompletedOrderList';
 
-export default class DeliveryPage extends React.Component {
+export default class CompletedOrdersPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -22,6 +22,7 @@ export default class DeliveryPage extends React.Component {
       productsData: [],
       ordersData: [],
       deliveryData: [],
+      isDataReady: false,
       query: ''
     };
 
@@ -49,14 +50,21 @@ export default class DeliveryPage extends React.Component {
     this.databaseTracker = Tracker.autorun(() => {
       Meteor.subscribe('accounts');
       Meteor.subscribe('products');
-      Meteor.subscribe('orders');
+      const ordersSubscription = Meteor.subscribe('orders');
       Meteor.subscribe('delivery');
-      const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
-      const productsData = ProductsData.find({}, { sort: { name: 1 } }).fetch();
-      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
-      const deliveryData = DeliveryData.find({}, { sort: { _id: 1 } }).fetch();
+      const accountsData = AccountsData.find().fetch();
+      const productsData = ProductsData.find().fetch();
+      const ordersData = OrdersData.find().fetch();
+      const deliveryData = DeliveryData.find().fetch();
+      const isDataReady = ordersSubscription.ready();
 
-      this.setState({ accountsData, productsData, ordersData, deliveryData });
+      this.setState({
+        accountsData,
+        productsData,
+        ordersData,
+        deliveryData,
+        isDataReady
+      });
     });
   }
 
@@ -76,7 +84,7 @@ export default class DeliveryPage extends React.Component {
           <div className="page-header__row">
             <h1 className="page-header__title">납품대기목록</h1>
             <PageHeaderSearch onInputSearchChange={this.onInputSearchChange} />
-            <DeliveryPageHeaderButtons
+            <CompletedOrdersPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
               accountsData={this.state.accountsData}
@@ -87,13 +95,14 @@ export default class DeliveryPage extends React.Component {
         </div>
 
         <div className="page-content">
-          <DeliveryList
+          <CompletedOrderList
             query={this.state.query}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             accountsData={this.state.accountsData}
             productsData={this.state.productsData}
             ordersData={this.state.ordersData}
+            isDataReady={this.state.isDataReady}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Spinner from '../../custom/Spinner';
 import Checkbox from '../../custom/Checkbox';
 import ProductListItem from './ProductListItem';
 import ProductOrderModal from './ProductOrderModal';
@@ -15,6 +16,7 @@ export default class ProductList extends React.Component {
   accountsData
   productsData
   platesData
+  isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -22,6 +24,9 @@ export default class ProductList extends React.Component {
     this.state = {
       accountsData: props.accountsData,
       productsData: props.productsData,
+      productsCount: props.productsData.length,
+      isDataReady: props.isDataReady,
+      itemsToShow: 100,
       queryObj: props.queryObj,
       isAdmin: props.isAdmin,
       isManager: props.isManager,
@@ -34,6 +39,7 @@ export default class ProductList extends React.Component {
       selectedProducts: []
     };
 
+    this.onListScroll = this.onListScroll.bind(this);
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
     this.showProductOrderModal = this.showProductOrderModal.bind(this);
     this.hideProductOrderModal = this.hideProductOrderModal.bind(this);
@@ -55,8 +61,22 @@ export default class ProductList extends React.Component {
       isAdmin: props.isAdmin,
       isManager: props.isManager,
       accountsData: props.accountsData,
-      productsData: props.productsData
+      productsData: props.productsData,
+      productsCount: props.productsData.length,
+      isDataReady: props.isDataReady
     });
+  }
+
+  onListScroll(e) {
+    const list = e.target;
+    console.log('product-list scrolling...');
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
+      let itemsToShow = this.state.itemsToShow;
+      itemsToShow += 20;
+      this.setState({ itemsToShow }, () => {
+        this.getProductList(this.state.queryObj);
+      });
+    }
   }
 
   onCheckboxChange(e) {
@@ -152,20 +172,10 @@ export default class ProductList extends React.Component {
   }
 
   getProductList(queryObj) {
-    let queryExist = false;
-    if (
-      queryObj.accountName !== '' ||
-      queryObj.name !== '' ||
-      queryObj.thick !== '' ||
-      queryObj.length !== '' ||
-      queryObj.width !== '' ||
-      queryObj.extColor !== '' ||
-      queryObj.printColor !== ''
-    ) {
-      queryExist = true;
-    }
+    let filteredProductsData = [];
 
-    return this.state.productsData.map(product => {
+    // filter data
+    this.state.productsData.map(product => {
       const account = this.state.accountsData.find(
         account => account._id === product.accountID
       );
@@ -202,8 +212,17 @@ export default class ProductList extends React.Component {
         }
       }
 
-      // only show product that has matching query text
-      if (matchQuery && queryExist) {
+      if (matchQuery) filteredProductsData.push(product);
+    });
+
+    // render filtered products
+    return filteredProductsData
+      .slice(0, this.state.itemsToShow)
+      .map(product => {
+        const account = this.state.accountsData.find(
+          account => account._id === product.accountID
+        );
+
         return (
           <ProductListItem
             key={product._id}
@@ -217,37 +236,40 @@ export default class ProductList extends React.Component {
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
         );
-      }
-    });
+      });
   }
 
   render() {
     return (
       <div className="list-container">
         {this.state.isAdmin || this.state.isManager ? (
-            <div className="product-list-header">
-              <Checkbox
-                name="selectAll"
-                label="전체선택"
-                onInputChange={this.onCheckboxChange}
-              />
-              <div className="product-buttons-container">
-                <button
-                  className="button button-with-icon-span product-button"
-                  onClick={this.onDeleteMultiClick}
-                  disabled={!this.state.isSelectedMulti}
-                >
-                  <i className="fa fa-trash fa-lg" />
-                  <span>삭제</span>
-                </button>
-              </div>
+          <div className="product-list-header">
+            <Checkbox
+              name="selectAll"
+              label="전체선택"
+              onInputChange={this.onCheckboxChange}
+            />
+            <div className="product-buttons-container">
+              <button
+                className="button button-with-icon-span product-button"
+                onClick={this.onDeleteMultiClick}
+                disabled={!this.state.isSelectedMulti}
+              >
+                <i className="fa fa-trash fa-lg" />
+                <span>삭제</span>
+              </button>
             </div>
-          ) : (
-            undefined
-          )}
+          </div>
+        ) : (
+          undefined
+        )}
 
-        <ul id="product-list" className="list">
-          {this.getProductList(this.state.queryObj)}
+        <ul id="product-list" className="list" onScroll={this.onListScroll}>
+          {this.state.isDataReady ? (
+            this.getProductList(this.state.queryObj)
+          ) : (
+            <Spinner />
+          )}
         </ul>
 
         {this.state.isProductOrderModalOpen && (

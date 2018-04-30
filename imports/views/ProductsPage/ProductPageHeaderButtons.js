@@ -3,7 +3,7 @@ import React from 'react';
 import { exportCSV } from '../../api/exportCSV';
 
 import ProductModal from './ProductModal';
-import ProductNewMultiModal from './ProductNewMultiModal';
+import AddNewMultiModal from '../components/AddNewMultiModal';
 
 export default class ProductPageHeaderButtons extends React.Component {
   /*=========================================================================
@@ -166,9 +166,11 @@ export default class ProductPageHeaderButtons extends React.Component {
         )}
 
         {this.state.isModalNewMultiOpen && (
-          <ProductNewMultiModal
+          <AddNewMultiModal
             isOpen={this.state.isModalNewMultiOpen}
             onModalClose={this.onModalClose}
+            title="제품 대량등록"
+            method="products.insertmany"
           />
         )}
       </div>

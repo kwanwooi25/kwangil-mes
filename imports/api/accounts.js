@@ -6,7 +6,7 @@ export const AccountsData = new Mongo.Collection('accounts');
 
 if (Meteor.isServer) {
   Meteor.publish('accounts', function() {
-    return AccountsData.find();
+    return AccountsData.find({}, { sort: { name: 1 } });
   });
 }
 
@@ -23,7 +23,7 @@ Meteor.methods({
 
     const user = Meteor.users.findOne(this.userId);
 
-    if (user.profile.isAdmin || user.profile.isManager ) {
+    if (user.profile.isAdmin || user.profile.isManager) {
       if (!AccountsData.findOne({ name: data.name })) {
         AccountsData.insert(data);
       } else {
@@ -33,14 +33,17 @@ Meteor.methods({
   },
 
   'accounts.insertmany'(json) {
-    console.log(json);
     if (!this.userId) {
       throw new Meteor.Error('User not logged in!');
     }
-    json.map(account => {
-      console.log(account);
-      AccountsData.insert(account);
-    });
+
+    const user = Meteor.users.findOne(this.userId);
+
+    if (user.profile.isAdmin || user.profile.isManager) {
+      json.map(account => {
+        AccountsData.insert(account);
+      });
+    }
   },
 
   'accounts.update'(accountID, data) {
@@ -48,7 +51,11 @@ Meteor.methods({
       throw new Meteor.Error('User not logged in!');
     }
 
-    AccountsData.update({ _id: accountID }, { $set: data });
+    const user = Meteor.users.findOne(this.userId);
+
+    if (user.profile.isAdmin || user.profile.isManager) {
+      AccountsData.update({ _id: accountID }, { $set: data });
+    }
   },
 
   'accounts.remove'(accountID) {
@@ -56,6 +63,21 @@ Meteor.methods({
       throw new Meteor.Error('User not logged in!');
     }
 
-    AccountsData.remove({ _id: accountID });
+    const user = Meteor.users.findOne(this.userId);
+
+    if (user.profile.isAdmin || user.profile.isManager) {
+      AccountsData.remove({ _id: accountID });
+    }
   }
+});
+
+Accounts.schema = new SimpleSchema({
+  name: { type: String },
+  phone_1: { type: String },
+  phone_2: { type: String, optional: true },
+  fax: { type: String, optional: true },
+  email_1: { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
+  email_2: { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
+  address: { type: String, optional: true },
+  memo: { type: String, optional: true }
 });

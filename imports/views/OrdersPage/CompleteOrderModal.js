@@ -157,8 +157,8 @@ export default class CompleteOrderModal extends React.Component {
       for (let i = 0; i < lis.length; i++) {
         const order = OrdersData.findOne({ _id: lis[i].id });
         order.data.completedAt = this.state.completedAt.format('YYYY-MM-DD');
-        order.data.completedQuantity = uncomma(
-          this.state.completedQuantityArray[i]
+        order.data.completedQuantity = Number(
+          uncomma(this.state.completedQuantityArray[i])
         );
         order.data.isCompleted = this.state.isCompletedArray[i];
         if (this.state.isCompletedArray[i]) {

@@ -20,6 +20,7 @@ export default class OrdersPage extends React.Component {
       accountsData: [],
       productsData: [],
       ordersData: [],
+      isDataReady: false,
       queryObj: {
         searchFrom: moment()
           .subtract(2, 'weeks')
@@ -56,12 +57,13 @@ export default class OrdersPage extends React.Component {
     this.databaseTracker = Tracker.autorun(() => {
       Meteor.subscribe('accounts');
       Meteor.subscribe('products');
-      Meteor.subscribe('orders');
-      const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
-      const productsData = ProductsData.find({}, { sort: { name: 1 } }).fetch();
-      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
+      const ordersSubscription = Meteor.subscribe('orders');
+      const accountsData = AccountsData.find().fetch();
+      const productsData = ProductsData.find().fetch();
+      const ordersData = OrdersData.find().fetch();
+      const isDataReady = ordersSubscription.ready();
 
-      this.setState({ accountsData, productsData, ordersData });
+      this.setState({ accountsData, productsData, ordersData, isDataReady });
     });
   }
 
@@ -100,6 +102,7 @@ export default class OrdersPage extends React.Component {
             accountsData={this.state.accountsData}
             productsData={this.state.productsData}
             ordersData={this.state.ordersData}
+            isDataReady={this.state.isDataReady}
           />
         </div>
       </div>

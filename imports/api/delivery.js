@@ -5,7 +5,7 @@ export const DeliveryData = new Mongo.Collection('delivery');
 
 if (Meteor.isServer) {
   Meteor.publish('delivery', function() {
-    return DeliveryData.find();
+    return DeliveryData.find({}, { sort: { _id: 1 } });
   });
 }
 

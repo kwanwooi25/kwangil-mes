@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Spinner from '../../custom/Spinner';
 import Checkbox from '../../custom/Checkbox';
 import PlateListItem from './PlateListItem';
 import PlateModal from './PlateModal';
@@ -14,6 +15,7 @@ export default class PlateList extends React.Component {
   accountsData
   productsData
   platesData
+  isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -25,6 +27,8 @@ export default class PlateList extends React.Component {
       accountsData: props.accountsData,
       productsData: props.productsData,
       platesData: props.platesData,
+      isDataReady: props.isDataReady,
+      itemsToShow: 100,
       isPlateModalOpen: false,
       isDeleteConfirmationModalOpen: false,
       selectedPlateID: '',
@@ -33,6 +37,7 @@ export default class PlateList extends React.Component {
       selectedPlates: []
     };
 
+    this.onListScroll = this.onListScroll.bind(this);
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
     this.showPlateModal = this.showPlateModal.bind(this);
     this.hidePlateModal = this.hidePlateModal.bind(this);
@@ -53,8 +58,21 @@ export default class PlateList extends React.Component {
       isManager: props.isManager,
       accountsData: props.accountsData,
       productsData: props.productsData,
-      platesData: props.platesData
+      platesData: props.platesData,
+      isDataReady: props.isDataReady
     });
+  }
+
+  onListScroll(e) {
+    const list = e.target;
+    console.log('plate-list scrolling...');
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
+      let itemsToShow = this.state.itemsToShow;
+      itemsToShow += 20;
+      this.setState({ itemsToShow }, () => {
+        this.getPlateList(this.state.queryObj);
+      });
+    }
   }
 
   onCheckboxChange(e) {
@@ -132,7 +150,7 @@ export default class PlateList extends React.Component {
     this.showDeleteConfirmationModal(this.state.selectedPlates);
   }
 
-  getProductList(queryObj) {
+  getPlateList(queryObj) {
     return this.state.platesData.map(plate => {
       // store product names in an array
       const productNames = [];
@@ -155,10 +173,10 @@ export default class PlateList extends React.Component {
         }
       });
 
-      if (plate.round.indexOf(queryObj.round) > -1) {
+      if (String(plate.round).indexOf(queryObj.round) > -1) {
         matchRoundQuery = true;
       }
-      if (plate.length.indexOf(queryObj.length) > -1) {
+      if (String(plate.length).indexOf(queryObj.length) > -1) {
         matchLengthQuery = true;
       }
 
@@ -207,8 +225,12 @@ export default class PlateList extends React.Component {
           </div>
         )}
 
-        <ul id="plate-list" className="list">
-          {this.getProductList(this.state.queryObj)}
+        <ul id="plate-list" className="list" onScroll={this.onListScroll}>
+          {this.state.isDataReady ? (
+            this.getPlateList(this.state.queryObj)
+          ) : (
+            <Spinner />
+          )}
         </ul>
 
         {this.state.isPlateModalOpen && (

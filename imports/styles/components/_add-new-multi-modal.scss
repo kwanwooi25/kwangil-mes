@@ -3,3 +3,10 @@
   width: 90%;
   max-width: 360px;
 }
+
+.add-new-multi-modal__error {
+  color: $color-error--500;
+  font-weight: $font-weight--bold;
+  margin: 0;
+  text-align: center;
+}

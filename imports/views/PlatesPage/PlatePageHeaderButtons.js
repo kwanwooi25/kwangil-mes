@@ -3,6 +3,7 @@ import React from 'react';
 import { exportCSV } from '../../api/exportCSV';
 
 import PlateModal from './PlateModal';
+import AddNewMultiModal from '../components/AddNewMultiModal';
 
 export default class PlatePageHeaderButtons extends React.Component {
   /*=========================================================================
@@ -25,6 +26,7 @@ export default class PlatePageHeaderButtons extends React.Component {
 
     this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
+    this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
     this.onClickExportExcel = this.onClickExportExcel.bind(this);
   }
@@ -154,7 +156,7 @@ export default class PlatePageHeaderButtons extends React.Component {
         {this.state.isAdmin ? (
           <button
             className="button button-with-icon-span page-header__button"
-            // onClick={this.onClickNewMulti}
+            onClick={this.onClickNewMulti}
           >
             <i className="fa fa-plus-square fa-lg" />
             <span>대량등록</span>
@@ -180,6 +182,15 @@ export default class PlatePageHeaderButtons extends React.Component {
             onModalClose={this.onModalClose}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
+          />
+        )}
+
+        {this.state.isModalNewMultiOpen && (
+          <AddNewMultiModal
+            isOpen={this.state.isModalNewMultiOpen}
+            onModalClose={this.onModalClose}
+            title="동판 대량등록"
+            method="plates.insertmany"
           />
         )}
       </div>

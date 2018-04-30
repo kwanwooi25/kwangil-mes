@@ -14,7 +14,8 @@ export default class AccountsPage extends React.Component {
       isAdmin: false,
       isManager: false,
       query: '',
-      accountsData: []
+      accountsData: [],
+      isDataReady: false
     };
 
     this.onInputSearchChange = this.onInputSearchChange.bind(this);
@@ -39,9 +40,11 @@ export default class AccountsPage extends React.Component {
 
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
+      const accountsSubscription = Meteor.subscribe('accounts');
+      const isDataReady = accountsSubscription.ready();
       this.setState({
-        accountsData: AccountsData.find({}, { sort: { name: 1 } }).fetch()
+        accountsData: AccountsData.find().fetch(),
+        isDataReady
       });
     });
   }
@@ -97,6 +100,7 @@ export default class AccountsPage extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             accountsData={this.state.accountsData}
+            isDataReady={this.state.isDataReady}
           />
         </div>
       </div>

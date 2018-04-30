@@ -3,11 +3,13 @@ import Modal from "react-modal";
 
 import ConfirmationModal from "../components/ConfirmationModal";
 
-export default class AccountNewMultiModal extends React.Component {
+export default class AddNewMultiModal extends React.Component {
   /*=========================================================================
   >> props <<
   isOpen       : if modal is open
   onModalClose : function to execute on modal close
+  title        : modal title
+  method       : insertmany method
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -53,7 +55,7 @@ export default class AccountNewMultiModal extends React.Component {
   onConfirmationModalClose(answer) {
     this.setState({ isConfirmationModalOpen: false });
     if (answer) {
-      Meteor.call("accounts.insertmany", this.state.json, (err, res) => {
+      Meteor.call(this.props.method, this.state.json, (err, res) => {
         if (!err) {
           this.props.onModalClose();
         }
@@ -71,7 +73,7 @@ export default class AccountNewMultiModal extends React.Component {
         overlayClassName="react-modal__bg"
       >
         <div className="boxed-view__header">
-          <h1>거래처 대량등록</h1>
+          <h1>{this.props.title}</h1>
         </div>
         <div className="boxed-view__content">
           <input
@@ -83,7 +85,7 @@ export default class AccountNewMultiModal extends React.Component {
           />
 
           {this.state.error && (
-            <p className="product-modal__error">{this.state.error}</p>
+            <p className="add-new-multi-modal__error">{this.state.error}</p>
           )}
 
           <div className="button-group">
@@ -92,7 +94,9 @@ export default class AccountNewMultiModal extends React.Component {
             </button>
             <button
               className="button button-cancel"
-              onClick={() => { this.props.onModalClose() }}
+              onClick={() => {
+                this.props.onModalClose();
+              }}
             >
               취소
             </button>
@@ -102,7 +106,7 @@ export default class AccountNewMultiModal extends React.Component {
         {this.state.isConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isConfirmationModalOpen}
-            title="거래처 대량등록"
+            title={this.props.title}
             descriptionArray={["계속 하시겠습니까?"]}
             onModalClose={this.onConfirmationModalClose}
           />

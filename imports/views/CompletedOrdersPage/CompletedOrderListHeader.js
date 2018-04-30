@@ -1,10 +1,8 @@
 import React from 'react';
 
-import { printOrders } from '../../api/printOrders';
-
 import Checkbox from "../../custom/Checkbox";
 
-export default class DeliveryListHeader extends React.Component {
+export default class CompletedOrderListHeader extends React.Component {
   /*=========================================================================
   >> props <<
   onCheckboxChange

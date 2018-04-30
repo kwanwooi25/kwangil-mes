@@ -3,6 +3,7 @@ import moment from 'moment';
 
 import { comma } from '../../api/comma';
 
+import Spinner from '../../custom/Spinner';
 import OrderListHeader from './OrderListHeader';
 import OrderListItem from './OrderListItem';
 import ProductOrderModal from '../ProductsPage/ProductOrderModal';
@@ -29,6 +30,7 @@ export default class OrderList extends React.Component {
       accountsData: props.accountsData,
       productsData: props.productsData,
       ordersData: props.ordersData,
+      isDataReady: props.isDataReady,
       isCompleteOrderModalOpen: false,
       isProductOrderModalOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -60,7 +62,8 @@ export default class OrderList extends React.Component {
       isManager: props.isManager,
       accountsData: props.accountsData,
       productsData: props.productsData,
-      ordersData: props.ordersData
+      ordersData: props.ordersData,
+      isDataReady: props.isDataReady
     });
   }
 
@@ -69,7 +72,7 @@ export default class OrderList extends React.Component {
     if (e.target.name === 'selectAll') {
       selectedOrders = [];
       const checkboxes = document.querySelectorAll(
-        '#order-list input[type="checkbox"]'
+        '#order-list input[type="checkbox"]:not(:disabled)'
       );
 
       for (let i = 0; i < checkboxes.length; i++) {
@@ -240,7 +243,11 @@ export default class OrderList extends React.Component {
         )}
 
         <ul id="order-list" className="list">
-          {this.getOrderList(this.state.queryObj)}
+          {this.state.isDataReady ? (
+            this.getOrderList(this.state.queryObj)
+          ) : (
+            <Spinner />
+          )}
         </ul>
 
         {this.state.isCompleteOrderModalOpen && (
