@@ -38,9 +38,9 @@ export default class OrdersPage extends React.Component {
 
   componentDidMount() {
     // dynamically adjust height
-    setLayout();
+    setLayout(75);
     window.addEventListener('resize', () => {
-      setLayout();
+      setLayout(75);
     });
 
     // tracks if the user logged in is admin or manager

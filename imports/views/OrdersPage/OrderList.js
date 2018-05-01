@@ -112,12 +112,16 @@ export default class OrderList extends React.Component {
     this.setState({ isCompleteOrderModalOpen: true, selectedOrders });
   }
 
-  hideCompleteOrderModal() {
-    this.setState({
-      isCompleteOrderModalOpen: false,
-      selectedOrders: [],
-      isSelectedMulti: false
-    });
+  hideCompleteOrderModal(answer) {
+    this.setState({ isCompleteOrderModalOpen: false });
+
+    if (answer) {
+      // reset selectAll checkbox
+      document.querySelector('input[name="selectAll"]').checked = false;
+
+      // reset selectedOrders array
+      this.setState({ selectedOrders: [], isSelectedMulti: false });
+    }
   }
 
   showProductOrderModal(selectedOrderID) {
@@ -159,6 +163,12 @@ export default class OrderList extends React.Component {
       this.state.selectedOrders.map(orderID => {
         Meteor.call('orders.remove', orderID);
       });
+
+      // reset selectAll checkbox
+      document.querySelector('input[name="selectAll"]').checked = false;
+
+      // reset selectedOrders array
+      this.setState({ selectedOrders: [], isSelectedMulti: false });
     }
   }
 

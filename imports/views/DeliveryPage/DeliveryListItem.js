@@ -9,7 +9,7 @@ import AccountName from '../components/AccountName';
 import ProductName from '../components/ProductName';
 import OrderName from '../components/OrderName';
 
-export default class CompletedOrderListItem extends React.Component {
+export default class DeliveryListItem extends React.Component {
   /*=========================================================================
   >> props <<
   isAdmin
@@ -18,7 +18,7 @@ export default class CompletedOrderListItem extends React.Component {
   product
   order
   onCheckboxChange
-  showDeliveryOrderModal
+  showConfirmationModal
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -28,7 +28,8 @@ export default class CompletedOrderListItem extends React.Component {
       isManager: props.isManager
     };
 
-    this.onDeliveryOrderClick = this.onDeliveryOrderClick.bind(this);
+    this.onCompleteDeliveryClick = this.onCompleteDeliveryClick.bind(this);
+    this.onDeleteClick = this.onDeleteClick.bind(this);
   }
 
   // set state on props change
@@ -39,9 +40,14 @@ export default class CompletedOrderListItem extends React.Component {
     });
   }
 
-  onDeliveryOrderClick(e) {
+  onCompleteDeliveryClick(e) {
     const selectedOrderID = this.getOrderID(e.target);
-    this.props.showDeliveryOrderModal([selectedOrderID]);
+    this.props.showConfirmationModal([selectedOrderID], 'complete');
+  }
+
+  onDeleteClick(e) {
+    const selectedOrderID = this.getOrderID(e.target);
+    this.props.showConfirmationModal([selectedOrderID], 'cancel');
   }
 
   getOrderID(target) {
@@ -62,14 +68,11 @@ export default class CompletedOrderListItem extends React.Component {
     let listClassName = '';
     let productSizeText = '';
     let completedQuantityText = '';
+    let deliverByText = '';
 
-    listClassName = 'completed-order';
-    if (order.data.deliveredAt) {
-      listClassName += ' delivery-ordered';
-    } else if (daysCount <= 1) {
-      listClassName += ' d-1';
-    } else if (daysCount <= 3) {
-      listClassName += ' d-3';
+    listClassName = 'delivery';
+    if (order.data.isDelivered) {
+      listClassName += ' delivered';
     }
 
     productSizeText = `
@@ -88,81 +91,74 @@ export default class CompletedOrderListItem extends React.Component {
       order.data.completedQuantity
     )}매 (${comma(weight.toFixed(0))}kg)`;
 
+    if (order.deliverBy === 'direct') {
+      deliverByText = '직납';
+    } else if (order.deliverBy === 'post') {
+      deliverByText = '택배';
+    } else {
+      deliverByText = order.deliverBy;
+    }
+
     return (
       <li className={listClassName} key={order._id} id={order._id}>
         {(this.state.isAdmin || this.state.isManager) && (
-          <div className="completed-order-list-item__checkbox-container">
+          <div className="delivery-list-item__checkbox-container">
             <Checkbox
               name={order._id}
               onInputChange={this.props.onCheckboxChange}
-              disabled={order.data.deliveredAt}
+              disabled={order.data.isDelivered}
             />
           </div>
         )}
 
-        <div className="completed-order-list-item-container">
-          <div className="completed-order-list-item__id-container">
-            <div className="completed-order-list-item__remark-container">
-              {order.data.deliveredAt && (
-                <span className="completed-order-list-item__text">
-                  출고지시: {order.data.deliveredAt}
-                </span>
-              )}
-              {(!order.data.deliveredAt && order.data.deliverFast) && (
-                <span className="completed-order-list-item__text">
-                  <i className="fa fa-star" /> 지급
-                </span>
-              )}
-              {(!order.data.deliveredAt && order.data.deliverDateStrict) && (
-                <span className="completed-order-list-item__text">
-                  <i className="fa fa-star" /> 납기엄수
-                </span>
-              )}
-            </div>
-
+        <div className="delivery-list-item-container">
+          <div className="delivery-list-item__details-container">
             <OrderName
-              className="completed-order-list-item__orderID"
+              className="delivery-list-item__orderID"
               orderID={order._id}
             />
-          </div>
-
-          <div className="completed-order-list-item__dates-container">
-            <p className="completed-order-list-item__text">
-              납기일: {order.data.deliverBefore}
-            </p>
-          </div>
-
-          <div className="completed-order-list-item__product-details-container">
-            <div className="completed-order-list-item__names-container">
+            <div className="delivery-list-item__names-container">
               <AccountName
-                className="completed-order-list-item__accountName"
+                className="delivery-list-item__accountName"
                 accountID={account._id}
                 accountName={account.name}
               />
               <ProductName
-                className="completed-order-list-item__productName"
+                className="delivery-list-item__productName"
                 productID={product._id}
                 productName={product.name}
               />
             </div>
-            <div className="completed-order-list-item__size-container">
-              <p className="completed-order-list-item__text">{productSizeText}</p>
-              <p className="completed-order-list-item__text">
+            <div className="delivery-list-item__size-container">
+              <span className="delivery-list-item__text">{productSizeText}</span>
+              <span className="delivery-list-item__text">
                 {completedQuantityText}
-              </p>
+              </span>
             </div>
+          </div>
+
+          <div className="delivery-list-item__deliverBy-container">
+            <span className="delivery-list-item__text">{deliverByText}</span>
           </div>
         </div>
 
         {(this.state.isAdmin || this.state.isManager) && (
-          <div className="completed-order-list-item__buttons-container">
+          <div className="delivery-list-item__buttons-container">
             <button
-              className="button button-with-icon-span completed-order-list-item__button"
-              onClick={this.onDeliveryOrderClick}
-              disabled={order.data.deliveredAt}
+              className="button button-with-icon-span delivery-list-item__button"
+              onClick={this.onCompleteDeliveryClick}
+              disabled={order.data.isDelivered}
             >
-              <i className="fa fa-truck fa-lg" />
-              <span>출고등록</span>
+              <i className="fa fa-check fa-lg" />
+              <span>완료</span>
+            </button>
+            <button
+              className="button button-with-icon-span delivery-list-item__button"
+              onClick={this.onDeleteClick}
+              disabled={order.data.isDelivered}
+            >
+              <i className="fa fa-trash fa-lg" />
+              <span>삭제</span>
             </button>
           </div>
         )}

@@ -3,6 +3,7 @@ import 'pdfmake/build/vfs_fonts.js';
 
 import { OrdersData } from './orders';
 import { ProductsData } from './products';
+import { AccountsData } from './accounts';
 import { comma } from './comma';
 
 import noImage from '../assets/no-image.png';
@@ -18,7 +19,7 @@ export const printOrders = selectedOrders => {
     const product = ProductsData.findOne({ _id: order.data.productID });
 
     getTextForDocContent(order, product).then(res => {
-      docContent.push(getDocContent(res));
+      docContent.push(getDocContent(res, product.isPrint));
       ordersCount++;
 
       // when last order added to docContent
@@ -34,7 +35,8 @@ export const printOrders = selectedOrders => {
 
         // add pagebreak between each order except the last one
         for (let i = 0; i < selectedOrders.length - 1; i++) {
-          docContent[i][3].pageBreak = 'after';
+          console.log(docContent[i]);
+          docContent[i+1][0].pageBreak = 'before';
         }
 
         // generate PDF and open
@@ -68,6 +70,7 @@ const openPDF = docDefinition => {
 };
 
 const getTextForDocContent = (order, product) => {
+  const account = AccountsData.findOne({ _id: product.accountID });
   const orderIDText = order._id.split('-').pop();
   const orderedAtText = `발주일: ${order.data.orderedAt}`;
   const sizeText = `${product.thick} x ${product.length} x ${product.width}`;
@@ -81,7 +84,7 @@ const getTextForDocContent = (order, product) => {
     Number(order.data.orderQuantity);
   const orderQuantityWeightText = `(${comma(orderQuantityInKG.toFixed(0))}kg)`;
   const productName = product.name;
-  const accountName = product.accountName;
+  const accountName = account.name;
   let deliverBeforeArray = order.data.deliverBefore.split('-');
   deliverBeforeArray.shift();
   const deliverBeforeText = deliverBeforeArray.join('/');
@@ -250,8 +253,8 @@ const getTextForDocContent = (order, product) => {
   });
 };
 
-const getDocContent = textObj => {
-  return [
+const getDocContent = (textObj, isPrint) => {
+  let docContent = [
     {
       layout: 'noBorders',
       table: {
@@ -280,7 +283,7 @@ const getDocContent = textObj => {
     {
       style: 'table',
       table: {
-        widths: ['28%', '21%', '39%', '12%'],
+        widths: ['33%', '21%', '34%', '12%'],
         body: [
           [
             { rowSpan: 2, text: textObj.sizeText, style: 'productSize' },
@@ -415,13 +418,19 @@ const getDocContent = textObj => {
           ]
         ]
       }
-    },
-    {
+    }
+  ];
+
+  // add product image if exist
+  if (isPrint) {
+    docContent.push({
       image: textObj.productImage,
       fit: [515, 300],
       alignment: 'center'
-    }
-  ];
+    });
+  };
+
+  return docContent;
 };
 
 const getDocDefinition = (filename, docContent) => {
@@ -463,7 +472,7 @@ const getDocDefinition = (filename, docContent) => {
         margin: 3
       },
       productSize: {
-        fontSize: 16,
+        fontSize: 18,
         bold: true,
         alignment: 'center',
         margin: [2, 15]
@@ -475,9 +484,9 @@ const getDocDefinition = (filename, docContent) => {
         margin: [5, 5, 5, 0]
       },
       productName: {
-        fontSize: 17,
+        fontSize: 12,
         alignment: 'center',
-        margin: 3
+        margin: [3, 8]
       },
       deliverBefore: {
         fontSize: 18,
@@ -491,7 +500,7 @@ const getDocDefinition = (filename, docContent) => {
         margin: [5, 0, 5, 5]
       },
       accountName: {
-        fontSize: 12,
+        fontSize: 9,
         alignment: 'center',
         margin: 3
       },

@@ -5,6 +5,7 @@ import moment from 'moment';
 import { OrdersData } from '../../api/orders';
 import { ProductsData } from '../../api/products';
 import { DeliveryData } from '../../api/delivery';
+import { AccountsData } from '../../api/accounts';
 import { comma, uncomma } from '../../api/comma';
 
 import Checkbox from '../../custom/Checkbox';
@@ -110,7 +111,6 @@ export default class DeliveryOrderModal extends React.Component {
 
       for (let i = 0; i < lis.length; i++) {
         const order = OrdersData.findOne({ _id: lis[i].id });
-        order.data.isDelivered = true;
         order.data.deliveredAt = deliveryDate;
 
         let deliverBy = '';
@@ -129,12 +129,12 @@ export default class DeliveryOrderModal extends React.Component {
       if (!isDeliveryDateExist) {
         let orderList = orderListToAdd;
         Meteor.call('delivery.insert', deliveryDate, orderList, (err, res) => {});
-        this.props.onModalClose();
+        this.props.onModalClose(true);
       } else {
         let orderList = DeliveryData.findOne({ _id: deliveryDate }).orderList;
         orderList = orderList.concat(orderListToAdd);
         Meteor.call('delivery.update', deliveryDate, orderList, (err, res) => {});
-        this.props.onModalClose();
+        this.props.onModalClose(true);
       }
     }
   }
@@ -143,6 +143,7 @@ export default class DeliveryOrderModal extends React.Component {
     return selectedOrders.map((orderID, index) => {
       const order = OrdersData.findOne({ _id: orderID });
       const product = ProductsData.findOne({ _id: order.data.productID });
+      const account = AccountsData.findOne({ _id: product.accountID });
 
       const productSizeText = `${product.thick} x ${product.length} x ${
         product.width
@@ -157,7 +158,7 @@ export default class DeliveryOrderModal extends React.Component {
           <div className="delivery-order-modal__order-details-container">
             <div className="delivery-order-modal__names-container">
               <p className="delivery-order-modal__accountName">
-                {product.accountName}
+                {account.name}
               </p>
               <p className="delivery-order-modal__productName">
                 {product.name}
@@ -217,7 +218,7 @@ export default class DeliveryOrderModal extends React.Component {
           document.getElementById('deliverBySelectArray[0]').focus();
         }}
         onRequestClose={() => {
-          this.props.onModalClose();
+          this.props.onModalClose(false);
         }}
         ariaHideApp={false}
         className="boxed-view__box delivery-order-modal"
@@ -254,7 +255,7 @@ export default class DeliveryOrderModal extends React.Component {
             <button
               className="button button-cancel"
               onClick={() => {
-                this.props.onModalClose();
+                this.props.onModalClose(false);
               }}
             >
               취소

@@ -69,7 +69,6 @@ export default class ProductList extends React.Component {
 
   onListScroll(e) {
     const list = e.target;
-    console.log('product-list scrolling...');
     if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
       let itemsToShow = this.state.itemsToShow;
       itemsToShow += 20;
@@ -164,6 +163,12 @@ export default class ProductList extends React.Component {
       this.state.selectedProducts.map(productID => {
         Meteor.call('products.remove', productID);
       });
+
+      // reset selectAll checkbox
+      document.querySelector('input[name="selectAll"]').checked = false;
+
+      // reset selectedProducts array
+      this.setState({ selectedProducts: [] });
     }
   }
 
@@ -243,15 +248,15 @@ export default class ProductList extends React.Component {
     return (
       <div className="list-container">
         {this.state.isAdmin || this.state.isManager ? (
-          <div className="product-list-header">
+          <div className="list-header">
             <Checkbox
               name="selectAll"
               label="전체선택"
               onInputChange={this.onCheckboxChange}
             />
-            <div className="product-buttons-container">
+            <div className="list-header-buttons-container">
               <button
-                className="button button-with-icon-span product-button"
+                className="button button-with-icon-span list-header-button"
                 onClick={this.onDeleteMultiClick}
                 disabled={!this.state.isSelectedMulti}
               >

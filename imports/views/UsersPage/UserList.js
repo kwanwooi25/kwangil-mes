@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Spinner from '../../custom/Spinner';
 import UserListItem from './UserListItem';
 // import AccountDetailView from './AccountDetailView';
 // import AccountModal from './AccountModal';
@@ -10,6 +11,7 @@ export default class UserList extends React.Component {
   >> props <<
   query : query string to filter account list
   usersData
+  isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -17,6 +19,7 @@ export default class UserList extends React.Component {
     this.state = {
       query: props.query,
       usersData: props.usersData,
+      isDataReady: props.isDataReady,
       isAccountModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -40,7 +43,8 @@ export default class UserList extends React.Component {
   componentWillReceiveProps(props) {
     this.setState({
       query: props.query,
-      usersData: props.usersData
+      usersData: props.usersData,
+      isDataReady: props.isDataReady
     });
   }
 
@@ -118,8 +122,14 @@ export default class UserList extends React.Component {
 
   render() {
     return (
-      <ul id="user-list">
-        {this.getUserList(this.state.query)}
+      <div className="list-container">
+        <ul id="user-list" className="list">
+          {this.state.isDataReady ? (
+            this.getUserList(this.state.query)
+          ) : (
+            <Spinner />
+          )}
+        </ul>
         {/* {this.state.isDetailViewOpen ? (
           <AccountDetailView
             isOpen={this.state.isDetailViewOpen}
@@ -151,7 +161,7 @@ export default class UserList extends React.Component {
         ) : (
           undefined
         )} */}
-      </ul>
+      </div>
     );
   }
 }

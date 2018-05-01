@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import { OrdersData } from '../../api/orders';
 import { ProductsData } from '../../api/products';
+import { AccountsData } from '../../api/accounts';
 import { comma, uncomma } from '../../api/comma';
 
 import Checkbox from '../../custom/Checkbox';
@@ -167,7 +168,7 @@ export default class CompleteOrderModal extends React.Component {
 
         Meteor.call('orders.update', order._id, order.data, (err, res) => {
           if (!err) {
-            this.props.onModalClose();
+            this.props.onModalClose(true);
           }
         });
       }
@@ -178,6 +179,7 @@ export default class CompleteOrderModal extends React.Component {
     return selectedOrders.map((orderID, index) => {
       const order = OrdersData.findOne({ _id: orderID });
       const product = ProductsData.findOne({ _id: order.data.productID });
+      const account = AccountsData.findOne({ _id: product.accountID });
 
       const productSizeText = `${product.thick} x ${product.length} x ${
         product.width
@@ -192,7 +194,7 @@ export default class CompleteOrderModal extends React.Component {
           <div className="complete-order-modal__order-details-container">
             <div className="complete-order-modal__names-container">
               <p className="complete-order-modal__accountName">
-                {product.accountName}
+                {account.name}
               </p>
               <p className="complete-order-modal__productName">
                 {product.name}
@@ -250,7 +252,7 @@ export default class CompleteOrderModal extends React.Component {
           document.getElementById('completedQuantityArray[0]').focus();
         }}
         onRequestClose={() => {
-          this.props.onModalClose();
+          this.props.onModalClose(false);
         }}
         ariaHideApp={false}
         className="boxed-view__box complete-order-modal"
@@ -292,7 +294,7 @@ export default class CompleteOrderModal extends React.Component {
             <button
               className="button button-cancel"
               onClick={() => {
-                this.props.onModalClose();
+                this.props.onModalClose(false);
               }}
             >
               취소

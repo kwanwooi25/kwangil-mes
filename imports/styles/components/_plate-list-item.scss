@@ -13,6 +13,25 @@
   }
 }
 
+.plate-list-header {
+  align-items: center;
+  border-bottom: 1.5px solid $color-primary--100;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  .plate-buttons-container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    width: auto;
+  }
+
+  .checkmark {
+    margin-right: $space-md;
+  }
+}
+
 .plate-list-item__container {
   display: flex;
   flex-direction: column;

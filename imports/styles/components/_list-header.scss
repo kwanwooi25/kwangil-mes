@@ -1,0 +1,25 @@
+.list-header {
+  align-items: center;
+  border-bottom: 1.5px solid $color-primary--100;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  .checkmark {
+    margin-right: $space-md;
+  }
+}
+
+.list-header-buttons-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  width: auto;
+}
+
+.list-header-button {
+  height: 2.3rem;
+  width: 2.8rem;
+  margin: $space-xs;
+  padding: $space-xs $space-sm;
+}

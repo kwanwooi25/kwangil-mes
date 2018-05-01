@@ -8,10 +8,10 @@ import { DeliveryData } from '../../api/delivery';
 import { setLayout } from '../../api/setLayout';
 
 import PageHeaderSearch from '../components/PageHeaderSearch';
-import CompletedOrdersPageHeaderButtons from './CompletedOrdersPageHeaderButtons';
-import CompletedOrderList from './CompletedOrderList';
+import DeliveryPageHeaderButtons from './DeliveryPageHeaderButtons';
+import DeliveryList from './DeliveryList';
 
-export default class CompletedOrdersPage extends React.Component {
+export default class DeliveryPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -23,10 +23,10 @@ export default class CompletedOrdersPage extends React.Component {
       ordersData: [],
       deliveryData: [],
       isDataReady: false,
-      query: ''
+      deliveryDate: moment().format('YYYY-MM-DD')
     };
 
-    this.onInputSearchChange = this.onInputSearchChange.bind(this);
+    this.onDeliveryDateChange = this.onDeliveryDateChange.bind(this);
   }
 
   componentDidMount() {
@@ -50,13 +50,13 @@ export default class CompletedOrdersPage extends React.Component {
     this.databaseTracker = Tracker.autorun(() => {
       Meteor.subscribe('accounts');
       Meteor.subscribe('products');
-      const ordersSubscription = Meteor.subscribe('orders');
-      Meteor.subscribe('delivery');
+      Meteor.subscribe('orders');
+      const deliverySubscription = Meteor.subscribe('delivery');
       const accountsData = AccountsData.find().fetch();
       const productsData = ProductsData.find().fetch();
       const ordersData = OrdersData.find().fetch();
       const deliveryData = DeliveryData.find().fetch();
-      const isDataReady = ordersSubscription.ready();
+      const isDataReady = deliverySubscription.ready();
 
       this.setState({
         accountsData,
@@ -73,8 +73,8 @@ export default class CompletedOrdersPage extends React.Component {
     this.databaseTracker.stop();
   }
 
-  onInputSearchChange(query) {
-    this.setState({ query });
+  onDeliveryDateChange(deliveryDate) {
+    this.setState({ deliveryDate: deliveryDate.format('YYYY-MM-DD') });
   }
 
   render() {
@@ -82,26 +82,27 @@ export default class CompletedOrdersPage extends React.Component {
       <div className="main">
         <div className="page-header">
           <div className="page-header__row">
-            <h1 className="page-header__title">납품대기목록</h1>
-            <PageHeaderSearch onInputSearchChange={this.onInputSearchChange} />
-            <CompletedOrdersPageHeaderButtons
+            <h1 className="page-header__title">출고목록</h1>
+            <DeliveryPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
               accountsData={this.state.accountsData}
               productsData={this.state.productsData}
               ordersData={this.state.ordersData}
+              onDeliveryDateChange={this.onDeliveryDateChange}
             />
           </div>
         </div>
 
         <div className="page-content">
-          <CompletedOrderList
-            query={this.state.query}
+          <DeliveryList
+            deliveryDate={this.state.deliveryDate}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             accountsData={this.state.accountsData}
             productsData={this.state.productsData}
             ordersData={this.state.ordersData}
+            deliveryData={this.state.deliveryData}
             isDataReady={this.state.isDataReady}
           />
         </div>

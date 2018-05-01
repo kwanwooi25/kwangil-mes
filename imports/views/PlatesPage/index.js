@@ -32,9 +32,9 @@ export default class PlatesPage extends React.Component {
 
   componentDidMount() {
     // dynamically adjust height
-    setLayout();
+    setLayout(75);
     window.addEventListener('resize', () => {
-      setLayout();
+      setLayout(75);
     });
     document
       .getElementById('plate-search-toggle')

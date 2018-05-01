@@ -1,36 +1,28 @@
 import React from 'react';
 
-import { printOrders } from '../../api/printOrders';
-
 import Checkbox from "../../custom/Checkbox";
 
-export default class OrderListHeader extends React.Component {
+export default class DeliveryListHeader extends React.Component {
   /*=========================================================================
   >> props <<
   onCheckboxChange
   isSelectedMulti
   selectedOrders
-  showCompleteOrderModal
-  showDeleteConfirmationModal
+  showConfirmationModal
   ==========================================================================*/
   constructor(props) {
     super(props);
 
-    this.onPrintMultiOrderClick = this.onPrintMultiOrderClick.bind(this);
-    this.onCompleteMultiOrderClick = this.onCompleteMultiOrderClick.bind(this);
     this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
+    this.onCompleteDeliveryClick = this.onCompleteDeliveryClick.bind(this);
   }
 
-  onPrintMultiOrderClick() {
-    printOrders(this.props.selectedOrders);
-  }
-
-  onCompleteMultiOrderClick() {
-    this.props.showCompleteOrderModal(this.props.selectedOrders);
+  onCompleteDeliveryClick() {
+    this.props.showConfirmationModal(this.props.selectedOrders, 'complete');
   }
 
   onDeleteMultiClick() {
-    this.props.showDeleteConfirmationModal(this.props.selectedOrders);
+    this.props.showConfirmationModal(this.props.selectedOrders, 'cancel');
   }
 
   render() {
@@ -44,15 +36,7 @@ export default class OrderListHeader extends React.Component {
         <div className="list-header-buttons-container">
           <button
             className="button button-with-icon-span list-header-button"
-            onClick={this.onPrintMultiOrderClick}
-            disabled={!this.props.isSelectedMulti}
-          >
-            <i className="fa fa-print fa-lg" />
-            <span>출력</span>
-          </button>
-          <button
-            className="button button-with-icon-span list-header-button"
-            onClick={this.onCompleteMultiOrderClick}
+            onClick={this.onCompleteDeliveryClick}
             disabled={!this.props.isSelectedMulti}
           >
             <i className="fa fa-check fa-lg" />

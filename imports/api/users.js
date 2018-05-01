@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { Roles } from 'meteor/alanning:roles';
 
 if (Meteor.isServer) {
   Meteor.publish('users', function() {
@@ -15,4 +16,4 @@ Accounts.validateLoginAttempt(function(data) {
   } else {
     return true;
   }
-})
+});

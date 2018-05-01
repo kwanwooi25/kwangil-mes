@@ -23,7 +23,7 @@ export default class AccountList extends React.Component {
       isManager: props.isManager,
       accountsData: props.accountsData,
       isDataReady: props.isDataReady,
-      itemsToShow: 9999,
+      itemsToShow: 100,
       isAccountModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -55,7 +55,6 @@ export default class AccountList extends React.Component {
 
   onListScroll(e) {
     const list = e.target;
-    console.log('account-list scrolling...');
     if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
       let itemsToShow = this.state.itemsToShow;
       itemsToShow += 20;

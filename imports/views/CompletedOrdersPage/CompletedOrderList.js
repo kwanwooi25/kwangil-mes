@@ -32,7 +32,6 @@ export default class CompletedOrderList extends React.Component {
       ordersData: props.ordersData,
       isDataReady: props.isDataReady,
       isDeliveryOrderModalOpen: false,
-      isConfirmationModalOpen: false,
       selectedOrders: [],
       confirmationTitle: '',
       confirmationDescription: [],
@@ -42,8 +41,6 @@ export default class CompletedOrderList extends React.Component {
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
     this.showDeliveryOrderModal = this.showDeliveryOrderModal.bind(this);
     this.hideDeliveryOrderModal = this.hideDeliveryOrderModal.bind(this);
-    this.showConfirmationModal = this.showConfirmationModal.bind(this);
-    this.hideConfirmationModal = this.hideConfirmationModal.bind(this);
   }
 
   // set state on props change
@@ -92,58 +89,16 @@ export default class CompletedOrderList extends React.Component {
     this.setState({ isDeliveryOrderModalOpen: true, selectedOrders });
   }
 
-  hideDeliveryOrderModal() {
-    this.setState({
-      isDeliveryOrderModalOpen: false,
-      selectedOrders: [],
-      isSelectedMulti: false
-    });
-  }
+  hideDeliveryOrderModal(answer) {
+    this.setState({ isDeliveryOrderModalOpen: false });
 
-  showConfirmationModal(selectedOrders) {
-    let confirmationTitle = '납품 완료';
-    let confirmationDescription = [
-      `${selectedOrders.length}건 납품완료하시겠습니까?`
-    ];
-
-    selectedOrders.map(orderID => {
-      const order = this.state.ordersData.find(order => order._id === orderID);
-      const product = this.state.productsData.find(
-        product => product._id === order.data.productID
-      );
-      const deliveryInfoText = `${product.name} (${product.thick}x${
-        product.length
-      }x${product.width}) = ${comma(order.data.completedQuantity)}매`;
-
-      confirmationDescription.push(deliveryInfoText);
-    });
-
-    this.setState({
-      isConfirmationModalOpen: true,
-      selectedOrders,
-      confirmationTitle,
-      confirmationDescription
-    });
-  }
-
-  hideConfirmationModal(answer) {
     if (answer) {
-      this.state.selectedOrders.map(orderID => {
-        const order = this.state.ordersData.find(
-          order => order._id === orderID
-        );
-        order.data.isDelivered = true;
-        order.data.deliveredAt = moment().format('YYYY-MM-DD');
+      // reset selectAll checkbox
+      document.querySelector('input[name="selectAll"]').checked = false;
 
-        Meteor.call('orders.update', order._id, order.data, (err, res) => {});
-      });
+      // reset selectedOrders array
+      this.setState({ selectedOrders: [], isSelectedMulti: false });
     }
-
-    this.setState({
-      isConfirmationModalOpen: false,
-      selectedOrders: [],
-      isSelectedMulti: false
-    });
   }
 
   getCompletedOrderList(query) {
@@ -186,7 +141,6 @@ export default class CompletedOrderList extends React.Component {
               order={order}
               onCheckboxChange={this.onCheckboxChange}
               showDeliveryOrderModal={this.showDeliveryOrderModal}
-              showConfirmationModal={this.showConfirmationModal}
             />
           );
         }
@@ -202,7 +156,6 @@ export default class CompletedOrderList extends React.Component {
             isSelectedMulti={this.state.isSelectedMulti}
             selectedOrders={this.state.selectedOrders}
             showDeliveryOrderModal={this.showDeliveryOrderModal}
-            showConfirmationModal={this.showConfirmationModal}
           />
         )}
 
@@ -219,15 +172,6 @@ export default class CompletedOrderList extends React.Component {
             isOpen={this.state.isDeliveryOrderModalOpen}
             selectedOrders={this.state.selectedOrders}
             onModalClose={this.hideDeliveryOrderModal}
-          />
-        )}
-
-        {this.state.isConfirmationModalOpen && (
-          <ConfirmationModal
-            isOpen={this.state.isConfirmationModalOpen}
-            title={this.state.confirmationTitle}
-            descriptionArray={this.state.confirmationDescription}
-            onModalClose={this.hideConfirmationModal}
           />
         )}
       </div>

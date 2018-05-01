@@ -65,7 +65,6 @@ export default class PlateList extends React.Component {
 
   onListScroll(e) {
     const list = e.target;
-    console.log('plate-list scrolling...');
     if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
       let itemsToShow = this.state.itemsToShow;
       itemsToShow += 20;
@@ -143,6 +142,12 @@ export default class PlateList extends React.Component {
       this.state.selectedPlates.map(plateID => {
         Meteor.call('plates.remove', plateID);
       });
+
+      // reset selectAll checkbox
+      document.querySelector('input[name="selectAll"]').checked = false;
+
+      // reset selectedPlates array
+      this.setState({ selectedPlates: [] });
     }
   }
 
@@ -206,15 +211,15 @@ export default class PlateList extends React.Component {
     return (
       <div className="list-container">
         {(this.state.isAdmin || this.state.isManager) && (
-          <div className="plate-list-header">
+          <div className="list-header">
             <Checkbox
               name="selectAll"
               label="전체선택"
               onInputChange={this.onCheckboxChange}
             />
-            <div className="plate-buttons-container">
+            <div className="list-header-buttons-container">
               <button
-                className="button button-with-icon-span plate-list-item__button"
+                className="button button-with-icon-span list-header-button"
                 onClick={this.onDeleteMultiClick}
                 disabled={!this.state.isSelectedMulti}
               >

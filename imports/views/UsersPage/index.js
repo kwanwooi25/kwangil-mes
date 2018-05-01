@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { setLayout } from '../../api/setLayout';
+
 import PageHeaderSearch from '../components/PageHeaderSearch';
 import UserPageHeaderButtons from './UserPageHeaderButtons';
 import UserList from './UserList';
@@ -10,7 +12,8 @@ export default class UsersPage extends React.Component {
 
     this.state = {
       query: '',
-      usersData: []
+      usersData: [],
+      isDataReady: false
     };
 
     this.onInputSearchChange = this.onInputSearchChange.bind(this);
@@ -18,41 +21,24 @@ export default class UsersPage extends React.Component {
 
   componentDidMount() {
     // dynamically adjust height
-    this.setLayout();
+    setLayout(30);
     window.addEventListener('resize', () => {
-      this.setLayout();
+      setLayout(30);
     });
 
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('users');
+      const usersSubscription = Meteor.subscribe('users');
+      const isDataReady = usersSubscription.ready();
       this.setState({
-        usersData: Meteor.users.find().fetch()
+        usersData: Meteor.users.find().fetch(),
+        isDataReady
       });
     });
   }
 
   componentWillUnmount() {
     this.databaseTracker.stop();
-  }
-
-  // dynamically adjust height
-  setLayout() {
-    const headerHeight = document
-      .querySelector('.header')
-      .getBoundingClientRect().height;
-    const pageHeaderHeight = document
-      .querySelector('.page-header')
-      .getBoundingClientRect().height;
-    const main = document.querySelector('.main');
-    const pageContent = document.querySelector('.page-content');
-    const mainHeight = `calc(100vh - ${headerHeight + 10}px)`;
-    const contentHeight = `calc(100vh - ${headerHeight +
-      25 +
-      pageHeaderHeight}px)`;
-    main.style.height = mainHeight;
-    main.style.marginTop = `${headerHeight + 5}px`;
-    pageContent.style.height = contentHeight;
   }
 
   onInputSearchChange(query) {
@@ -74,6 +60,7 @@ export default class UsersPage extends React.Component {
           <UserList
             query={this.state.query}
             usersData={this.state.usersData}
+            isDataReady={this.state.isDataReady}
           />
         </div>
       </div>

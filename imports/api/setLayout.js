@@ -1,4 +1,4 @@
-export const setLayout = () => {
+export const setLayout = (distance) => {
   const headerHeight = document
     .querySelector('.header')
     .getBoundingClientRect().height;
@@ -8,10 +8,8 @@ export const setLayout = () => {
   const main = document.querySelector('.main');
   const list = document.querySelector('.list');
   const mainHeight = `calc(100vh - ${headerHeight + 10}px)`;
-  const contentHeight = `calc(100vh - ${headerHeight +
-    75 +
-    pageHeaderHeight}px)`;
+  const listHeight = `calc(100vh - ${headerHeight + pageHeaderHeight + distance}px)`;
   main.style.height = mainHeight;
   main.style.marginTop = `${headerHeight + 5}px`;
-  list.style.height = contentHeight;
+  list.style.height = listHeight;
 }
