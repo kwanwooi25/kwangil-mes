@@ -1,11 +1,11 @@
-import React from "react";
-import moment from "moment";
+import React from 'react';
+import moment from 'moment';
 
-import { comma } from "../../api/comma";
+import { comma } from '../../api/comma';
 
-import Spinner from "../../custom/Spinner";
-import DeliveryListHeader from "./DeliveryListHeader";
-import DeliveryListItem from "./DeliveryListItem";
+import Spinner from '../../custom/Spinner';
+import DeliveryListHeader from './DeliveryListHeader';
+import DeliveryListItem from './DeliveryListItem';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class DeliveryList extends React.Component {
@@ -34,7 +34,7 @@ export default class DeliveryList extends React.Component {
       isDataReady: props.isDataReady,
       isConfirmationModalOpen: false,
       selectedOrders: [],
-      confirmationTitle: "",
+      confirmationTitle: '',
       confirmationDescription: [],
       confirmFor: '',
       isSelectedMulti: false
@@ -61,7 +61,7 @@ export default class DeliveryList extends React.Component {
 
   onCheckboxChange(e) {
     let selectedOrders = this.state.selectedOrders;
-    if (e.target.name === "selectAll") {
+    if (e.target.name === 'selectAll') {
       selectedOrders = [];
       const checkboxes = document.querySelectorAll(
         '#delivery-list input[type="checkbox"]:not(:disabled)'
@@ -79,7 +79,7 @@ export default class DeliveryList extends React.Component {
         selectedOrders.push(e.target.name);
       }
     }
-    selectedOrders = selectedOrders.filter(value => value !== "selectAll");
+    selectedOrders = selectedOrders.filter(value => value !== 'selectAll');
     if (selectedOrders.length >= 2) {
       this.setState({ isSelectedMulti: true });
     } else {
@@ -94,10 +94,14 @@ export default class DeliveryList extends React.Component {
 
     if (confirmFor === 'complete') {
       confirmationTitle = '납품 완료';
-      confirmationDescription = [`${selectedOrders.length}건 납품완료하시겠습니까?`];
+      confirmationDescription = [
+        `${selectedOrders.length}건 납품완료하시겠습니까?`
+      ];
     } else if (confirmFor === 'cancel') {
       confirmationTitle = '출고지시 취소';
-      confirmationDescription = [`${selectedOrders.length}건 출고 취소하시겠습니까?`];
+      confirmationDescription = [
+        `${selectedOrders.length}건 출고 취소하시겠습니까?`
+      ];
     }
 
     selectedOrders.map(orderID => {
@@ -133,12 +137,13 @@ export default class DeliveryList extends React.Component {
         if (this.state.confirmFor === 'complete') {
           order.data.isDelivered = true;
           Meteor.call('orders.update', order._id, order.data, (err, res) => {});
-
         } else if (this.state.confirmFor === 'cancel') {
           let removeFromDeliveryID = '';
           let orderIDToRemove = '';
           this.state.deliveryData.map(delivery => {
-            let checkOrderID = delivery.orderList.map(order => order.orderID).indexOf(order._id);
+            let checkOrderID = delivery.orderList
+              .map(order => order.orderID)
+              .indexOf(order._id);
             if (checkOrderID > -1) {
               orderIDToRemove = checkOrderID;
               removeFromDeliveryID = delivery._id;
@@ -152,12 +157,20 @@ export default class DeliveryList extends React.Component {
           order.data.deliveredAt = '';
 
           Meteor.call('orders.update', order._id, order.data, (err, res) => {});
-          Meteor.call('delivery.update', delivery._id, delivery.orderList, (err, res) => {});
+          Meteor.call(
+            'delivery.update',
+            delivery._id,
+            delivery.orderList,
+            (err, res) => {}
+          );
         }
       });
 
-      // reset selectAll checkbox
-      document.querySelector('input[name="selectAll"]').checked = false;
+      // reset checkboxes
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
+      }
 
       // reset selectedOrders array
       this.setState({ selectedOrders: [], isSelectedMulti: false });
@@ -189,22 +202,27 @@ export default class DeliveryList extends React.Component {
           const product = this.state.productsData.find(
             product => product._id === order.data.productID
           );
-          const account = this.state.accountsData.find(
-            account => account._id === product.accountID
-          );
+          let account;
+          if (product) {
+            account = this.state.accountsData.find(
+              account => account._id === product.accountID
+            );
+          }
 
-          return (
-            <DeliveryListItem
-              key={order._id}
-              isAdmin={this.state.isAdmin}
-              isManager={this.state.isManager}
-              account={account}
-              product={product}
-              order={order}
-              onCheckboxChange={this.onCheckboxChange}
-              showConfirmationModal={this.showConfirmationModal}
-            />
-          );
+          if (account && product) {
+            return (
+              <DeliveryListItem
+                key={order._id}
+                isAdmin={this.state.isAdmin}
+                isManager={this.state.isManager}
+                account={account}
+                product={product}
+                order={order}
+                onCheckboxChange={this.onCheckboxChange}
+                showConfirmationModal={this.showConfirmationModal}
+              />
+            );
+          }
         });
     }
   }

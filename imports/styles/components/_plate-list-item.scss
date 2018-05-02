@@ -83,6 +83,10 @@
     cursor: pointer;
     text-decoration: underline;
   }
+
+  &-error {
+    color: $grey--500;
+  }
 }
 
 .plate-list-item__button {

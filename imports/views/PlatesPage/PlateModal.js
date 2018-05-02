@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import { ProductsData } from '../../api/products';
 import { PlatesData } from '../../api/plates';
+import { AccountsData } from '../../api/accounts';
 
 import TextInput from '../../custom/TextInput';
 import Textarea from '../../custom/Textarea';
@@ -276,19 +277,24 @@ export default class PlateModal extends React.Component {
     if (this.state.forProductList) {
       return this.state.forProductList.map(({ productID, printContent }) => {
         const product = ProductsData.findOne({ _id: productID });
-        const productSize = `
-            ${product.thick} x ${product.length} x ${product.width}
-          `;
+        let account;
+        let productSize = '';
+        if (product) {
+          productSize = `${product.thick} x ${product.length} x ${product.width}`;
+          account = AccountsData.findOne({ _id: product.accountID });
+        } else {
+          productSize = '[삭제된 품목]';
+        }
 
         return (
           <li
-            id={product._id}
-            key={product._id}
+            id={product ? product._id : '[삭제된 품목]'}
+            key={product ? product._id : '[삭제된 품목]'}
             className="plate-modal__forProductList__item"
           >
             <div className="plate-modal__forProductList__item__productInfo">
-              <span>{product.accountName}</span>
-              <span>{product.name}</span>
+              <span>{account ? account.name : '[삭제된 업체]'}</span>
+              <span>{product ? product.name : '[삭제된 품목]'}</span>
               <span>{productSize}</span>
               <span>{printContent}</span>
             </div>

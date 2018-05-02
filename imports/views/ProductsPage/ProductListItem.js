@@ -86,11 +86,17 @@ export default class ProductListItem extends React.Component {
         ): undefined}
         <div className="product-container">
           <div className="product-name-container">
-            <AccountName
-              className="product-accountName"
-              accountID={account._id}
-              accountName={account.name}
-            />
+            {account ? (
+              <AccountName
+                className="product-accountName"
+                accountID={account._id}
+                accountName={account.name}
+              />
+            ) : (
+              <div className="product-accountName-container">
+                <span className="product-accountName-error">[삭제된 업체]</span>
+              </div>
+            )}
             <ProductName
               className="product-productName"
               productID={product._id}

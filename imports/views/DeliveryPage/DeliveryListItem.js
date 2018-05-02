@@ -75,9 +75,7 @@ export default class DeliveryListItem extends React.Component {
       listClassName += ' delivered';
     }
 
-    productSizeText = `
-      ${product.thick} x ${product.length} x ${product.width}
-    `;
+    productSizeText = `${product.thick} x ${product.length} x ${product.width}`;
 
     const weight =
       Number(product.thick) *
@@ -130,7 +128,9 @@ export default class DeliveryListItem extends React.Component {
               />
             </div>
             <div className="delivery-list-item__size-container">
-              <span className="delivery-list-item__text">{productSizeText}</span>
+              <span className="delivery-list-item__text">
+                {productSizeText}
+              </span>
               <span className="delivery-list-item__text">
                 {completedQuantityText}
               </span>

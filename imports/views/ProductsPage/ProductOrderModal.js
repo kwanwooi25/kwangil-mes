@@ -5,6 +5,7 @@ import moment from 'moment';
 
 import { ProductsData } from '../../api/products';
 import { OrdersData } from '../../api/orders';
+import { AccountsData } from '../../api/accounts';
 import { comma, uncomma } from '../../api/comma';
 
 import DatePickerWithMessage from '../../custom/DatePicker/DatePickerWithMessage';
@@ -34,6 +35,7 @@ export default class ProductOrderModal extends React.Component {
       // EDIT mode
       const order = OrdersData.findOne({ _id: props.orderID });
       const product = ProductsData.findOne({ _id: order.data.productID });
+      const account = AccountsData.findOne({ _id: product.accountID });
 
       initialState = {
         mode: 'EDIT',
@@ -58,11 +60,14 @@ export default class ProductOrderModal extends React.Component {
         orderQuantityEmpty: false,
         isConfirmationModalOpen: false,
         confirmationTitle: '',
-        confirmationDescription: []
+        confirmationDescription: [],
+        error: account ? '' : '업체 정보가 없습니다. 작업지시가 불가능합니다.'
       };
     } else {
       // ADDNEW mode
       const product = ProductsData.findOne({ _id: props.productID });
+      const account = AccountsData.findOne({ _id: product.accountID });
+
       initialState = {
         mode: 'ADDNEW',
         orderID: '',
@@ -86,7 +91,8 @@ export default class ProductOrderModal extends React.Component {
         orderQuantityEmpty: false,
         isConfirmationModalOpen: false,
         confirmationTitle: '',
-        confirmationDescription: []
+        confirmationDescription: [],
+        error: account ? '' : '업체 정보가 없습니다. 작업지시가 불가능합니다.'
       };
     }
 
@@ -124,9 +130,8 @@ export default class ProductOrderModal extends React.Component {
 
   getProductInfo() {
     const product = this.state.product;
-    const sizeText = `
-      ${product.thick} x ${product.length} x ${product.width}
-    `;
+    const account = AccountsData.findOne({ _id: product.accountID });
+    const sizeText = `${product.thick} x ${product.length} x ${product.width}`;
 
     let extPrintText = `${product.extColor}원단`;
     let printDetailText = '';
@@ -176,7 +181,7 @@ export default class ProductOrderModal extends React.Component {
     return (
       <div className="product-order-modal__product-info-container">
         <p className="product-order-modal__accountName">
-          {product.accountName}
+          {account ? account.name : '[삭제된 업체]'}
         </p>
         <p className="product-order-modal__productName">{product.name}</p>
         <p className="product-order-modal__description">{sizeText}</p>
@@ -248,7 +253,6 @@ export default class ProductOrderModal extends React.Component {
 
   onClickOK(e) {
     e.preventDefault();
-
     // validation
     if (!this.validate('orderedAt', this.state.orderedAt)) {
       document.getElementById('orderedAt').focus();
@@ -264,8 +268,8 @@ export default class ProductOrderModal extends React.Component {
           confirmationDescription: [
             this.state.product.name,
             `  ${this.state.product.thick} x
-              ${this.state.product.length} x
-              ${this.state.product.width} = ${comma(
+                ${this.state.product.length} x
+                ${this.state.product.width} = ${comma(
               this.state.orderQuantity
             )}매`,
             '작업지시 하시겠습니까?'
@@ -278,8 +282,8 @@ export default class ProductOrderModal extends React.Component {
           confirmationDescription: [
             this.state.product.name,
             `  ${this.state.product.thick} x
-              ${this.state.product.length} x
-              ${this.state.product.width} = ${comma(
+                ${this.state.product.length} x
+                ${this.state.product.width} = ${comma(
               this.state.orderQuantity
             )}매`,
             '작업지시 수정하시겠습니까?'
@@ -402,8 +406,7 @@ export default class ProductOrderModal extends React.Component {
                       }}
                       disabled={this.state.mode === 'EDIT'}
                       errorMessage={
-                        this.state.orderedAtEmpty
-                        && '발주일을 입력하세요.'
+                        this.state.orderedAtEmpty && '발주일을 입력하세요.'
                       }
                     />
                   </div>
@@ -420,8 +423,7 @@ export default class ProductOrderModal extends React.Component {
                         this.setState({ deliverBefore });
                       }}
                       errorMessage={
-                        this.state.deliverBeforeEmpty
-                        && '납기일을 입력하세요.'
+                        this.state.deliverBeforeEmpty && '납기일을 입력하세요.'
                       }
                     />
                   </div>
@@ -438,8 +440,8 @@ export default class ProductOrderModal extends React.Component {
                       value={this.state.orderQuantity}
                       onInputChange={this.onInputChange}
                       errorMessage={
-                        this.state.orderQuantityEmpty
-                        && '발주수량을 입력하세요.'
+                        this.state.orderQuantityEmpty &&
+                        '발주수량을 입력하세요.'
                       }
                     />
                   </div>
@@ -537,8 +539,16 @@ export default class ProductOrderModal extends React.Component {
             </div>
           </div>
 
+          {this.state.error && (
+            <p className="error-message">{this.state.error}</p>
+          )}
+
           <div className="button-group">
-            <button className="button" onClick={this.onClickOK}>
+            <button
+              className="button"
+              onClick={this.onClickOK}
+              disabled={this.state.error}
+            >
               {this.state.mode === 'ADDNEW'
                 ? '발주'
                 : this.state.mode === 'EDIT' && '수정'}

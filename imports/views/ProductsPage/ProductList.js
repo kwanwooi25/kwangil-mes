@@ -184,40 +184,73 @@ export default class ProductList extends React.Component {
       const account = this.state.accountsData.find(
         account => account._id === product.accountID
       );
+      let accountName = '';
+      if (account) {
+        accountName = account.name;
+      } else {
+        accountName = '[삭제된 업체]';
+      }
 
-      let matchQuery = false;
+      let accountNameMatch = false;
+      let productNameMatch = false;
+      let productSizeMatch = false;
+      let extColorMatch = false;
+      let printColorMatch = false;
 
       if (
-        account.name &&
-        account.name.toLowerCase().indexOf(queryObj.accountName) > -1 &&
+        accountName &&
+        accountName.toLowerCase().indexOf(queryObj.accountName) > -1
+      ) {
+        accountNameMatch = true;
+      }
+
+      if (
         product.name &&
-        product.name.toLowerCase().indexOf(queryObj.name) > -1 &&
+        product.name.toLowerCase().indexOf(queryObj.name) > -1
+      ) {
+        productNameMatch = true;
+      }
+
+      if (
         product.thick &&
         String(product.thick).indexOf(queryObj.thick) > -1 &&
         product.length &&
         String(product.length).indexOf(queryObj.length) > -1 &&
         product.width &&
-        String(product.width).indexOf(queryObj.width) > -1 &&
+        String(product.width).indexOf(queryObj.width) > -1
+      ) {
+        productSizeMatch = true;
+      }
+
+      if (
         product.extColor &&
         product.extColor.toLowerCase().indexOf(queryObj.extColor) > -1
       ) {
-        if (queryObj.printColor) {
-          if (product.isPrint) {
-            if (
-              (product.printFrontColor &&
-                product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
-              (product.printBackColor &&
-                product.printBackColor.indexOf(queryObj.printColor) > -1)
-            ) {
-              matchQuery = true;
-            }
-          }
-        } else {
-          matchQuery = true;
-        }
+        extColorMatch = true;
       }
 
-      if (matchQuery) filteredProductsData.push(product);
+      if (queryObj.printColor && product.isPrint) {
+        if (
+          (product.printFrontColor &&
+            product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
+          (product.printBackColor &&
+            product.printBackColor.indexOf(queryObj.printColor) > -1)
+        ) {
+          printColorMatch = true;
+        }
+      } else {
+        printColorMatch = true;
+      }
+
+      if (
+        accountNameMatch &&
+        productNameMatch &&
+        productSizeMatch &&
+        extColorMatch &&
+        printColorMatch
+      ) {
+        filteredProductsData.push(product);
+      }
     });
 
     // render filtered products

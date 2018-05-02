@@ -36,13 +36,6 @@ export default class PlatesPage extends React.Component {
     window.addEventListener('resize', () => {
       setLayout(75);
     });
-    document
-      .getElementById('plate-search-toggle')
-      .addEventListener('click', () => {
-        setTimeout(() => {
-          setLayout();
-        }, 0);
-      });
 
     // tracks if the user logged in is admin or manager
     this.authTracker = Tracker.autorun(() => {

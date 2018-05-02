@@ -4,6 +4,10 @@
   display: flex;
   justify-content: space-between;
 
+  &.current-user {
+    background: $color-secondary--50;
+  }
+
   &:hover {
     background: $color-primary--50;
   }
@@ -11,6 +15,11 @@
   &:last-child {
     border-bottom: 1.8px solid $color-primary--100;
   }
+}
+
+.its-me {
+  color: $color-secondary--900;
+  margin: $space-xs;
 }
 
 .user-list-item__user-detail-container {
@@ -24,6 +33,10 @@
     font-size: $font-size--lg;
     font-weight: $font-weight--bold;
   }
+
+  span {
+    width: 25%;
+  }
 }
 
 .user-list-item__buttons-container {
@@ -35,10 +48,17 @@
   height: 2.3rem;
   width: 2.8rem;
   margin: $space-xs;
+  padding: $space-xs;
 }
 
 @media (min-width: $break--sm) {
   .user-list-item__user-detail-container {
-    max-width: 50%;
+    max-width: 70%;
+  }
+}
+
+@media (min-width: $break--md) {
+  .user-list-item__user-detail-container {
+    max-width: 60%;
   }
 }

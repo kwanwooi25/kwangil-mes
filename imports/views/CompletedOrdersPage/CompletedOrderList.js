@@ -93,8 +93,11 @@ export default class CompletedOrderList extends React.Component {
     this.setState({ isDeliveryOrderModalOpen: false });
 
     if (answer) {
-      // reset selectAll checkbox
-      document.querySelector('input[name="selectAll"]').checked = false;
+      // reset checkboxes
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
+      }
 
       // reset selectedOrders array
       this.setState({ selectedOrders: [], isSelectedMulti: false });
@@ -114,15 +117,18 @@ export default class CompletedOrderList extends React.Component {
         const product = this.state.productsData.find(
           product => product._id === order.data.productID
         );
-        const account = this.state.accountsData.find(
-          account => account._id === product.accountID
-        );
+        let account;
+        if (product) {
+          account = this.state.accountsData.find(
+            account => account._id === product.accountID
+          );
+        }
 
         let matchQuery = false;
 
         if (
-          (account.name.indexOf(query) > -1 ||
-            product.name.indexOf(query) > -1) &&
+          (account && account.name.indexOf(query) > -1 ||
+            product && product.name.indexOf(query) > -1) &&
           order.data.isCompleted &&
           !order.data.isDelivered
         ) {

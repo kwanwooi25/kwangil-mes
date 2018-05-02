@@ -34,6 +34,22 @@ export default class CompleteOrderModal extends React.Component {
       completedQuantityEmptyArray.push(false);
     }
 
+    let error = '';
+    for (let i = 0; i < ordersCount; i++) {
+      const order = OrdersData.findOne({ _id: props.selectedOrders[i] });
+      const product = ProductsData.findOne({ _id: order.data.productID });
+      if (!product) {
+        error = '존재하지 않는 품목이 있습니다. 완료할 수 없습니다.';
+        break;
+      } else {
+        const account = AccountsData.findOne({ _id: product.accountID });
+        if (!account) {
+          error = '존재하지 않는 업체가 있습니다. 완료할 수 없습니다.';
+          break;
+        }
+      }
+    }
+
     this.state = {
       completedAt: moment(),
       completedQuantityArray,
@@ -42,7 +58,8 @@ export default class CompleteOrderModal extends React.Component {
       ordersCount,
       isConfirmationModalOpen: false,
       confirmationTitle: '',
-      confirmationDescription: []
+      confirmationDescription: [],
+      error
     };
 
     this.onInputChange = this.onInputChange.bind(this);
@@ -121,11 +138,11 @@ export default class CompleteOrderModal extends React.Component {
       const order = OrdersData.findOne({ _id: this.props.selectedOrders[i] });
       const product = ProductsData.findOne({ _id: order.data.productID });
       const orderInfoText = `
-        ${product.name} (${product.thick}x${product.length}x${product.width})
-        = ${comma(uncomma(this.state.completedQuantityArray[i]))}매 ${
+          ${product.name} (${product.thick}x${product.length}x${product.width})
+          = ${comma(uncomma(this.state.completedQuantityArray[i]))}매 ${
         this.state.isCompletedArray[i] ? '(완료)' : ''
       }
-      `;
+        `;
       confirmationDescription.push(orderInfoText);
       if (!this.validate(targetName, value)) {
         document.getElementById(targetName).focus();
@@ -179,11 +196,16 @@ export default class CompleteOrderModal extends React.Component {
     return selectedOrders.map((orderID, index) => {
       const order = OrdersData.findOne({ _id: orderID });
       const product = ProductsData.findOne({ _id: order.data.productID });
-      const account = AccountsData.findOne({ _id: product.accountID });
-
-      const productSizeText = `${product.thick} x ${product.length} x ${
-        product.width
-      }`;
+      let account;
+      let productSizeText = '';
+      if (product) {
+        account = AccountsData.findOne({ _id: product.accountID });
+        productSizeText = `${product.thick} x ${product.length} x ${
+          product.width
+        }`;
+      } else {
+        productSizeText = '[삭제된 품목]';
+      }
 
       return (
         <li
@@ -194,10 +216,10 @@ export default class CompleteOrderModal extends React.Component {
           <div className="complete-order-modal__order-details-container">
             <div className="complete-order-modal__names-container">
               <p className="complete-order-modal__accountName">
-                {account.name}
+                {account ? account.name : '[삭제된 업체]'}
               </p>
               <p className="complete-order-modal__productName">
-                {product.name}
+                {product ? product.name : '[삭제된 품목]'}
               </p>
             </div>
             <div className="complete-order-modal__size-container">
@@ -287,8 +309,16 @@ export default class CompleteOrderModal extends React.Component {
             />
           </div>
 
+          {this.state.error && (
+            <p className="error-message">{this.state.error}</p>
+          )}
+
           <div className="confirmation-modal__button-group">
-            <button className="button" onClick={this.onClickOK}>
+            <button
+              className="button"
+              onClick={this.onClickOK}
+              disabled={this.state.error}
+            >
               확인
             </button>
             <button

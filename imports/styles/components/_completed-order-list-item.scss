@@ -50,16 +50,16 @@
 }
 
 .completed-order-list-item__id-container {
-  align-items: flex-start;
+  align-items: center;
   display: flex;
-  flex-direction: column;
   width: 40%;
 }
 
 .completed-order-list-item__dates-container {
-  align-items: center;
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
   width: 60%;
-  text-align: right;
 }
 
 .completed-order-list-item__names-container {
@@ -171,14 +171,12 @@
 
 @media (min-width: $break--lg) {
   .completed-order-list-item__id-container {
-    width: 11%;
+    width: 10%;
   }
 
   .completed-order-list-item__dates-container {
-    align-items: center;
-    display: flex;
-    width: 15%;
-    text-align: left;
+    align-items: flex-start;
+    width: 16%;
   }
 
   .completed-order-list-item__names-container {

@@ -59,18 +59,31 @@ export default class PlateListItem extends React.Component {
       const product = this.props.productsData.find(
         product => product._id === productID
       );
-      const productSize = `${product.thick} x ${product.length} x ${product.width}`;
+      let productSize = '';
+      if (product) {
+        productSize = `${product.thick} x ${product.length} x ${product.width}`;
+      } else {
+        productSize = '[삭제된 품목]';
+      }
 
       return (
         <div
-          key={product._id}
+          key={product ? product._id : '[삭제된 품목]'}
           className="plate-list-item__forProductListItem"
         >
-          <ProductName
-            className="plate-list-item__forProductName"
-            productID={product._id}
-            productName={product.name}
-          />
+          {product ? (
+            <ProductName
+              className="plate-list-item__forProductName"
+              productID={product._id}
+              productName={product.name}
+            />
+          ) : (
+            <div className="plate-list-item__forProductName-container">
+              <span className="plate-list-item__forProductName-error">
+                [삭제된 품목]
+              </span>
+            </div>
+          )}
           <span>{productSize}</span>
           <span>{printContent}</span>
         </div>

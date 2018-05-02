@@ -103,12 +103,10 @@ export default class OrderListItem extends React.Component {
       listClassName += ' d-3';
     }
 
-    productSizeText = `
-      ${product.thick} x ${product.length} x ${product.width}
-    `;
+    productSizeText = `${product.thick} x ${product.length} x ${product.width}`;
 
     isPrintText = '무지';
-    if (product.isPrint) {
+    if (product && product.isPrint) {
       isPrintText = '인쇄';
       switch (order.data.plateStatus) {
         case 'confirm':
@@ -126,10 +124,8 @@ export default class OrderListItem extends React.Component {
     orderQuantityText = `${comma(order.data.orderQuantity)}매`;
     completedQuantityText = `
       ${comma(
-        order.data.completedQuantity ?
-        order.data.completedQuantity :
-        0)
-      }매
+        order.data.completedQuantity ? order.data.completedQuantity : 0
+      )}매
       `;
 
     // const weight =
@@ -165,10 +161,7 @@ export default class OrderListItem extends React.Component {
               </span>
             )}
 
-            <OrderName
-              className="order-list__orderID"
-              orderID={order._id}
-            />
+            <OrderName className="order-list__orderID" orderID={order._id} />
           </div>
 
           <div className="order-dates-container">
@@ -178,7 +171,7 @@ export default class OrderListItem extends React.Component {
             </p>
           </div>
 
-          <div className='order-product-details-container'>
+          <div className="order-product-details-container">
             <div className="order-names-container">
               <AccountName
                 className="order-list__accountName"
@@ -206,10 +199,10 @@ export default class OrderListItem extends React.Component {
               className="select order-list__select"
               value={order.data.isCompleted ? 'completed' : order.data.status}
               onChange={this.onStatusChange}
-              disabled={order.data.isCompleted}
+              disabled={order.data.isCompleted || !product || !account}
             >
               <option value="extruding">압출중</option>
-              <option value="printing" disabled={!product.isPrint}>
+              <option value="printing" disabled={product && !product.isPrint}>
                 인쇄중
               </option>
               <option value="cutting">가공중</option>
@@ -224,7 +217,7 @@ export default class OrderListItem extends React.Component {
               <button
                 className="button button-with-icon-span order-button"
                 onClick={this.onPrintOrderClick}
-                disabled={order.data.isCompleted}
+                disabled={order.data.isCompleted || !product || !account}
               >
                 <i className="fa fa-print fa-lg" />
                 <span>출력</span>
@@ -232,7 +225,7 @@ export default class OrderListItem extends React.Component {
               <button
                 className="button button-with-icon-span order-button"
                 onClick={this.onCompleteOrderClick}
-                disabled={order.data.isCompleted}
+                disabled={order.data.isCompleted || !product || !account}
               >
                 <i className="fa fa-check fa-lg" />
                 <span>완료</span>
@@ -240,7 +233,7 @@ export default class OrderListItem extends React.Component {
               <button
                 className="button button-with-icon-span order-button"
                 onClick={this.onEditClick}
-                disabled={order.data.isCompleted}
+                disabled={order.data.isCompleted || !product || !account}
               >
                 <i className="fa fa-edit fa-lg" />
                 <span>수정</span>

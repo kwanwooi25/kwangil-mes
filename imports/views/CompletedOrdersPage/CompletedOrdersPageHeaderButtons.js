@@ -18,7 +18,7 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
   }
 
   onClickExportExcel() {
-    const list = document.getElementById('delivery-list');
+    const list = document.getElementById('completed-order-list');
     const filename = '광일_납품대기목록.csv';
     const slice = Array.prototype.slice;
 

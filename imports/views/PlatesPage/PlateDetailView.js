@@ -44,13 +44,16 @@ export default class PlateDetailView extends React.Component {
     const getForProductList = () => {
       return plate.forProductList.map(({ productID, printContent }) => {
         const product = ProductsData.findOne({ _id: productID });
-        const productSize = `${product.thick} x ${product.length} x ${
-          product.width
-        }`;
+        let productSize = '';
+        if (product) {
+          productSize = `${product.thick} x ${product.length} x ${product.width}`;
+        } else {
+          productSize = '[삭제된 품목]';
+        }
 
         return (
           <li key={productID} className="plate-detail__forProductListItem">
-            <span>{product.name}</span>
+            <span>{product ? product.name : '[삭제된 품목]'}</span>
             <span>{productSize}</span>
             <span>{printContent}</span>
           </li>

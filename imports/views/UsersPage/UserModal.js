@@ -12,13 +12,35 @@ export default class UserModal extends React.Component {
   isOpen       : if modal is open
   userID       : user ID to display
   onModalClose : function to execute on modal close
+  editFor
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     if (props.userID) {
+      const user = Meteor.users.findOne({ _id: props.userID });
+      console.log(user);
       // EDIT mode
       initialState = {
+        mode:
+          props.editFor === 'profile'
+            ? 'EDIT_PROFILE'
+            : props.editFor === 'password' && 'RESET_PASSWORD',
+        userID: props.userID,
+        username: user.username,
+        password: '',
+        passwordConf: '',
+        displayName: user.profile.displayName,
+        department: user.profile.department,
+        position: user.profile.position,
+        role: user.profile.isManager ? 'manager' : 'user',
+        isConfirmationModalOpen: false,
+        confirmationTitle: '',
+        confirmationDescription: [],
+        usernameEmpty: false,
+        passwordEmpty: false,
+        passwordConfError: false,
+        displayNameEmpty: false
       };
     } else {
       // ADDNEW mode
@@ -38,7 +60,7 @@ export default class UserModal extends React.Component {
         usernameEmpty: false,
         passwordEmpty: false,
         passwordConfError: false,
-        displayNameEmpty: false,
+        displayNameEmpty: false
       };
     }
 
@@ -51,15 +73,15 @@ export default class UserModal extends React.Component {
   }
 
   onInputChange(e) {
-    // add and remove class 'changed' on EDIT mode
-    if (
-      this.state.mode === 'EDIT' &&
-      initialState[e.target.name] !== e.target.value
-    ) {
-      e.target.parentNode.classList.add('changed');
-    } else {
-      e.target.parentNode.classList.remove('changed');
+    if (this.state.mode === 'EDIT_PROFILE') {
+      // add and remove class 'changed' on EDIT mode
+      if (initialState[e.target.name] !== e.target.value) {
+        e.target.parentNode.classList.add('changed');
+      } else {
+        e.target.parentNode.classList.remove('changed');
+      }
     }
+
     this.setState({ error: '' });
 
     this.setState({ [e.target.name]: e.target.value });
@@ -111,11 +133,20 @@ export default class UserModal extends React.Component {
     // validation
     if (!this.validate('username', this.state.username)) {
       document.getElementById('username').focus();
-    } else if (!this.validate('password', this.state.password)) {
+    } else if (
+      this.refs.password &&
+      !this.validate('password', this.state.password)
+    ) {
       document.getElementById('password').focus();
-    } else if (!this.validate('passwordConf', this.state.passwordConf)) {
+    } else if (
+      this.refs.passwordConf &&
+      !this.validate('passwordConf', this.state.passwordConf)
+    ) {
       document.getElementById('passwordConf').focus();
-    } else if (!this.validate('displayName', this.state.displayName)) {
+    } else if (
+      this.refs.displayName &&
+      !this.validate('displayName', this.state.displayName)
+    ) {
       document.getElementById('displayName').focus();
     } else {
       if (this.state.mode === 'ADDNEW') {
@@ -127,11 +158,17 @@ export default class UserModal extends React.Component {
             `${this.state.displayName} (${this.state.username})`
           ]
         });
-      } else if (this.state.mode === 'EDIT') {
+      } else if (this.state.mode === 'EDIT_PROFILE') {
         this.setState({
           isConfirmationModalOpen: true,
-          confirmationTitle: '거래처 정보 수정',
+          confirmationTitle: '사용자 정보 수정',
           confirmationDescription: ['수정하신 내용을 저장하시겠습니까?']
+        });
+      } else if (this.state.mode === 'RESET_PASSWORD') {
+        this.setState({
+          isConfirmationModalOpen: true,
+          confirmationTitle: '비밀번호 변경',
+          confirmationDescription: ['변경된 비밀번호를 저장하시겠습니까?']
         });
       }
     }
@@ -159,15 +196,21 @@ export default class UserModal extends React.Component {
         }
       });
 
-      // EDIT mode
-    } else if (this.state.mode === 'EDIT' && answer) {
-      // Meteor.call('accounts.update', this.state.userID, data, (err, res) => {
-      //   if (!err) {
-      //     this.props.onModalClose();
-      //   } else {
-      //     this.setState({ error: err.error });
-      //   }
-      // });
+      // EDIT_PROFILE mode
+    } else if (this.state.mode === 'EDIT_PROFILE' && answer) {
+      Meteor.users.update(this.state.userID, { $set: { profile } });
+      this.props.onModalClose();
+
+      // RESET_PASSWORD mode
+    } else if (this.state.mode === 'RESET_PASSWORD' && answer) {
+      Meteor.call(
+        'users.setPassword',
+        this.state.userID,
+        password,
+        (err, res) => {
+          if (!err) this.props.onModalClose();
+        }
+      );
     }
   }
 
@@ -191,7 +234,8 @@ export default class UserModal extends React.Component {
         <div className="boxed-view__header">
           <h1>
             {this.state.mode === 'ADDNEW' && '사용자 등록'}
-            {this.state.mode === 'EDIT' && '거래처 정보수정'}
+            {this.state.mode === 'EDIT_PROFILE' && '사용자 정보수정'}
+            {this.state.mode === 'RESET_PASSWORD' && '비밀번호 변경'}
           </h1>
         </div>
         <form className="boxed-view__content">
@@ -206,102 +250,131 @@ export default class UserModal extends React.Component {
                 id="username"
                 value={this.state.username}
                 onInputChange={this.onInputChange}
-                errorMessage={this.state.usernameEmpty && '아이디를 입력하세요.'}
-              />
-            </div>
-          </div>
-          <div className="form-element-container">
-            <div className="form-element__label">
-              <label htmlFor="password">비밀번호</label>
-            </div>
-            <div className="form-elements">
-              <TextInput
-                className="form-element"
-                inputType="password"
-                id="password"
-                value={this.state.password}
-                onInputChange={this.onInputChange}
-                errorMessage={this.state.passwordEmpty && '비밀번호를 입력하세요.'}
-              />
-            </div>
-          </div>
-          <div className="form-element-container">
-            <div className="form-element__label">
-              <label htmlFor="passwordConf">비밀번호 확인</label>
-            </div>
-            <div className="form-elements">
-              <TextInput
-                className="form-element"
-                inputType="password"
-                id="passwordConf"
-                value={this.state.passwordConf}
-                onInputChange={this.onInputChange}
                 errorMessage={
-                  this.state.passwordConfError && '비밀번호가 일치하지 않습니다.'
+                  this.state.usernameEmpty && '아이디를 입력하세요.'
                 }
+                disabled={this.state.mode !== 'ADDNEW'}
               />
             </div>
           </div>
-          <div className="form-element-container">
-            <div className="form-element__label">
-              <label htmlFor="displayName">이름</label>
+
+          {this.state.mode !== 'EDIT_PROFILE' && (
+            <div className="form-element-container">
+              <div className="form-element__label">
+                <label htmlFor="password">비밀번호</label>
+              </div>
+              <div className="form-elements">
+                <TextInput
+                  className="form-element"
+                  inputType="password"
+                  id="password"
+                  ref="password"
+                  value={this.state.password}
+                  onInputChange={this.onInputChange}
+                  errorMessage={
+                    this.state.passwordEmpty && '비밀번호를 입력하세요.'
+                  }
+                />
+              </div>
             </div>
-            <div className="form-elements">
-              <TextInput
-                className="form-element"
-                inputType="text"
-                id="displayName"
-                value={this.state.displayName}
-                onInputChange={this.onInputChange}
-                errorMessage={this.state.displayNameEmpty && '이름을 입력하세요.'}
-              />
+          )}
+
+          {this.state.mode !== 'EDIT_PROFILE' && (
+            <div className="form-element-container">
+              <div className="form-element__label">
+                <label htmlFor="passwordConf">비밀번호 확인</label>
+              </div>
+              <div className="form-elements">
+                <TextInput
+                  className="form-element"
+                  inputType="password"
+                  id="passwordConf"
+                  ref="passwordConf"
+                  value={this.state.passwordConf}
+                  onInputChange={this.onInputChange}
+                  errorMessage={
+                    this.state.passwordConfError &&
+                    '비밀번호가 일치하지 않습니다.'
+                  }
+                />
+              </div>
             </div>
-          </div>
-          <div className="form-element-container">
-            <div className="form-element__label">
-              <label htmlFor="department">부서</label>
+          )}
+
+          {this.state.mode !== 'RESET_PASSWORD' && (
+            <div className="form-element-container">
+              <div className="form-element__label">
+                <label htmlFor="displayName">이름</label>
+              </div>
+              <div className="form-elements">
+                <TextInput
+                  className="form-element"
+                  inputType="text"
+                  id="displayName"
+                  ref="displayName"
+                  value={this.state.displayName}
+                  onInputChange={this.onInputChange}
+                  errorMessage={
+                    this.state.displayNameEmpty && '이름을 입력하세요.'
+                  }
+                />
+              </div>
             </div>
-            <div className="form-elements">
-              <TextInput
-                className="form-element"
-                inputType="text"
-                id="department"
-                value={this.state.department}
-                onInputChange={this.onInputChange}
-              />
+          )}
+
+          {this.state.mode !== 'RESET_PASSWORD' && (
+            <div className="form-element-container">
+              <div className="form-element__label">
+                <label htmlFor="department">부서</label>
+              </div>
+              <div className="form-elements">
+                <TextInput
+                  className="form-element"
+                  inputType="text"
+                  id="department"
+                  value={this.state.department}
+                  onInputChange={this.onInputChange}
+                />
+              </div>
             </div>
-          </div>
-          <div className="form-element-container">
-            <div className="form-element__label">
-              <label htmlFor="position">직책</label>
+          )}
+
+          {this.state.mode !== 'RESET_PASSWORD' && (
+            <div className="form-element-container">
+              <div className="form-element__label">
+                <label htmlFor="position">직책</label>
+              </div>
+              <div className="form-elements">
+                <TextInput
+                  className="form-element"
+                  inputType="text"
+                  id="position"
+                  value={this.state.position}
+                  onInputChange={this.onInputChange}
+                />
+              </div>
             </div>
-            <div className="form-elements">
-              <TextInput
-                className="form-element"
-                inputType="text"
-                id="position"
-                value={this.state.position}
-                onInputChange={this.onInputChange}
-              />
+          )}
+
+          {this.state.mode !== 'RESET_PASSWORD' && (
+            <div className="form-element-container">
+              <div className="form-element__label">
+                <label htmlFor="role">권한</label>
+              </div>
+              <div className="form-elements">
+                <select
+                  className="select user-modal__role-select"
+                  id="role"
+                  name="role"
+                  value={this.state.role}
+                  onChange={this.onInputChange}
+                >
+                  <option value="user">사용자</option>
+                  <option value="manager">관리자</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <div className="form-element-container">
-            <div className="form-element__label">
-              <label htmlFor="role">권한</label>
-            </div>
-            <div className="form-elements">
-              <select
-                className="select user-modal__role-select"
-                id="role"
-                name="role"
-                value={this.state.role}
-                onChange={this.onInputChange}
-              >
-                <option value="user">사용자</option>
-                <option value="manager">관리자</option>
-              </select>
-            </div>
-          </div>
+          )}
 
           {this.state.error && (
             <p className="user-modal__error">{this.state.error}</p>

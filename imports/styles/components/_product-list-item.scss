@@ -51,8 +51,13 @@
   padding: $space-xs;
 }
 
-.product-accountName {
+.product-accountName,
+.product-accountName-error {
   font-size: $font-size--sm;
+}
+
+.product-accountName-error {
+  color: $grey--500;
 }
 
 .product-productName {

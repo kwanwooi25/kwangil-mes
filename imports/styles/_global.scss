@@ -46,6 +46,15 @@
   overflow-y: scroll;
 }
 
+.error-message {
+  color: $color-error--500;
+  font-weight: $font-weight--bold;
+  margin: 0;
+  padding: $space-xs;
+  text-align: center;
+  width: 100%;
+}
+
 @media (min-width: $break--sm) {
   .sm5 {
     width: 5% !important;

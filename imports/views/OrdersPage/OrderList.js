@@ -177,49 +177,55 @@ export default class OrderList extends React.Component {
       const product = this.state.productsData.find(
         product => product._id === order.data.productID
       );
-      const account = this.state.accountsData.find(
-        account => account._id === product.accountID
-      );
+      let account;
+      if (product) {
+        account = this.state.accountsData.find(
+          account => account._id === product.accountID
+        );
+      }
 
-      let matchQuery = false;
+      let dateRangeMatch = false;
+      let accountNameMatch = false;
+      let productNameMatch = false;
+      let isPrintMatch = false;
+      let showCompletedMatch = false;
 
       const orderedAt = moment(order.data.orderedAt);
       const searchFrom = moment(queryObj.searchFrom);
       const searchTo = moment(queryObj.searchTo);
 
+      if (searchFrom <= orderedAt && orderedAt <= searchTo) {
+        dateRangeMatch = true;
+      }
+
+      if (account && account.name.indexOf(queryObj.accountName) > -1) {
+        accountNameMatch = true;
+      }
+
+      if (product && product.name.indexOf(queryObj.productName) > -1) {
+        productNameMatch = true;
+      }
+
       if (
-        searchFrom <= orderedAt &&
-        orderedAt <= searchTo &&
-        account.name.indexOf(queryObj.accountName) > -1 &&
-        product.name.indexOf(queryObj.productName) > -1
+        queryObj.isPrintQuery === 'both' ||
+        (queryObj.isPrintQuery === 'false' && !product.isPrint) ||
+        (queryObj.isPrintQuery === 'true' && product.isPrint)
       ) {
-        if (!order.data.isCompleted) {
-          if (queryObj.isPrintQuery === 'both') {
-            matchQuery = true;
-          }
-          if (queryObj.isPrintQuery === 'false' && !product.isPrint) {
-            matchQuery = true;
-          }
-          if (queryObj.isPrintQuery === 'true' && product.isPrint) {
-            matchQuery = true;
-          }
-        } else {
-          if (queryObj.showCompletedOrder) {
-            if (queryObj.isPrintQuery === 'both') {
-              matchQuery = true;
-            }
-            if (queryObj.isPrintQuery === 'false' && !product.isPrint) {
-              matchQuery = true;
-            }
-            if (queryObj.isPrintQuery === 'true' && product.isPrint) {
-              matchQuery = true;
-            }
-          }
-        }
+        isPrintMatch = true;
+      }
+
+      if (order.data.isCompleted === queryObj.showCompletedOrder) {
+        showCompletedMatch = true;
       }
 
       // only show product that has matching query text
-      if (matchQuery) {
+      if (
+        dateRangeMatch &&
+        accountNameMatch &&
+        productNameMatch &&
+        isPrintMatch &&
+        showCompletedMatch
+      ) {
         return (
           <OrderListItem
             key={order._id}

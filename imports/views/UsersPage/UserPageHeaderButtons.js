@@ -32,7 +32,7 @@ export default class UserPageHeaderButtons extends React.Component {
           className="button button-with-icon-span page-header__button"
           onClick={this.onClickNew}
         >
-          <i className="fa fa-plus fa-lg" />
+          <i className="fa fa-user-plus fa-lg" />
           <span>신규</span>
         </button>
 

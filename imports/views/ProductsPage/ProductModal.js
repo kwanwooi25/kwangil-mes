@@ -36,7 +36,7 @@ export default class ProductModal extends React.Component {
         productID: product._id,
         accountList: [],
         accountID: product.accountID,
-        accountName: account.name,
+        accountName: account ? account.name : '',
         name: product.name,
         thick: product.thick,
         length: product.length,

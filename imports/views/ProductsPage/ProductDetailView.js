@@ -1,14 +1,14 @@
-import { Meteor } from "meteor/meteor";
-import React from "react";
-import Modal from "react-modal";
+import { Meteor } from 'meteor/meteor';
+import React from 'react';
+import Modal from 'react-modal';
 
-import { AccountsData } from "../../api/accounts";
-import { ProductsData } from "../../api/products";
-import { PlatesData } from "../../api/plates";
-import { comma, uncomma } from "../../api/comma";
+import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
+import { PlatesData } from '../../api/plates';
+import { comma, uncomma } from '../../api/comma';
 
 import PlateName from '../components/PlateName';
-import noImage from "../../assets/no-image.png";
+import noImage from '../../assets/no-image.png';
 
 export default class ProductDetailView extends React.Component {
   /*=========================================================================
@@ -22,7 +22,7 @@ export default class ProductDetailView extends React.Component {
 
     this.state = {
       isPlateDetailViewOpen: false,
-      selectedPlateID: ""
+      selectedPlateID: ''
     };
 
     this.onClickOK = this.onClickOK.bind(this);
@@ -37,27 +37,27 @@ export default class ProductDetailView extends React.Component {
     const product = ProductsData.findOne({ _id: this.props.productID });
     const account = AccountsData.findOne({ _id: product.accountID });
     const plateList = PlatesData.find({
-      "forProductList.productID": product._id
+      'forProductList.productID': product._id
     }).fetch();
 
-    let extSurmmaryText = "",
-      printSummaryText = "",
-      printFrontText = "",
-      printBackText = "",
-      cutPositionText = "",
-      cutExtraText = "",
-      cutPunchText = "",
-      packDetailText = "",
-      priceText = "";
+    let extSurmmaryText = '',
+      printSummaryText = '',
+      printFrontText = '',
+      printBackText = '',
+      cutPositionText = '',
+      cutExtraText = '',
+      cutPunchText = '',
+      packDetailText = '',
+      priceText = '';
 
     extSummaryText = `${product.extColor}원단`;
-    if (product.extPretreat === "single") {
-      extSummaryText += " / 단면처리";
-    } else if (product.extPretreat === "both") {
-      extSummaryText += " / 양면처리";
+    if (product.extPretreat === 'single') {
+      extSummaryText += ' / 단면처리';
+    } else if (product.extPretreat === 'both') {
+      extSummaryText += ' / 양면처리';
     }
     if (product.extAntistatic) {
-      extSummaryText += " / 대전방지";
+      extSummaryText += ' / 대전방지';
     }
 
     if (product.isPrint) {
@@ -83,7 +83,7 @@ export default class ProductDetailView extends React.Component {
           printBackText += ` / ${product.printBackPosition}`;
         }
       } else {
-        printSummaryText += ")";
+        printSummaryText += ')';
       }
     }
 
@@ -92,12 +92,12 @@ export default class ProductDetailView extends React.Component {
     }
 
     if (product.cutUltrasonic) {
-      cutExtraText = "초음파가공";
+      cutExtraText = '초음파가공';
       if (product.cutPowderPack) {
-        cutExtraText += " / 가루포장";
+        cutExtraText += ' / 가루포장';
       }
     } else if (product.cutPowderPack) {
-      cutExtraText = "가루포장";
+      cutExtraText = '가루포장';
     }
 
     if (product.cutPunches) {
@@ -115,7 +115,7 @@ export default class ProductDetailView extends React.Component {
       packDetailText += ` (${comma(product.packQuantity)}매씩)`;
     }
     if (product.packDeliverAll) {
-      packDetailText += " / 전량납품";
+      packDetailText += ' / 전량납품';
     }
 
     if (product.price) {
@@ -147,13 +147,15 @@ export default class ProductDetailView extends React.Component {
     return (
       <div className="product-detail__container">
         <div className="product-detail__subsection">
-          <h3 className="product-detail__accountName">{account.name}</h3>
+          <h3 className="product-detail__accountName">
+            {account ? account.name : '[삭제된 업체]'}
+          </h3>
           <h2 className="product-detail__productName">{product.name}</h2>
           <p className="product-detail__description">
             {product.thick} &times; {product.length} &times; {product.width}
           </p>
           <p className="product-detail__description">
-            {product.isPrint ? printSummaryText : "무지"}
+            {product.isPrint ? printSummaryText : '무지'}
           </p>
         </div>
 

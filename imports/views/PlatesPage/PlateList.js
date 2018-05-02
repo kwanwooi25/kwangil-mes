@@ -143,8 +143,11 @@ export default class PlateList extends React.Component {
         Meteor.call('plates.remove', plateID);
       });
 
-      // reset selectAll checkbox
-      document.querySelector('input[name="selectAll"]').checked = false;
+      // reset checkboxes
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
+      }
 
       // reset selectedPlates array
       this.setState({ selectedPlates: [] });
@@ -156,20 +159,27 @@ export default class PlateList extends React.Component {
   }
 
   getPlateList(queryObj) {
-    return this.state.platesData.map(plate => {
+    let filteredPlatesData = [];
+
+    // filter data
+    this.state.platesData.map(plate => {
       // store product names in an array
       const productNames = [];
       plate.forProductList.map(({ productID }) => {
         const product = this.state.productsData.find(
           product => product._id === productID
         );
-        productNames.push(product.name);
+        if (product) {
+          productNames.push(product.name);
+        } else {
+          productNames.push('[삭제된 품목]');
+        }
       });
 
-      let matchQuery = false;
       let matchProductNameQuery = false;
       let matchRoundQuery = false;
       let matchLengthQuery = false;
+      let matchMaterialQuery = false;
 
       // return true if any of product names contain query text
       productNames.forEach(productName => {
@@ -181,30 +191,42 @@ export default class PlateList extends React.Component {
       if (String(plate.round).indexOf(queryObj.round) > -1) {
         matchRoundQuery = true;
       }
+
       if (String(plate.length).indexOf(queryObj.length) > -1) {
         matchLengthQuery = true;
       }
 
-      if (matchProductNameQuery && matchRoundQuery && matchLengthQuery) {
-        matchQuery = true;
+      if (queryObj.plateMaterial === 'both') {
+        matchMaterialQuery = true;
+      } else if (plate.material.indexOf(queryObj.plateMaterial) > -1) {
+        matchMaterialQuery = true;
       }
 
-      // only show product that has matching query text
-      if (matchQuery) {
-        return (
-          <PlateListItem
-            key={plate._id}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
-            plate={plate}
-            productsData={this.state.productsData}
-            onCheckboxChange={this.onCheckboxChange}
-            showPlateModal={this.showPlateModal}
-            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-          />
-        );
+      if (
+        matchProductNameQuery &&
+        matchRoundQuery &&
+        matchLengthQuery &&
+        matchMaterialQuery
+      ) {
+        filteredPlatesData.push(plate);
       }
     });
+
+    // render filtered plates
+    return filteredPlatesData.slice(0, this.state.itemsToShow).map(plate => {
+      return (
+        <PlateListItem
+          key={plate._id}
+          isAdmin={this.state.isAdmin}
+          isManager={this.state.isManager}
+          plate={plate}
+          productsData={this.state.productsData}
+          onCheckboxChange={this.onCheckboxChange}
+          showPlateModal={this.showPlateModal}
+          showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+        />
+      );
+    })
   }
 
   render() {

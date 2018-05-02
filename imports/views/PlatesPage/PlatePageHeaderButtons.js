@@ -24,7 +24,6 @@ export default class PlatePageHeaderButtons extends React.Component {
       isModalNewOpen: false
     };
 
-    this.onSearchExpandClick = this.onSearchExpandClick.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
@@ -38,13 +37,6 @@ export default class PlatePageHeaderButtons extends React.Component {
       productsData: props.productsData,
       platesData: props.platesData
     });
-  }
-
-  onSearchExpandClick() {
-    const plateSearch = document.getElementById('plate-search');
-    const plateSearchExpand = document.getElementById('plate-search-expand');
-    plateSearch.classList.toggle('hidden');
-    plateSearchExpand.classList.toggle('hidden');
   }
 
   onClickNew() {
@@ -103,10 +95,12 @@ export default class PlatePageHeaderButtons extends React.Component {
                       const product = this.state.productsData.find(
                         product => product._id === productID
                       );
-
-                      const productInfoText = `${product.name} (${
-                        product.thick
-                      }x${product.length}x${product.width}) ${printContent}`;
+                      let productInfoText = '';
+                      if (product) {
+                        productInfoText = `${product.name} (${product.thick}x${product.length}x${product.width}) ${printContent}`;
+                      } else {
+                        productInfoText = '[삭제된 품목]';
+                      }
 
                       return productInfoText;
                     })
@@ -138,14 +132,6 @@ export default class PlatePageHeaderButtons extends React.Component {
   render() {
     return (
       <div className="page-header__buttons">
-        <button
-          id="plate-search-toggle"
-          className="button button-with-icon-span page-header__button"
-          onClick={this.onSearchExpandClick}
-        >
-          <i className="fa fa-search-plus" />
-          <span>확장검색</span>
-        </button>
         <button
           className="button button-with-icon-span page-header__button"
           onClick={this.onClickExportExcel}

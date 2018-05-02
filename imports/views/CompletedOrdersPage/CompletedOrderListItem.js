@@ -72,9 +72,7 @@ export default class CompletedOrderListItem extends React.Component {
       listClassName += ' d-3';
     }
 
-    productSizeText = `
-      ${product.thick} x ${product.length} x ${product.width}
-    `;
+    productSizeText = `${product.thick} x ${product.length} x ${product.width}`;
 
     const weight =
       Number(product.thick) *
@@ -103,21 +101,18 @@ export default class CompletedOrderListItem extends React.Component {
         <div className="completed-order-list-item-container">
           <div className="completed-order-list-item__id-container">
             <div className="completed-order-list-item__remark-container">
-              {order.data.deliveredAt && (
-                <span className="completed-order-list-item__text">
-                  출고지시: {order.data.deliveredAt}
-                </span>
-              )}
-              {(!order.data.deliveredAt && order.data.deliverFast) && (
-                <span className="completed-order-list-item__text">
-                  <i className="fa fa-star" /> 지급
-                </span>
-              )}
-              {(!order.data.deliveredAt && order.data.deliverDateStrict) && (
-                <span className="completed-order-list-item__text">
-                  <i className="fa fa-star" /> 납기엄수
-                </span>
-              )}
+              {!order.data.deliveredAt &&
+                order.data.deliverFast && (
+                  <span className="completed-order-list-item__text">
+                    <i className="fa fa-star" /> 지급
+                  </span>
+                )}
+              {!order.data.deliveredAt &&
+                order.data.deliverDateStrict && (
+                  <span className="completed-order-list-item__text">
+                    <i className="fa fa-star" /> 납기엄수
+                  </span>
+                )}
             </div>
 
             <OrderName
@@ -127,9 +122,14 @@ export default class CompletedOrderListItem extends React.Component {
           </div>
 
           <div className="completed-order-list-item__dates-container">
-            <p className="completed-order-list-item__text">
+            {order.data.deliveredAt && (
+              <span className="completed-order-list-item__text">
+                출고지시: {order.data.deliveredAt}
+              </span>
+            )}
+            <span className="completed-order-list-item__text">
               납기일: {order.data.deliverBefore}
-            </p>
+            </span>
           </div>
 
           <div className="completed-order-list-item__product-details-container">
@@ -146,7 +146,9 @@ export default class CompletedOrderListItem extends React.Component {
               />
             </div>
             <div className="completed-order-list-item__size-container">
-              <p className="completed-order-list-item__text">{productSizeText}</p>
+              <p className="completed-order-list-item__text">
+                {productSizeText}
+              </p>
               <p className="completed-order-list-item__text">
                 {completedQuantityText}
               </p>
