@@ -62,19 +62,6 @@
   align-items: center;
   display: flex;
   margin: 0;
-  padding: $space-xs;
-}
-
-.delivery-list-item__productName,
-.delivery-list-item__accountName,
-.delivery-list-item__orderID {
-  color: $grey--900;
-
-  &:hover {
-    color: $color-primary--500;
-    cursor: pointer;
-    text-decoration: underline;
-  }
 }
 
 .delivery-list-item__deliverBy-container {

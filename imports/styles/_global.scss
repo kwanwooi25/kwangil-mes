@@ -1,8 +1,9 @@
 .main {
   background: white;
   box-shadow: $box-shadow--1;
-  margin: $space-xs;
+  margin: $space-xs auto;
   padding: $space-md;
+  max-width: $break--xl;
 
   &.nav-open {
     position: absolute;
@@ -56,10 +57,15 @@
 }
 
 .link {
+  border-bottom: 3px solid transparent;
+  color: $color-primary--700;
+  padding: $space-xs;
+  text-decoration: none;
+
   &:hover {
+    border-bottom: 3px solid $color-primary--500;
     color: $color-primary--300;
     cursor: pointer;
-    text-decoration: underline;
   }
 }
 

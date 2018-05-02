@@ -90,74 +90,76 @@ export default class Header extends React.Component {
             </div>
           </div>
         </div>
-        <nav className="nav">
-          <NavLink
-            className="nav--item"
-            activeClassName="nav--item--active"
-            to="/dashboard"
-            onClick={this.closeNav}
-          >
-            HOME
-          </NavLink>
-          <NavLink
-            className="nav--item"
-            activeClassName="nav--item--active"
-            to="/accounts"
-            onClick={this.closeNav}
-          >
-            거래처목록
-          </NavLink>
-          <NavLink
-            className="nav--item"
-            activeClassName="nav--item--active"
-            to="/products"
-            onClick={this.closeNav}
-          >
-            품목관리
-          </NavLink>
-          <NavLink
-            className="nav--item"
-            activeClassName="nav--item--active"
-            to="/plates"
-            onClick={this.closeNav}
-          >
-            동판관리
-          </NavLink>
-          <NavLink
-            className="nav--item"
-            activeClassName="nav--item--active"
-            to="/orders"
-            onClick={this.closeNav}
-          >
-            주문관리
-          </NavLink>
-          <NavLink
-            className="nav--item"
-            activeClassName="nav--item--active"
-            to="/orders-completed"
-            onClick={this.closeNav}
-          >
-            납품대기목록
-          </NavLink>
-          <NavLink
-            className="nav--item"
-            activeClassName="nav--item--active"
-            to="/delivery"
-            onClick={this.closeNav}
-          >
-            출고관리
-          </NavLink>
-          {this.state.isAdmin && (
+        <div className="nav-container">
+          <nav className="nav">
             <NavLink
               className="nav--item"
               activeClassName="nav--item--active"
-              to="/users"
+              to="/dashboard"
               onClick={this.closeNav}
             >
-              사용자관리
+              HOME
             </NavLink>
-          )}
-        </nav>
+            <NavLink
+              className="nav--item"
+              activeClassName="nav--item--active"
+              to="/accounts"
+              onClick={this.closeNav}
+            >
+              거래처목록
+            </NavLink>
+            <NavLink
+              className="nav--item"
+              activeClassName="nav--item--active"
+              to="/products"
+              onClick={this.closeNav}
+            >
+              품목관리
+            </NavLink>
+            <NavLink
+              className="nav--item"
+              activeClassName="nav--item--active"
+              to="/plates"
+              onClick={this.closeNav}
+            >
+              동판관리
+            </NavLink>
+            <NavLink
+              className="nav--item"
+              activeClassName="nav--item--active"
+              to="/orders"
+              onClick={this.closeNav}
+            >
+              주문관리
+            </NavLink>
+            <NavLink
+              className="nav--item"
+              activeClassName="nav--item--active"
+              to="/orders-completed"
+              onClick={this.closeNav}
+            >
+              납품대기목록
+            </NavLink>
+            <NavLink
+              className="nav--item"
+              activeClassName="nav--item--active"
+              to="/delivery"
+              onClick={this.closeNav}
+            >
+              출고관리
+            </NavLink>
+            {this.state.isAdmin && (
+              <NavLink
+                className="nav--item"
+                activeClassName="nav--item--active"
+                to="/users"
+                onClick={this.closeNav}
+              >
+                사용자관리
+              </NavLink>
+            )}
+          </nav>
+        </div>
       </header>
     );
   }

@@ -189,9 +189,15 @@ export default class AccountModal extends React.Component {
       document.getElementById('name').focus();
     } else if (!this.validate('phone_1', this.state.phone_1)) {
       document.getElementById('phone_1').focus();
-    } else if (!this.validate('email_1', this.state.email_1)) {
+    } else if (
+      this.state.email_1 &&
+      !this.validate('email_1', this.state.email_1)
+    ) {
       document.getElementById('email_1').focus();
-    } else if (!this.validate('email_2', this.state.email_2)) {
+    } else if (
+      this.state.email_2 &&
+      !this.validate('email_2', this.state.email_2)
+    ) {
       document.getElementById('email_2').focus();
     } else {
       if (this.state.mode === 'ADDNEW') {
@@ -281,9 +287,7 @@ export default class AccountModal extends React.Component {
                 id="name"
                 value={this.state.name}
                 onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.nameEmpty && '업체명을 입력하세요.'
-                }
+                errorMessage={this.state.nameEmpty && '업체명을 입력하세요.'}
               />
             </div>
           </div>
@@ -336,9 +340,7 @@ export default class AccountModal extends React.Component {
                 id="fax"
                 value={this.state.fax}
                 onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.faxError && '숫자만 입력 가능합니다.'
-                }
+                errorMessage={this.state.faxError && '숫자만 입력 가능합니다.'}
               />
             </div>
           </div>

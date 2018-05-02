@@ -13,6 +13,8 @@ import noImage from '../../assets/no-image.png';
 export default class ProductDetailView extends React.Component {
   /*=========================================================================
   >> props <<
+  isAdmin
+  isManager
   isOpen
   productID
   onModalClose
@@ -21,11 +23,29 @@ export default class ProductDetailView extends React.Component {
     super(props);
 
     this.state = {
+      isAdmin: false,
+      isManager: false,
       isPlateDetailViewOpen: false,
       selectedPlateID: ''
     };
 
     this.onClickOK = this.onClickOK.bind(this);
+  }
+
+  componentDidMount() {
+    //tracks if the user logged in is admin or manager
+    this.authTracker = Tracker.autorun(() => {
+      if (Meteor.user()) {
+        this.setState({
+          isAdmin: Meteor.user().profile.isAdmin,
+          isManager: Meteor.user().profile.isManager
+        });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.authTracker.stop();
   }
 
   onClickOK(e) {
@@ -181,15 +201,17 @@ export default class ProductDetailView extends React.Component {
                 src={product.printImageURL}
                 onError={e => (e.target.src = noImage)}
               />
-              <div className="image-overlay">
-                <a
-                  className="product-detail__image-link"
-                  href={product.printImageURL}
-                  target="_blank"
-                >
-                  <i className="fa fa-expand" />
-                </a>
-              </div>
+              {product.printImageURL && (
+                <div className="image-overlay">
+                  <a
+                    className="product-detail__image-link"
+                    href={product.printImageURL}
+                    target="_blank"
+                  >
+                    <i className="fa fa-expand" />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -208,11 +230,20 @@ export default class ProductDetailView extends React.Component {
           <p className="product-detail__description">{product.packMemo}</p>
         </div>
 
-        <div className="product-detail__subsection">
-          <h3 className="product-detail__subtitle">관리자 참고사항</h3>
-          <p className="product-detail__description">{priceText}</p>
-          <p className="product-detail__description">{product.memo}</p>
-        </div>
+        {(this.state.isAdmin || this.state.isManager) && (
+          <div className="product-detail__subsection">
+            <h3 className="product-detail__subtitle">관리자 참고사항</h3>
+            <p className="product-detail__description">{priceText}</p>
+            <p className="product-detail__description">{product.memo}</p>
+          </div>
+        )}
+
+        {product.olderHistory && (
+          <div className="product-detail__subsection">
+            <h3 className="product-detail__subtitle">작업이력</h3>
+            <p className="product-detail__description">{product.olderHistory}</p>
+          </div>
+        )}
       </div>
     );
   }

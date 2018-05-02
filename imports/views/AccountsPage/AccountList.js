@@ -103,7 +103,10 @@ export default class AccountList extends React.Component {
     this.state.accountsData.map(account => {
       let matchQuery = false;
       for (let key in account) {
-        if (key !== '_id' && account[key].indexOf(query) > -1) {
+        if (
+          key !== '_id' &&
+          (account[key] && account[key].indexOf(query) > -1)
+        ) {
           matchQuery = true;
         }
       }

@@ -535,516 +535,500 @@ export default class ProductModal extends React.Component {
           </h1>
         </div>
         <form className="boxed-view__content product-modal__content">
-          <div className="accordion-container">
-            <Accordion title="기본정보" />
-            <div className="accordion-panel open">
-              <div className="form-element-group sm50 md60 lg55">
-                <div className="form-element-container lg45">
-                  <div className="form-element__label">
-                    <label htmlFor="accountName">업체명</label>
-                  </div>
-                  <div className="form-elements">
-                    <TextInput
-                      className="form-element"
-                      inputType="text"
-                      id="accountName"
-                      value={this.state.accountName}
-                      onInputChange={this.onInputChange}
-                      listID="accountNameList"
-                      errorMessage={
-                        this.state.accountNameEmpty
-                          ? '업체명을 입력하세요.'
-                          : this.state.accountNameError
-                            ? '존재하지 않는 업체입니다.'
-                            : undefined
-                      }
-                    />
-                    <datalist id="accountNameList">
-                      {this.getAccountNameList()}
-                    </datalist>
-                  </div>
+          <div className="product-modal__subsection">
+            <h3 className="product-modal__subtitle">기본정보</h3>
+            <div className="form-element-group sm50 md60 lg55">
+              <div className="form-element-container lg45">
+                <div className="form-element__label">
+                  <label htmlFor="accountName">업체명</label>
                 </div>
-                <div className="form-element-container lg50">
-                  <div className="form-element__label">
-                    <label htmlFor="name">제품명</label>
-                  </div>
-                  <div className="form-elements">
-                    <TextInput
-                      className="form-element"
-                      inputType="text"
-                      id="name"
-                      value={this.state.name}
-                      onInputChange={this.onInputChange}
-                      errorMessage={
-                        this.state.nameEmpty && '제품명을 입력하세요.'
-                      }
-                    />
-                  </div>
+                <div className="form-elements">
+                  <TextInput
+                    className="form-element"
+                    inputType="text"
+                    id="accountName"
+                    value={this.state.accountName}
+                    onInputChange={this.onInputChange}
+                    listID="accountNameList"
+                    errorMessage={
+                      this.state.accountNameEmpty
+                        ? '업체명을 입력하세요.'
+                        : this.state.accountNameError
+                          ? '존재하지 않는 업체입니다.'
+                          : undefined
+                    }
+                  />
+                  <datalist id="accountNameList">
+                    {this.getAccountNameList()}
+                  </datalist>
+                </div>
+              </div>
+              <div className="form-element-container lg50">
+                <div className="form-element__label">
+                  <label htmlFor="name">제품명</label>
+                </div>
+                <div className="form-elements">
+                  <TextInput
+                    className="form-element"
+                    inputType="text"
+                    id="name"
+                    value={this.state.name}
+                    onInputChange={this.onInputChange}
+                    errorMessage={
+                      this.state.nameEmpty && '제품명을 입력하세요.'
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="form-element-group sm50 md40 lg45">
+              <div className="form-element-container lg60">
+                <div className="form-element__label">
+                  <label htmlFor="thick">규격</label>
+                </div>
+                <div className="form-elements product-modal__size-container">
+                  <TextInput
+                    className="form-element product-modal__size"
+                    inputType="text"
+                    id="thick"
+                    value={this.state.thick}
+                    onInputChange={this.onInputChange}
+                    errorMessage={
+                      this.state.thickEmpty
+                        ? '두께를 입력하세요.'
+                        : this.state.thickError
+                          ? '숫자만 입력 가능합니다.'
+                          : undefined
+                    }
+                  />
+                  <i className="fa fa-times" />
+                  <TextInput
+                    className="form-element product-modal__size"
+                    inputType="text"
+                    id="length"
+                    value={this.state.length}
+                    onInputChange={this.onInputChange}
+                    errorMessage={
+                      this.state.lengthEmpty
+                        ? '길이(원단)를 입력하세요.'
+                        : this.state.lengthError
+                          ? '숫자만 입력 가능합니다.'
+                          : undefined
+                    }
+                  />
+                  <i className="fa fa-times" />
+                  <TextInput
+                    className="form-element product-modal__size"
+                    inputType="text"
+                    id="width"
+                    value={this.state.width}
+                    onInputChange={this.onInputChange}
+                    errorMessage={
+                      this.state.widthEmpty
+                        ? '너비(가공)를 입력하세요.'
+                        : this.state.widthError
+                          ? '숫자만 입력 가능합니다.'
+                          : undefined
+                    }
+                  />
                 </div>
               </div>
 
-              <div className="form-element-group sm50 md40 lg45">
-                <div className="form-element-container lg60">
-                  <div className="form-element__label">
-                    <label htmlFor="thick">규격</label>
-                  </div>
-                  <div className="form-elements product-modal__size-container">
-                    <TextInput
-                      className="form-element product-modal__size"
-                      inputType="text"
-                      id="thick"
-                      value={this.state.thick}
-                      onInputChange={this.onInputChange}
-                      errorMessage={
-                        this.state.thickEmpty
-                          ? '두께를 입력하세요.'
-                          : this.state.thickError
-                            ? '숫자만 입력 가능합니다.'
-                            : undefined
-                      }
-                    />
-                    <i className="fa fa-times" />
-                    <TextInput
-                      className="form-element product-modal__size"
-                      inputType="text"
-                      id="length"
-                      value={this.state.length}
-                      onInputChange={this.onInputChange}
-                      errorMessage={
-                        this.state.lengthEmpty
-                          ? '길이(원단)를 입력하세요.'
-                          : this.state.lengthError
-                            ? '숫자만 입력 가능합니다.'
-                            : undefined
-                      }
-                    />
-                    <i className="fa fa-times" />
-                    <TextInput
-                      className="form-element product-modal__size"
-                      inputType="text"
-                      id="width"
-                      value={this.state.width}
-                      onInputChange={this.onInputChange}
-                      errorMessage={
-                        this.state.widthEmpty
-                          ? '너비(가공)를 입력하세요.'
-                          : this.state.widthError
-                            ? '숫자만 입력 가능합니다.'
-                            : undefined
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="form-element-container lg35">
-                  <div className="form-elements product-modal__isPrint">
-                    <RadioButton
-                      name="isPrint"
-                      label="무지"
-                      value="isPrintFalse"
-                      checked={!this.state.isPrint}
-                      onInputChange={this.onInputChange}
-                    />
-                    <RadioButton
-                      name="isPrint"
-                      label="인쇄"
-                      value="isPrintTrue"
-                      checked={this.state.isPrint}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
+              <div className="form-element-container lg35">
+                <div className="form-elements product-modal__isPrint">
+                  <RadioButton
+                    name="isPrint"
+                    label="무지"
+                    value="isPrintFalse"
+                    checked={!this.state.isPrint}
+                    onInputChange={this.onInputChange}
+                  />
+                  <RadioButton
+                    name="isPrint"
+                    label="인쇄"
+                    value="isPrintTrue"
+                    checked={this.state.isPrint}
+                    onInputChange={this.onInputChange}
+                  />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="accordion-container">
-            <Accordion title="압출" />
-            <div className="accordion-panel open">
-              <div className="form-element-group sm50 md60">
-                <div className="form-element-container lg45">
-                  <div className="form-element__label">
-                    <label htmlFor="extColor">원단색상</label>
-                  </div>
-                  <div className="form-elements">
-                    <TextInput
-                      className="form-element"
-                      inputType="text"
-                      id="extColor"
-                      value={this.state.extColor}
-                      onInputChange={this.onInputChange}
-                      errorMessage={
-                        this.state.extColorEmpty && '원단색상을 입력하세요.'
-                      }
-                    />
-                  </div>
+          <div className="product-modal__subsection">
+            <h3 className="product-modal__subtitle">압출</h3>
+            <div className="form-element-group sm50 md60">
+              <div className="form-element-container lg45">
+                <div className="form-element__label">
+                  <label htmlFor="extColor">원단색상</label>
                 </div>
-                <div className="form-element-container lg50">
-                  <div className="form-elements product-modal__pretreat">
-                    <RadioButton
-                      name="extPretreat"
-                      label="인쇄단면"
-                      value="single"
-                      disabled={!this.state.isPrint}
-                      checked={
-                        this.state.extPretreat === 'single' ? true : false
-                      }
-                      onInputChange={this.onInputChange}
-                    />
-                    <RadioButton
-                      name="extPretreat"
-                      label="인쇄양면"
-                      value="both"
-                      disabled={!this.state.isPrint}
-                      checked={this.state.extPretreat === 'both' ? true : false}
-                      onInputChange={this.onInputChange}
-                    />
-                    <Checkbox
-                      name="extAntistatic"
-                      label="대전방지"
-                      checked={this.state.extAntistatic}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
+                <div className="form-elements">
+                  <TextInput
+                    className="form-element"
+                    inputType="text"
+                    id="extColor"
+                    value={this.state.extColor}
+                    onInputChange={this.onInputChange}
+                    errorMessage={
+                      this.state.extColorEmpty && '원단색상을 입력하세요.'
+                    }
+                  />
                 </div>
               </div>
+              <div className="form-element-container lg50">
+                <div className="form-elements product-modal__pretreat">
+                  <RadioButton
+                    name="extPretreat"
+                    label="인쇄단면"
+                    value="single"
+                    disabled={!this.state.isPrint}
+                    checked={this.state.extPretreat === 'single' ? true : false}
+                    onInputChange={this.onInputChange}
+                  />
+                  <RadioButton
+                    name="extPretreat"
+                    label="인쇄양면"
+                    value="both"
+                    disabled={!this.state.isPrint}
+                    checked={this.state.extPretreat === 'both' ? true : false}
+                    onInputChange={this.onInputChange}
+                  />
+                  <Checkbox
+                    name="extAntistatic"
+                    label="대전방지"
+                    checked={this.state.extAntistatic}
+                    onInputChange={this.onInputChange}
+                  />
+                </div>
+              </div>
+            </div>
 
-              <div className="form-element-group sm50 md40">
-                <div className="form-element-container">
-                  <div className="form-element__label">
-                    <label htmlFor="extMemo">압출참고</label>
-                  </div>
-                  <div className="form-elements">
-                    <Textarea
-                      className="form-element"
-                      id="extMemo"
-                      value={this.state.extMemo}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
+            <div className="form-element-group sm50 md40">
+              <div className="form-element-container">
+                <div className="form-element__label">
+                  <label htmlFor="extMemo">압출참고</label>
+                </div>
+                <div className="form-elements">
+                  <Textarea
+                    className="form-element"
+                    id="extMemo"
+                    value={this.state.extMemo}
+                    onInputChange={this.onInputChange}
+                  />
                 </div>
               </div>
             </div>
           </div>
 
           {this.state.isPrint && (
-            <div className="accordion-container">
-              <Accordion title="인쇄" />
-              <div className="accordion-panel open">
-                <div className="form-element-container upload-area md45 lg35">
-                  <p className="upload-alert">
-                    {this.state.printImageFile ? (
-                      <img id="printImage" src={this.state.printImageFile} />
-                    ) : this.state.printImageURL ? (
-                      <img id="printImage" src={this.state.printImageURL} />
-                    ) : (
-                      <span>클릭하거나 파일 끌어다놓기</span>
-                    )}
-                    <input
-                      type="file"
-                      id="printImageFile"
-                      ref="printImageFile"
-                      name="printImageFile"
-                      onChange={this.onInputChange}
+            <div className="product-modal__subsection">
+              <h3 className="product-modal__subtitle">인쇄</h3>
+              <div className="form-element-container upload-area md45 lg35">
+                <p className="upload-alert">
+                  {this.state.printImageFile ? (
+                    <img id="printImage" src={this.state.printImageFile} />
+                  ) : this.state.printImageURL ? (
+                    <img id="printImage" src={this.state.printImageURL} />
+                  ) : (
+                    <span>클릭하거나 파일 끌어다놓기</span>
+                  )}
+                  <input
+                    type="file"
+                    id="printImageFile"
+                    ref="printImageFile"
+                    name="printImageFile"
+                    onChange={this.onInputChange}
+                  />
+                </p>
+              </div>
+              <div className="form-element-group md50 lg60">
+                <div className="form-element-container">
+                  <div className="form-element__label">
+                    <label>전면</label>
+                  </div>
+                  <div className="form-elements product-modal__print-detail-container">
+                    <TextInput
+                      className="form-element product-modal__color-count"
+                      inputType="text"
+                      id="printFrontColorCount"
+                      value={this.state.printFrontColorCount}
+                      onInputChange={this.onInputChange}
+                      errorMessage={
+                        this.state.printFrontColorCountError &&
+                        '숫자로 입력하세요.'
+                      }
                     />
-                  </p>
+                    <label htmlFor="printFrontColorCount">도, </label>
+                    <label htmlFor="printFrontColor">색상:</label>
+                    <TextInput
+                      className="form-element product-modal__color"
+                      inputType="text"
+                      id="printFrontColor"
+                      value={this.state.printFrontColor}
+                      onInputChange={this.onInputChange}
+                    />
+                    <label htmlFor="printFrontPosition">인쇄위치:</label>
+                    <TextInput
+                      className="form-element product-modal__print-position"
+                      inputType="text"
+                      id="printFrontPosition"
+                      value={this.state.printFrontPosition}
+                      onInputChange={this.onInputChange}
+                    />
+                  </div>
                 </div>
-                <div className="form-element-group md50 lg60">
+
+                {this.state.extPretreat === 'both' && (
                   <div className="form-element-container">
                     <div className="form-element__label">
-                      <label>전면</label>
+                      <label>후면</label>
                     </div>
                     <div className="form-elements product-modal__print-detail-container">
                       <TextInput
                         className="form-element product-modal__color-count"
                         inputType="text"
-                        id="printFrontColorCount"
-                        value={this.state.printFrontColorCount}
+                        id="printBackColorCount"
+                        value={this.state.printBackColorCount}
                         onInputChange={this.onInputChange}
                         errorMessage={
-                          this.state.printFrontColorCountError
-                          && '숫자로 입력하세요.'
+                          this.state.printBackColorCountError &&
+                          '숫자로 입력하세요.'
                         }
                       />
-                      <label htmlFor="printFrontColorCount">도, </label>
-                      <label htmlFor="printFrontColor">색상:</label>
+                      <label htmlFor="printBackColorCount">도, </label>
+                      <label htmlFor="printBackColor">색상:</label>
                       <TextInput
                         className="form-element product-modal__color"
                         inputType="text"
-                        id="printFrontColor"
-                        value={this.state.printFrontColor}
+                        id="printBackColor"
+                        value={this.state.printBackColor}
                         onInputChange={this.onInputChange}
                       />
-                      <label htmlFor="printFrontPosition">인쇄위치:</label>
+                      <label htmlFor="printBackPosition">인쇄위치:</label>
                       <TextInput
                         className="form-element product-modal__print-position"
                         inputType="text"
-                        id="printFrontPosition"
-                        value={this.state.printFrontPosition}
+                        id="printBackPosition"
+                        value={this.state.printBackPosition}
                         onInputChange={this.onInputChange}
                       />
                     </div>
                   </div>
+                )}
 
-                  {this.state.extPretreat === 'both' && (
-                    <div className="form-element-container">
-                      <div className="form-element__label">
-                        <label>후면</label>
-                      </div>
-                      <div className="form-elements product-modal__print-detail-container">
-                        <TextInput
-                          className="form-element product-modal__color-count"
-                          inputType="text"
-                          id="printBackColorCount"
-                          value={this.state.printBackColorCount}
-                          onInputChange={this.onInputChange}
-                          errorMessage={
-                            this.state.printBackColorCountError
-                            && '숫자로 입력하세요.'
-                          }
-                        />
-                        <label htmlFor="printBackColorCount">도, </label>
-                        <label htmlFor="printBackColor">색상:</label>
-                        <TextInput
-                          className="form-element product-modal__color"
-                          inputType="text"
-                          id="printBackColor"
-                          value={this.state.printBackColor}
-                          onInputChange={this.onInputChange}
-                        />
-                        <label htmlFor="printBackPosition">인쇄위치:</label>
-                        <TextInput
-                          className="form-element product-modal__print-position"
-                          inputType="text"
-                          id="printBackPosition"
-                          value={this.state.printBackPosition}
-                          onInputChange={this.onInputChange}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="form-element-container">
-                    <div className="form-element__label">
-                      <label htmlFor="printMemo">인쇄참고</label>
-                    </div>
-                    <div className="form-elements">
-                      <Textarea
-                        className="form-element"
-                        id="printMemo"
-                        value={this.state.printMemo}
-                        onInputChange={this.onInputChange}
-                      />
-                    </div>
+                <div className="form-element-container">
+                  <div className="form-element__label">
+                    <label htmlFor="printMemo">인쇄참고</label>
+                  </div>
+                  <div className="form-elements">
+                    <Textarea
+                      className="form-element"
+                      id="printMemo"
+                      value={this.state.printMemo}
+                      onInputChange={this.onInputChange}
+                    />
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          <div className="accordion-container">
-            <Accordion title="가공" />
-            <div className="accordion-panel open">
-              <div className="form-element-group sm50 md60">
-                <div className="form-element-container">
-                  <div className="form-element__label">
-                    <label />
-                  </div>
-                  <div className="form-elements">
-                    <Checkbox
-                      name="cutUltrasonic"
-                      label="초음파가공"
-                      checked={this.state.cutUltrasonic}
-                      onInputChange={this.onInputChange}
-                    />
-                    <Checkbox
-                      name="cutPowderPack"
-                      label="가루포장"
-                      checked={this.state.cutPowderPack}
-                      onInputChange={this.onInputChange}
-                    />
-                    <Checkbox
-                      name="cutPunches"
-                      label="바람구멍"
-                      checked={this.state.cutPunches}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
+          <div className="product-modal__subsection">
+            <h3 className="product-modal__subtitle">가공</h3>
+            <div className="form-element-group sm50 md60">
+              <div className="form-element-container">
+                <div className="form-element__label">
+                  <label />
                 </div>
-
-                {this.state.cutPunches && (
-                  <div className="form-element-container">
-                    <div className="form-element__label">
-                      <label>바람구멍</label>
-                    </div>
-                    <div className="form-elements product-modal__punch-detail-container">
-                      <TextInput
-                        className="form-element product-modal__punch-count"
-                        inputType="text"
-                        id="cutPunchCount"
-                        value={this.state.cutPunchCount}
-                        onInputChange={this.onInputChange}
-                        errorMessage={
-                          this.state.cutPunchCountError
-                          && '숫자로 입력하세요.'
-                        }
-                      />
-                      <label htmlFor="cutPunchCount">개, </label>
-                      <label htmlFor="cutPunchSize">크기:</label>
-                      <TextInput
-                        className="form-element product-modal__punch-size"
-                        inputType="text"
-                        id="cutPunchSize"
-                        value={this.state.cutPunchSize}
-                        onInputChange={this.onInputChange}
-                      />
-                      <label htmlFor="cutPunchPosition">위치:</label>
-                      <TextInput
-                        className="form-element product-modal__punch-position"
-                        inputType="text"
-                        id="cutPunchPosition"
-                        value={this.state.cutPunchPosition}
-                        onInputChange={this.onInputChange}
-                      />
-                    </div>
-                  </div>
-                )}
+                <div className="form-elements">
+                  <Checkbox
+                    name="cutUltrasonic"
+                    label="초음파가공"
+                    checked={this.state.cutUltrasonic}
+                    onInputChange={this.onInputChange}
+                  />
+                  <Checkbox
+                    name="cutPowderPack"
+                    label="가루포장"
+                    checked={this.state.cutPowderPack}
+                    onInputChange={this.onInputChange}
+                  />
+                  <Checkbox
+                    name="cutPunches"
+                    label="바람구멍"
+                    checked={this.state.cutPunches}
+                    onInputChange={this.onInputChange}
+                  />
+                </div>
               </div>
-              <div className="form-element-group sm50 md40">
+
+              {this.state.cutPunches && (
                 <div className="form-element-container">
                   <div className="form-element__label">
-                    <label htmlFor="cutPosition">가공위치</label>
+                    <label>바람구멍</label>
                   </div>
-                  <div className="form-elements">
+                  <div className="form-elements product-modal__punch-detail-container">
                     <TextInput
-                      className="form-element"
+                      className="form-element product-modal__punch-count"
                       inputType="text"
-                      id="cutPosition"
-                      value={this.state.cutPosition}
+                      id="cutPunchCount"
+                      value={this.state.cutPunchCount}
+                      onInputChange={this.onInputChange}
+                      errorMessage={
+                        this.state.cutPunchCountError && '숫자로 입력하세요.'
+                      }
+                    />
+                    <label htmlFor="cutPunchCount">개, </label>
+                    <label htmlFor="cutPunchSize">크기:</label>
+                    <TextInput
+                      className="form-element product-modal__punch-size"
+                      inputType="text"
+                      id="cutPunchSize"
+                      value={this.state.cutPunchSize}
+                      onInputChange={this.onInputChange}
+                    />
+                    <label htmlFor="cutPunchPosition">위치:</label>
+                    <TextInput
+                      className="form-element product-modal__punch-position"
+                      inputType="text"
+                      id="cutPunchPosition"
+                      value={this.state.cutPunchPosition}
                       onInputChange={this.onInputChange}
                     />
                   </div>
                 </div>
-                <div className="form-element-container">
-                  <div className="form-element__label">
-                    <label htmlFor="cutMemo">가공참고</label>
-                  </div>
-                  <div className="form-elements">
-                    <Textarea
-                      className="form-element"
-                      id="cutMemo"
-                      value={this.state.cutMemo}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
+              )}
+            </div>
+            <div className="form-element-group sm50 md40">
+              <div className="form-element-container">
+                <div className="form-element__label">
+                  <label htmlFor="cutPosition">가공위치</label>
+                </div>
+                <div className="form-elements">
+                  <TextInput
+                    className="form-element"
+                    inputType="text"
+                    id="cutPosition"
+                    value={this.state.cutPosition}
+                    onInputChange={this.onInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-element-container">
+                <div className="form-element__label">
+                  <label htmlFor="cutMemo">가공참고</label>
+                </div>
+                <div className="form-elements">
+                  <Textarea
+                    className="form-element"
+                    id="cutMemo"
+                    value={this.state.cutMemo}
+                    onInputChange={this.onInputChange}
+                  />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="accordion-container">
-            <Accordion title="포장" />
-            <div className="accordion-panel open">
-              <div className="form-element-group sm50">
-                <div className="form-element-container lg50">
-                  <div className="form-element__label">
-                    <label htmlFor="packMaterial">방법</label>
-                  </div>
-                  <div className="form-elements">
-                    <TextInput
-                      className="form-element"
-                      inputType="text"
-                      id="packMaterial"
-                      value={this.state.packMaterial}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
+          <div className="product-modal__subsection">
+            <h3 className="product-modal__subtitle">포장</h3>
+            <div className="form-element-group sm50">
+              <div className="form-element-container lg50">
+                <div className="form-element__label">
+                  <label htmlFor="packMaterial">방법</label>
                 </div>
-                <div className="form-element-container lg45">
-                  <div className="form-element__label">
-                    <label htmlFor="packQuantity">단위</label>
-                  </div>
-                  <div className="form-elements">
-                    <TextInput
-                      className="form-element"
-                      inputType="text"
-                      id="packQuantity"
-                      value={this.state.packQuantity}
-                      onInputChange={this.onInputChange}
-                      errorMessage={
-                        this.state.packQuantityError
-                        && '숫자로 입력하세요.'
-                      }
-                    />
-                  </div>
+                <div className="form-elements">
+                  <TextInput
+                    className="form-element"
+                    inputType="text"
+                    id="packMaterial"
+                    value={this.state.packMaterial}
+                    onInputChange={this.onInputChange}
+                  />
                 </div>
               </div>
-
-              <div className="form-element-group sm50">
-                <div className="form-element-container lg25">
-                  <div className="form-elements product-modal__deliverAll">
-                    <Checkbox
-                      name="packDeliverAll"
-                      label="전량납품"
-                      checked={this.state.packDeliverAll}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
+              <div className="form-element-container lg45">
+                <div className="form-element__label">
+                  <label htmlFor="packQuantity">단위</label>
                 </div>
-                <div className="form-element-container lg70">
-                  <div className="form-element__label">
-                    <label htmlFor="packMemo">포장참고</label>
-                  </div>
-                  <div className="form-elements">
-                    <Textarea
-                      className="form-element"
-                      id="packMemo"
-                      value={this.state.packMemo}
-                      onInputChange={this.onInputChange}
-                    />
-                  </div>
+                <div className="form-elements">
+                  <TextInput
+                    className="form-element"
+                    inputType="text"
+                    id="packQuantity"
+                    value={this.state.packQuantity}
+                    onInputChange={this.onInputChange}
+                    errorMessage={
+                      this.state.packQuantityError && '숫자로 입력하세요.'
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="form-element-group sm50">
+              <div className="form-element-container lg25">
+                <div className="form-elements product-modal__deliverAll">
+                  <Checkbox
+                    name="packDeliverAll"
+                    label="전량납품"
+                    checked={this.state.packDeliverAll}
+                    onInputChange={this.onInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-element-container lg70">
+                <div className="form-element__label">
+                  <label htmlFor="packMemo">포장참고</label>
+                </div>
+                <div className="form-elements">
+                  <Textarea
+                    className="form-element"
+                    id="packMemo"
+                    value={this.state.packMemo}
+                    onInputChange={this.onInputChange}
+                  />
                 </div>
               </div>
             </div>
           </div>
 
           {(this.props.isAdmin || this.props.isManager) && (
-            <div className="accordion-container">
-              <Accordion title="관리자 참고사항" />
-              <div className="accordion-panel open">
-                <div className="form-element-group sm40 lg60">
-                  <div className="form-element-container lg45">
-                    <div className="form-element__label">
-                      <label htmlFor="price">단가</label>
-                    </div>
-                    <div className="form-elements">
-                      <TextInput
-                        className="form-element"
-                        inputType="text"
-                        id="price"
-                        value={this.state.price}
-                        onInputChange={this.onInputChange}
-                        errorMessage={
-                          this.state.priceError && '숫자로 입력하세요.'
-                        }
-                      />
-                    </div>
+            <div className="product-modal__subsection">
+              <h3 className="product-modal__subtitle">관리자 참고사항</h3>
+              <div className="form-element-group sm40 lg60">
+                <div className="form-element-container lg45">
+                  <div className="form-element__label">
+                    <label htmlFor="price">단가</label>
+                  </div>
+                  <div className="form-elements">
+                    <TextInput
+                      className="form-element"
+                      inputType="text"
+                      id="price"
+                      value={this.state.price}
+                      onInputChange={this.onInputChange}
+                      errorMessage={
+                        this.state.priceError && '숫자로 입력하세요.'
+                      }
+                    />
                   </div>
                 </div>
+              </div>
 
-                <div className="form-element-group sm60 lg40">
-                  <div className="form-element-container">
-                    <div className="form-element__label">
-                      <label htmlFor="memo">메모</label>
-                    </div>
-                    <div className="form-elements">
-                      <Textarea
-                        className="form-element"
-                        id="memo"
-                        value={this.state.memo}
-                        onInputChange={this.onInputChange}
-                      />
-                    </div>
+              <div className="form-element-group sm60 lg40">
+                <div className="form-element-container">
+                  <div className="form-element__label">
+                    <label htmlFor="memo">메모</label>
+                  </div>
+                  <div className="form-elements">
+                    <Textarea
+                      className="form-element"
+                      id="memo"
+                      value={this.state.memo}
+                      onInputChange={this.onInputChange}
+                    />
                   </div>
                 </div>
               </div>

@@ -33,7 +33,7 @@ export default class PlateName extends React.Component {
     return (
       <div className={this.props.className + '-container'}>
         <a
-          className={this.props.className}
+          className={'link ' + this.props.className}
           onClick={this.onClick}
         >
           {this.props.plateName}

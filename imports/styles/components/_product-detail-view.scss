@@ -63,12 +63,12 @@
     width: 100%;
     opacity: 0;
     transition: 0.2s ease-in-out;
-    background: $color-primary--200;
+    background: $color-primary--50;
   }
 
   .product-detail__image-link {
     color: white;
-    font-size: 7.5rem;
+    font-size: 5rem;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -77,7 +77,7 @@
     text-align: center;
 
     &:hover {
-      color: $color-primary--500;
+      color: $color-primary--200;
     }
   }
 

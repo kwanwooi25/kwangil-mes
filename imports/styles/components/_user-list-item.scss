@@ -23,19 +23,25 @@
 }
 
 .user-list-item__user-detail-container {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
+  flex-direction: column;
   flex-grow: 1;
   justify-content: space-between;
-  padding: 0 $space-sm;
+  padding: 0 $space-xs;
+
+  span {
+    padding: $space-xs;
+  }
 
   span:first-child {
     font-size: $font-size--lg;
     font-weight: $font-weight--bold;
+    padding-top: $space-sm;
   }
 
-  span {
-    width: 25%;
+  span:last-child {
+    padding-bottom: $space-sm;
   }
 }
 
@@ -53,7 +59,13 @@
 
 @media (min-width: $break--sm) {
   .user-list-item__user-detail-container {
+    align-items: center;
+    flex-direction: row;
     max-width: 70%;
+
+    span {
+      width: 25%;
+    }
   }
 }
 

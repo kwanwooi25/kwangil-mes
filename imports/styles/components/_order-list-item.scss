@@ -132,20 +132,13 @@
 .order-list__accountName-container,
 .order-list__orderID-container {
   margin: 0;
-  padding: $space-xs;
+  padding: $space-xs 0;
 }
 
 .order-list__productName,
 .order-list__accountName,
 .order-list__orderID {
-  color: $grey--900;
   font-size: $font-size--md;
-
-  &:hover {
-    color: $color-primary--500;
-    cursor: pointer;
-    text-decoration: underline;
-  }
 }
 
 .order-list__productName {

@@ -65,17 +65,24 @@ export default class AccountListItem extends React.Component {
             accountName={account.name}
           />
           <div className="account-contact-container">
-            <a className="account-phone" href={`tel:${account.phone_1}`}>
-              {account.phone_1 && <i className="fa fa-phone" />}
-              {account.phone_1}
-            </a>
-            <a className="account-fax">
-              {account.fax && <i className="fa fa-fax" />}
-              {account.fax}
-            </a>
+            {account.phone_1 && (
+              <a className="link account-phone" href={`tel:${account.phone_1}`}>
+                <i className="fa fa-phone" />
+                <span> {account.phone_1}</span>
+              </a>
+            )}
+
+            {account.fax && (
+              <a className="link account-fax">
+                <i className="fa fa-fax" />
+                <span> {account.fax}</span>
+              </a>
+            )}
+
             {account.email_1 && (
-              <a className="account-email" href={`mailto:${account.email_1}`}>
-                <i className="fa fa-envelope" /> {account.email_1}
+              <a className="link account-email" href={`mailto:${account.email_1}`}>
+                <i className="fa fa-envelope" />
+                <span> {account.email_1}</span>
               </a>
             )}
           </div>

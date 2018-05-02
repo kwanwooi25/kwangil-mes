@@ -90,19 +90,7 @@
   align-items: center;
   display: flex;
   margin: 0;
-  padding: $space-xs;
-}
-
-.completed-order-list-item__productName,
-.completed-order-list-item__accountName,
-.completed-order-list-item__orderID {
-  color: $grey--900;
-
-  &:hover {
-    color: $color-primary--500;
-    cursor: pointer;
-    text-decoration: underline;
-  }
+  padding: $space-xs 0;
 }
 
 .completed-order-list-item__buttons-container {

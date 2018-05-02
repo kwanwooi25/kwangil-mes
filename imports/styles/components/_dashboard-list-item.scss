@@ -1,8 +1,16 @@
+#dashboard-list {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: $space-xs;
+}
+
 .dashboard-list-item {
   background: $color-primary--50;
   border-radius: $border-radius;
   box-shadow: $box-shadow--1;
-  margin: $space-md 0 $space-lg;
+  margin: $space-md 0;
 }
 
 .dashboard-list-item__title {
@@ -10,11 +18,17 @@
   border-top-left-radius: $border-radius;
   border-top-right-radius: $border-radius;
   color: white;
-  font-size: $font-size--lg;
+  font-size: $font-size--xl;
   font-weight: $font-weight--bold;
   margin: 0;
   padding: $space-md;
   text-align: center;
+}
+
+.dashboard-list-item__subtitle {
+  font-size: $font-size--lg;
+  text-align: center;
+  width: 100%;
 }
 
 .dashboard-list-item__content {
@@ -23,7 +37,7 @@
   border-bottom-right-radius: $border-radius;
   display: flex;
   flex-wrap: wrap;
-  padding: $space-md;
+  padding: $space-sm;
 
   p {
     margin: 0;
@@ -52,7 +66,7 @@
 }
 
 .dashboard-list-item__large-number {
-  font-size: $font-size--xl * 3;
+  font-size: $font-size--xl * 2;
   font-weight: $font-weight--bold;
 }
 
@@ -61,19 +75,72 @@
   font-weight: $font-weight--bold;
 }
 
+.incompleteOrders-container {
+  width: 100%;
+}
+
+.completedOrders-container {
+  width: 48%;
+}
+
+.deliveryOrders-container {
+  width: 48%;
+}
+
+.needPlateProducts-container {
+  width: 100%;
+}
+
 .needPlateProducts {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .needPlateProducts-list-item {
-
+  padding: $space-xs;
+  margin-bottom: $space-xs;
 }
 
-.dashboard-list-item__productName {
-  &:hover {
-    color: $color-primary--300;
-    cursor: pointer;
+.dashboard-list-item__productName-container {
+  text-align: left;
+}
+
+@media (min-width: $break--sm) {
+  .incompleteOrders-container {
+    width: 58%;
+  }
+
+  .completedOrders-container {
+    width: 38%;
+  }
+
+  .deliveryOrders-container {
+    width: 36%;
+  }
+
+  .needPlateProducts-container {
+    width: 60%;
+  }
+}
+
+@media (min-width: $break--md) {
+  .incompleteOrders-container {
+    width: 40%;
+  }
+
+  .completedOrders-container {
+    width: 28%;
+  }
+
+  .deliveryOrders-container {
+    width: 28%;
+  }
+
+  .needPlateProducts-container {
+    width: auto;
   }
 }

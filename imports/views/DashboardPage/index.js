@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import { setLayout } from '../../api/setLayout';
@@ -17,7 +18,7 @@ export default class DashboardPage extends React.Component {
     this.state = {
       ordersData: [],
       isDataReady: false
-    }
+    };
   }
 
   componentDidMount() {
@@ -67,34 +68,46 @@ export default class DashboardPage extends React.Component {
     incompleteCount = extrudingCount + printingCount + cuttingCount;
 
     return (
-      <li className="dashboard-list-item">
+      <li className="dashboard-list-item incompleteOrders-container">
         <h3 className="dashboard-list-item__title">작업중 목록</h3>
         <div className="dashboard-list-item__content">
           <div className="dashboard-list-item__content-50">
             <p>
-              <a className="dashboard-list-item__large-number link">{incompleteCount}</a>건
+              <Link
+                className="dashboard-list-item__large-number link"
+                to="/orders"
+              >
+                {incompleteCount}
+              </Link>
+              <span>건</span>
             </p>
           </div>
           <div className="dashboard-list-item__content-50">
             <p>
               <span>압출중 </span>
-              <a className="dashboard-list-item__small-number">{extrudingCount}</a>
+              <a className="dashboard-list-item__small-number">
+                {extrudingCount}
+              </a>
               <span> 건</span>
             </p>
             <p>
               <span>인쇄중 </span>
-              <a className="dashboard-list-item__small-number">{printingCount}</a>
+              <a className="dashboard-list-item__small-number">
+                {printingCount}
+              </a>
               <span> 건</span>
             </p>
             <p>
               <span>가공중 </span>
-              <a className="dashboard-list-item__small-number">{cuttingCount}</a>
+              <a className="dashboard-list-item__small-number">
+                {cuttingCount}
+              </a>
               <span> 건</span>
             </p>
           </div>
         </div>
       </li>
-    )
+    );
   }
 
   getNeedPlateSummary() {
@@ -111,20 +124,24 @@ export default class DashboardPage extends React.Component {
     });
 
     return (
-      <li className="dashboard-list-item">
+      <li className="dashboard-list-item needPlateProducts-container">
         <h3 className="dashboard-list-item__title">동판 제작 필요 품목</h3>
         <div className="dashboard-list-item__content">
-          <div className="dashboard-list-item__content-25">
+          <div className="dashboard-list-item__content-100">
             <p>
-              <a className="dashboard-list-item__large-number">{needPlateCount}</a>
-              개 품목
+              <a className="dashboard-list-item__large-number">
+                {needPlateCount}
+              </a>
+              <span>개 품목</span>
             </p>
           </div>
-          <div className="dashboard-list-item__content-75">
+          <div className="dashboard-list-item__content-100">
             <ul className="needPlateProducts">
               {needPlateProducts.map(productID => {
                 const product = ProductsData.findOne({ _id: productID });
-                const productSize = ` ${product.thick}x${product.length}x${product.width}`;
+                const productSize = ` ${product.thick}x${product.length}x${
+                  product.width
+                }`;
                 return (
                   <li key={productID} className="needPlateProducts-list-item">
                     <ProductName
@@ -133,13 +150,13 @@ export default class DashboardPage extends React.Component {
                       productName={product.name + productSize}
                     />
                   </li>
-                )
+                );
               })}
             </ul>
           </div>
         </div>
       </li>
-    )
+    );
   }
 
   getCompletedOrdersSummary() {
@@ -152,18 +169,23 @@ export default class DashboardPage extends React.Component {
     });
 
     return (
-      <li className="dashboard-list-item">
+      <li className="dashboard-list-item completedOrders-container">
         <h3 className="dashboard-list-item__title">납품대기 목록</h3>
         <div className="dashboard-list-item__content">
           <div className="dashboard-list-item__content-100">
             <p>
-              <a className="dashboard-list-item__large-number link">{completedCount}</a>
+              <Link
+                className="dashboard-list-item__large-number link"
+                to="/orders-completed"
+              >
+                {completedCount}
+              </Link>
               건
             </p>
           </div>
         </div>
       </li>
-    )
+    );
   }
 
   getDeliveryOrderSummary() {
@@ -174,21 +196,31 @@ export default class DashboardPage extends React.Component {
     let etcCount = 0;
 
     delivery = DeliveryData.findOne({ _id: today });
-    delivery.orderList.map(({ deliverBy }) => {
-      if (deliverBy === 'direct') {
-        directCount++;
-      } else if (deliverBy === 'post') {
-        postCount++;
-      } else {
-        etcCount++;
-      }
-    });
+
+    if (delivery) {
+      delivery.orderList.map(({ deliverBy }) => {
+        if (deliverBy === 'direct') {
+          directCount++;
+        } else if (deliverBy === 'post') {
+          postCount++;
+        } else {
+          etcCount++;
+        }
+      });
+    }
 
     return (
-      <li className="dashboard-list-item">
+      <li className="dashboard-list-item deliveryOrders-container">
         <h3 className="dashboard-list-item__title">금일 출고건</h3>
         <div className="dashboard-list-item__content">
-          <p>{moment().format('YYYY년 MM월 DD일')}</p>
+          <p className="dashboard-list-item__subtitle">
+            <Link
+              className="link"
+              to="/delivery"
+            >
+              {moment().format('YYYY년 MM월 DD일')}
+            </Link>
+          </p>
           <div className="dashboard-list-item__content-100">
             <p>
               <span>직납 </span>
@@ -208,7 +240,7 @@ export default class DashboardPage extends React.Component {
           </div>
         </div>
       </li>
-    )
+    );
   }
 
   render() {
@@ -223,17 +255,7 @@ export default class DashboardPage extends React.Component {
         <div className="page-content">
           <div className="list-container">
             <ul id="dashboard-list" className="list">
-              {this.state.isDataReady ? (
-                this.getOrdersSummary()
-              ) : (
-                <Spinner />
-              )}
-
-              {this.state.isDataReady ? (
-                this.getNeedPlateSummary()
-              ) : (
-                <Spinner />
-              )}
+              {this.state.isDataReady ? this.getOrdersSummary() : <Spinner />}
 
               {this.state.isDataReady ? (
                 this.getCompletedOrdersSummary()
@@ -247,10 +269,15 @@ export default class DashboardPage extends React.Component {
                 <Spinner />
               )}
 
+              {this.state.isDataReady ? (
+                this.getNeedPlateSummary()
+              ) : (
+                <Spinner />
+              )}
             </ul>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }

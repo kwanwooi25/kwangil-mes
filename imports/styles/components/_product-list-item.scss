@@ -42,18 +42,18 @@
   color: $grey--600;
 
   i {
-    font-size: $font-size--xs;
+    font-size: $font-size--sm;
   }
 }
 
 .product-accountName-container,
 .product-productName-container {
-  padding: $space-xs;
+  padding: $space-xs 0;
 }
 
 .product-accountName,
 .product-accountName-error {
-  font-size: $font-size--sm;
+  font-size: $font-size--md;
 }
 
 .product-accountName-error {
@@ -61,22 +61,15 @@
 }
 
 .product-productName {
-  font-size: $font-size--md;
+  font-size: $font-size--lg;
   font-weight: $font-weight--bold;
-}
-
-.product-accountName:hover,
-.product-productName:hover {
-  color: $color-primary--500;
-  cursor: pointer;
-  text-decoration: underline;
 }
 
 .product-size__thick,
 .product-size__length,
 .product-size__width,
 .product-isPrint {
-  font-size: $font-size--sm;
+  font-size: $font-size--md;
   margin: 0;
   padding: $space-xs;
 }

@@ -47,13 +47,6 @@
 .plate-list-item__plateSize {
   font-size: $font-size--lg;
   font-weight: $font-weight--bold;
-  padding: $space-xs;
-
-  &:hover {
-    color: $color-primary--500;
-    cursor: pointer;
-    text-decoration: underline;
-  }
 }
 
 .plate-list-item__forProductListItem {
@@ -77,12 +70,6 @@
 
 .plate-list-item__forProductName {
   font-size: $font-size--md;
-
-  &:hover {
-    color: $color-primary--500;
-    cursor: pointer;
-    text-decoration: underline;
-  }
 
   &-error {
     color: $grey--500;
