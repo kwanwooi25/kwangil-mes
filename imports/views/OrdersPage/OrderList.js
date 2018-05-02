@@ -214,7 +214,8 @@ export default class OrderList extends React.Component {
         isPrintMatch = true;
       }
 
-      if (order.data.isCompleted === queryObj.showCompletedOrder) {
+      if (!order.data.isCompleted ||
+        (order.data.isCompleted && queryObj.showCompletedOrder)) {
         showCompletedMatch = true;
       }
 

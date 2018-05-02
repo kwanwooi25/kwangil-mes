@@ -12,9 +12,11 @@ import noImage from '../assets/no-image.png';
 export const printDeliveryOrder = deliveryID => {
   let filename = `출고지시서_${deliveryID}`;
   let textObjArray = [];
+  let docContent = [];
   let directArray = [];
+  let directTableBody = [];
   let postArray = [];
-  let etcArray = [];
+  let postTableBody = [];
 
   const delivery = DeliveryData.findOne({ _id: deliveryID });
 
@@ -39,52 +41,37 @@ export const printDeliveryOrder = deliveryID => {
 
   // categorize by delivery method
   textObjArray.map(textObj => {
-    if (textObj.deliverBy === '직납') {
-      directArray.push(textObj);
-    } else if (textObj.deliverBy === '택배') {
+    if (textObj.deliverBy === '택배') {
       postArray.push(textObj);
     } else {
-      etcArray.push(textObj);
+      directArray.push(textObj);
     }
   });
 
-  console.log('directArray: ', directArray);
-  console.log('postArray: ', postArray);
-  console.log('etcArray: ', etcArray);
+  // docContent for direct delivery
+  if (directArray.length > 0) {
+    directArray.map(textObj => {
+      directTableBody.push(getTableBody(textObj));
+    });
+    docContent.push(getDocContent(deliveryID, '출고지시서 (직납)', directTableBody));
+  }
 
-  // selectedOrders.map((orderID, index) => {
-  //   filename += `_${orderID}`;
-  //
-  //   const order = OrdersData.findOne({ _id: orderID });
-  //   const product = ProductsData.findOne({ _id: order.data.productID });
-  //
-  //   getTextForDocContent(order, product).then(res => {
-  //     docContent.push(getDocContent(res, product.isPrint));
-  //     ordersCount++;
-  //
-  //     // when last order added to docContent
-  //     if (selectedOrders.length === ordersCount) {
-  //       // sort docContent by orderID
-  //       docContent.sort((a, b) => {
-  //         const a_orderID = a[0].table.body[0][0].text;
-  //         const b_orderID = b[0].table.body[0][0].text;
-  //         if (a_orderID > b_orderID) return 1;
-  //         if (a_orderID < b_orderID) return -1;
-  //         return 0;
-  //       });
-  //
-  //       // add pagebreak between each order except the last one
-  //       for (let i = 0; i < selectedOrders.length - 1; i++) {
-  //         console.log(docContent[i]);
-  //         docContent[i+1][0].pageBreak = 'before';
-  //       }
-  //
-  //       // generate PDF and open
-  //       const docDefinition = getDocDefinition(filename, docContent);
-  //       openPDF(docDefinition);
-  //     }
-  //   });
-  // });
+  // docContent for post
+  if (postArray.length > 0) {
+    postArray.map(textObj => {
+      postTableBody.push(getTableBody(textObj));
+    });
+    docContent.push(getDocContent(deliveryID, '출고지시서 (택배)', postTableBody));
+  }
+
+  // add pageBreak between both docContent
+  if (docContent.length === 2) {
+    docContent[1][0].pageBreak = 'before';
+  }
+
+  // generate PDF and open
+  const docDefinition = getDocDefinition(filename, docContent);
+  openPDF(docDefinition);
 };
 
 const openPDF = docDefinition => {
@@ -110,7 +97,11 @@ const openPDF = docDefinition => {
 };
 
 const getTextForDocContent = (order, deliverBy, product, account) => {
-  let productSize = `${product.thick} x ${product.length} x ${product.width}`;
+  let productSize = `${product.thick}x${product.length}x${product.width}`;
+  let plateStatus =
+    order.data.plateStatus === 'confirm' ? '확인' :
+      order.data.plateStatus === 'edit' ? '수정' :
+        order.data.plateStatus === 'new' ? '신규' : '';
   let weight =
     Number(product.thick) *
     (Number(product.length) + 5) *
@@ -123,7 +114,9 @@ const getTextForDocContent = (order, deliverBy, product, account) => {
     accountName: account.name,
     productName: product.name,
     productSize,
-    quantity: `${comma(order.data.completedQuantity)}매`,
+    orderQuantity: `${comma(order.data.orderQuantity)}매`,
+    plateStatus,
+    completedQuantity: `${comma(order.data.completedQuantity)}매`,
     weight: `${comma(weight.toFixed(0))}kg`,
     deliverBy
   };
@@ -131,185 +124,67 @@ const getTextForDocContent = (order, deliverBy, product, account) => {
   return textObj;
 };
 
-const getDocContent = (textObj, isPrint) => {
-  let docContent = [
+const getTableBody = (textObj) => {
+  const {
+    deliverBy,
+    accountName,
+    productName,
+    productSize,
+    orderQuantity,
+    plateStatus,
+    completedQuantity
+  } = textObj;
+
+  return [
+    { text: deliverBy, style: 'tableCell' },
+    { text: accountName, style: 'tableCell' },
+    { text: productName, style: 'tableCell' },
+    { text: productSize, style: 'tableCell' },
+    { text: orderQuantity, style: 'tableCell' },
+    { text: plateStatus, style: 'tableCell' },
+    { text: completedQuantity, style: 'tableCell' },
+    {}
+  ]
+}
+
+const getDocContent = (deliveryID, title, tableBody) => {
+
+  // insert table header
+  tableBody.unshift([
+    { text: '구분', style: 'tableHeader' },
+    { text: '업체명', style: 'tableHeader' },
+    { text: '제품명', style: 'tableHeader' },
+    { text: '규격', style: 'tableHeader' },
+    { text: '주문수량', style: 'tableHeader' },
+    { text: '동판', style: 'tableHeader' },
+    { text: '완성수량', style: 'tableHeader' },
+    { text: '박스수', style: 'tableHeader' }
+  ]);
+
+  return [
     {
       layout: 'noBorders',
       table: {
-        widths: ['23%', '*', '23%'],
+        // 공란, 제목, 출고일
+        widths: [ '25%', '*', '25%' ],
         body: [
           [
-            { rowSpan: 2, text: textObj.orderIDText, style: 'orderNo' },
-            { text: '작업지시서', style: 'title' },
-            {
-              text: textObj.deliverRemarkText,
-              style: 'deliverRemark'
-            }
-          ],
-          [
             {},
-            {
-              colSpan: 2,
-              text: textObj.orderedAtText,
-              style: 'orderedAt'
-            },
-            {}
+            { text: title, style: 'docTitle' },
+            { text: `출고일: ${deliveryID}`, style: 'date' }
           ]
         ]
       }
     },
     {
-      style: 'table',
       table: {
-        widths: ['33%', '21%', '34%', '12%'],
-        body: [
-          [
-            { rowSpan: 2, text: textObj.sizeText, style: 'productSize' },
-            {
-              text: textObj.orderQuantityText,
-              style: 'orderQuantity',
-              border: [true, true, true, false]
-            },
-            { text: textObj.productName, style: 'productName' },
-            {
-              rowSpan: 2,
-              text: textObj.deliverBeforeText,
-              style: 'deliverBefore'
-            }
-          ],
-          [
-            {},
-            {
-              text: textObj.orderQuantityWeightText,
-              style: 'orderQuantityWeight',
-              border: [true, false, true, true]
-            },
-            { text: textObj.accountName, style: 'accountName' },
-            {}
-          ]
-        ]
-      }
-    },
-    {
-      style: 'table',
-      table: {
-        widths: ['14%', '19%', '5%', '9%', '20%', '9%', '24%'],
-        heights: ['auto', 60, 60, 50, 20, 20, 20],
-        body: [
-          [
-            { colSpan: 2, text: '압출부', style: 'workOrderHeader' },
-            {},
-            { colSpan: 3, text: '인쇄부', style: 'workOrderHeader' },
-            {},
-            {},
-            { colSpan: 2, text: '가공부', style: 'workOrderHeader' },
-            {}
-          ],
-          [
-            {
-              rowSpan: 4,
-              colSpan: 2,
-              text: textObj.extDetailsText,
-              style: 'workOrderBody'
-            },
-            {},
-            { text: '전\n면', style: 'workOrderHeader', margin: [0, 15] },
-            {
-              colSpan: 2,
-              text: textObj.printFrontText,
-              style: 'workOrderBody'
-            },
-            {},
-            {
-              rowSpan: 2,
-              colSpan: 2,
-              text: textObj.cutDetailsText,
-              style: 'workOrderBody'
-            },
-            {}
-          ],
-          [
-            {},
-            {},
-            { text: '후\n면', style: 'workOrderHeader', margin: [0, 15] },
-            {
-              colSpan: 2,
-              text: textObj.printBackText,
-              style: 'workOrderBody'
-            },
-            {},
-            {},
-            {}
-          ],
-          [
-            {},
-            {},
-            {
-              colSpan: 3,
-              text: textObj.printMemoText,
-              style: 'workOrderBody'
-            },
-            {},
-            {},
-            {
-              rowSpan: 2,
-              text: '포장',
-              style: 'workOrderHeader',
-              margin: [0, 30]
-            },
-            {
-              rowSpan: 2,
-              text: textObj.packDetailsText,
-              style: 'workOrderBody'
-            }
-          ],
-          [
-            {},
-            {},
-            {
-              colSpan: 2,
-              text: textObj.plateStatusText,
-              style: 'workOrderBody'
-            },
-            {},
-            {
-              /* plate location goes here */
-            },
-            {},
-            {}
-          ],
-          [
-            { text: '작업참고', style: 'workOrderHeader' },
-            {
-              colSpan: 6,
-              text: textObj.workMemo,
-              style: 'workOrderMemo'
-            }
-          ],
-          [
-            { text: '납품참고', style: 'workOrderHeader' },
-            {
-              colSpan: 6,
-              text: textObj.deliverMemo,
-              style: 'workOrderMemo'
-            }
-          ]
-        ]
+        // 구분, 업체명, 제품명, 규격, 주문수량, 동판, 완성수량, 박스수
+        widths: ['6%', '17%', '28%', '14%', '11%', '5%', '13%', '6%'],
+        body: tableBody,
       }
     }
-  ];
-
-  // add product image if exist
-  if (isPrint) {
-    docContent.push({
-      image: textObj.productImage,
-      fit: [515, 300],
-      alignment: 'center'
-    });
-  }
-
-  return docContent;
-};
+  ]
+}
 
 const getDocDefinition = (filename, docContent) => {
   return {
@@ -324,78 +199,26 @@ const getDocDefinition = (filename, docContent) => {
     },
 
     styles: {
-      table: {
-        margin: [0, 0, 0, 10]
-      },
-      title: {
-        fontSize: 24,
+      docTitle: {
+        fontSize: 20,
         bold: true,
+        margin: 10,
         alignment: 'center'
       },
-      orderNo: {
-        fontSize: 30,
-        bold: true,
-        margin: [10, 20, 0, 0]
-      },
-      deliverRemark: {
-        fontSize: 18,
-        bold: true,
-        background: '#555',
-        color: '#fff',
+      date: {
         alignment: 'right',
-        margin: 5
+        margin: [0, 30, 0, 0]
       },
-      orderedAt: {
-        alignment: 'right',
-        margin: 3
-      },
-      productSize: {
-        fontSize: 18,
-        bold: true,
-        alignment: 'center',
-        margin: [2, 15]
-      },
-      orderQuantity: {
-        fontSize: 16,
-        bold: true,
-        alignment: 'center',
-        margin: [5, 5, 5, 0]
-      },
-      productName: {
-        fontSize: 12,
-        alignment: 'center',
-        margin: [3, 8]
-      },
-      deliverBefore: {
-        fontSize: 18,
-        bold: true,
-        alignment: 'center',
-        margin: [3, 15]
-      },
-      orderQuantityWeight: {
-        fontSize: 12,
-        alignment: 'center',
-        margin: [5, 0, 5, 5]
-      },
-      accountName: {
+      tableHeader: {
         fontSize: 9,
-        alignment: 'center',
-        margin: 3
-      },
-      workOrderHeader: {
-        fontSize: 12,
         bold: true,
-        alignment: 'center',
-        margin: 3
+        margin: [0, 5],
+        alignment: 'center'
       },
-      workOrderBody: {
-        fontSize: 12,
-        alignment: 'center',
-        margin: 3
-      },
-      workOrderRemark: {
-        fontSize: 12,
-        margin: 3
+      tableCell: {
+        fontSize: 9,
+        margin: [0, 5],
+        alignment: 'center'
       }
     }
   };

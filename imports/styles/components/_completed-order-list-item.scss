@@ -50,8 +50,9 @@
 }
 
 .completed-order-list-item__id-container {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
+  flex-direction: column;
   width: 40%;
 }
 
@@ -175,7 +176,8 @@
   }
 
   .completed-order-list-item__dates-container {
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
     width: 16%;
   }
 

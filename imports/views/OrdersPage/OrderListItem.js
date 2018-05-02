@@ -160,6 +160,11 @@ export default class OrderListItem extends React.Component {
                 <i className="fa fa-star" /> 납기엄수
               </span>
             )}
+            {order.data.isDelivered && (
+              <span className="order-list__text">
+                [납품완료] {order.data.deliveredAt}
+              </span>
+            )}
 
             <OrderName className="order-list__orderID" orderID={order._id} />
           </div>

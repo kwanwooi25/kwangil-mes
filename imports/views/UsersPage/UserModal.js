@@ -19,7 +19,6 @@ export default class UserModal extends React.Component {
 
     if (props.userID) {
       const user = Meteor.users.findOne({ _id: props.userID });
-      console.log(user);
       // EDIT mode
       initialState = {
         mode:
@@ -33,7 +32,10 @@ export default class UserModal extends React.Component {
         displayName: user.profile.displayName,
         department: user.profile.department,
         position: user.profile.position,
-        role: user.profile.isManager ? 'manager' : 'user',
+        role:
+          user.profile.isManager
+          ? 'manager'
+          : user.profile.isAdmin ? 'admin' : 'user',
         isConfirmationModalOpen: false,
         confirmationTitle: '',
         confirmationDescription: [],
@@ -368,9 +370,11 @@ export default class UserModal extends React.Component {
                   name="role"
                   value={this.state.role}
                   onChange={this.onInputChange}
+                  disabled={this.state.role === 'admin'}
                 >
                   <option value="user">사용자</option>
                   <option value="manager">관리자</option>
+                  <option value="admin" disabled>최종관리자</option>
                 </select>
               </div>
             </div>

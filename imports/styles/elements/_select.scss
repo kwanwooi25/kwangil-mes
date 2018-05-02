@@ -19,4 +19,10 @@
     color: $color-error--500;
     margin-bottom: 0.1rem;
   }
+
+  &:disabled {
+    background: $grey--50;
+    border: 1px solid $grey--500;
+    color: $grey--500;
+  }
 }

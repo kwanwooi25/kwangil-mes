@@ -17,4 +17,10 @@
     border: 1px solid $color-error--500;
     color: $color-error--500;
   }
+
+  &:disabled {
+    background: $grey--50;
+    border: 1px solid $grey--500;
+    color: $grey--500;
+  }
 }
