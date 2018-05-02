@@ -170,5 +170,6 @@ export default class CompletedOrderListItem extends React.Component {
         )}
       </li>
     );
+
   }
 }

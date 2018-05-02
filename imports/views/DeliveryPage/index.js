@@ -48,15 +48,19 @@ export default class DeliveryPage extends React.Component {
 
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
-      Meteor.subscribe('orders');
+      const accountsSubscription = Meteor.subscribe('accounts');
+      const productsSubscription = Meteor.subscribe('products');
+      const ordersSubscription = Meteor.subscribe('orders');
       const deliverySubscription = Meteor.subscribe('delivery');
       const accountsData = AccountsData.find().fetch();
       const productsData = ProductsData.find().fetch();
       const ordersData = OrdersData.find().fetch();
       const deliveryData = DeliveryData.find().fetch();
-      const isDataReady = deliverySubscription.ready();
+      const isDataReady =
+        accountsSubscription.ready() &&
+        productsSubscription.ready() &&
+        ordersSubscription.ready() &&
+        deliverySubscription.ready();
 
       this.setState({
         accountsData,

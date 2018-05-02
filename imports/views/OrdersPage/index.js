@@ -55,13 +55,16 @@ export default class OrdersPage extends React.Component {
 
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
+      const accountsSubscription = Meteor.subscribe('accounts');
+      const productsSubscription = Meteor.subscribe('products');
       const ordersSubscription = Meteor.subscribe('orders');
       const accountsData = AccountsData.find().fetch();
       const productsData = ProductsData.find().fetch();
       const ordersData = OrdersData.find().fetch();
-      const isDataReady = ordersSubscription.ready();
+      const isDataReady =
+        accountsSubscription.ready() &&
+        productsSubscription.ready() &&
+        ordersSubscription.ready();
 
       this.setState({ accountsData, productsData, ordersData, isDataReady });
     });

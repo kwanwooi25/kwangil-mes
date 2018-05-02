@@ -10,7 +10,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 =============================================*/
 import LoginPage from '../views/LoginPage';
 import Header from '../views/components/Header';
-// import DashboardPage from '../views/DashboardPage';
+import DashboardPage from '../views/DashboardPage';
 import AccountsPage from '../views/AccountsPage';
 import ProductsPage from '../views/ProductsPage';
 import PlatesPage from '../views/PlatesPage';
@@ -22,8 +22,6 @@ import NotFoundPage from '../views/NotFoundPage';
 
 const unauthenticatedPages = ['/'];
 const authenticatedPages = ['/dashboard', '/accounts', '/products', '/plates', '/orders', '/orders-completed', '/delivery', '/users'];
-
-const DashboardPage = () => <h3>DashboardPage</h3>;
 
 export const routes = (
   <BrowserRouter>

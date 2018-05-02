@@ -49,13 +49,16 @@ export default class PlatesPage extends React.Component {
 
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      Meteor.subscribe('accounts');
-      Meteor.subscribe('products');
+      const accountsSubscription = Meteor.subscribe('accounts');
+      const productsSubscription = Meteor.subscribe('products');
       const platesSubscription = Meteor.subscribe('plates');
       const accountsData = AccountsData.find().fetch();
       const productsData = ProductsData.find().fetch();
       const platesData = PlatesData.find().fetch();
-      const isDataReady = platesSubscription.ready();
+      const isDataReady =
+        accountsSubscription.ready() &&
+        productsSubscription.ready() &&
+        platesSubscription.ready();
 
       this.setState({ accountsData, productsData, platesData, isDataReady });
     });

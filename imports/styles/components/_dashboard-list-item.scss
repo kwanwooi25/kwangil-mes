@@ -1,0 +1,79 @@
+.dashboard-list-item {
+  background: $color-primary--50;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow--1;
+  margin: $space-md 0 $space-lg;
+}
+
+.dashboard-list-item__title {
+  background: $color-primary--500;
+  border-top-left-radius: $border-radius;
+  border-top-right-radius: $border-radius;
+  color: white;
+  font-size: $font-size--lg;
+  font-weight: $font-weight--bold;
+  margin: 0;
+  padding: $space-md;
+  text-align: center;
+}
+
+.dashboard-list-item__content {
+  align-items: center;
+  border-bottom-left-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;
+  display: flex;
+  flex-wrap: wrap;
+  padding: $space-md;
+
+  p {
+    margin: 0;
+    padding: $space-xs 0;
+  }
+}
+
+.dashboard-list-item__content-25 {
+  width: 25%;
+  text-align: center;
+}
+
+.dashboard-list-item__content-50 {
+  width: 50%;
+  text-align: center;
+}
+
+.dashboard-list-item__content-75 {
+  width: 75%;
+  text-align: center;
+}
+
+.dashboard-list-item__content-100 {
+  width: 100%;
+  text-align: center;
+}
+
+.dashboard-list-item__large-number {
+  font-size: $font-size--xl * 3;
+  font-weight: $font-weight--bold;
+}
+
+.dashboard-list-item__small-number {
+  font-size: $font-size--xl;
+  font-weight: $font-weight--bold;
+}
+
+.needPlateProducts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.needPlateProducts-list-item {
+
+}
+
+.dashboard-list-item__productName {
+  &:hover {
+    color: $color-primary--300;
+    cursor: pointer;
+  }
+}

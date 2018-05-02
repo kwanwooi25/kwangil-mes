@@ -55,6 +55,14 @@
   width: 100%;
 }
 
+.link {
+  &:hover {
+    color: $color-primary--300;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
 @media (min-width: $break--sm) {
   .sm5 {
     width: 5% !important;
