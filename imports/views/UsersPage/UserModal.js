@@ -185,7 +185,8 @@ export default class UserModal extends React.Component {
       displayName: this.state.displayName,
       department: this.state.department,
       position: this.state.position,
-      isManager: this.state.role === 'manager'
+      isManager: this.state.role === 'manager',
+      isAdmin: this.state.role === 'admin'
     };
 
     // ADDNEW mode

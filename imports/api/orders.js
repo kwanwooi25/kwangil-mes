@@ -2,11 +2,27 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
+import { ProductsData } from './products';
+import { AccountsData } from './accounts';
+
 export const OrdersData = new Mongo.Collection('orders');
 export const OrderCounter = new Mongo.Collection('orderCounter');
 
 if (Meteor.isServer) {
   Meteor.publish('orders', function() {
+    const ordersData = OrdersData.find().fetch();
+    ordersData.map(order => {
+      const product = ProductsData.findOne({ _id: order.data.productID });
+      if (!product) {
+        Meteor.call('orders.remove', order._id);
+      } else {
+        const account = AccountsData.findOne({ _id: product.accountID });
+        if (!account) {
+          Meteor.call('orders.remove', order._id);
+        }
+      }
+    });
+
     return OrdersData.find({}, { sort: { _id: 1 } });
   });
   Meteor.publish('orderCounter', function() {

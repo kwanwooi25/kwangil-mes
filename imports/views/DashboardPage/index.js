@@ -163,9 +163,9 @@ export default class DashboardPage extends React.Component {
     let completedCount = 0;
 
     this.state.ordersData.map(order => {
-      const { isCompleted, isDelivered } = order.data;
+      const { isCompleted, isDelivered, deliveredAt } = order.data;
 
-      if (isCompleted && !isDelivered) completedCount++;
+      if (isCompleted && !deliveredAt && !isDelivered) completedCount++;
     });
 
     return (

@@ -13,11 +13,11 @@ import '../imports/api/images';
 Meteor.startup(() => {
   if (!Meteor.users.find().count()) {
     const username = 'admin';
-    const password = 'rhkddlf12';
+    const password = 'admin';
     const profile = {
       displayName: '관리자',
-      department: '',
-      position: '',
+      department: '관리부',
+      position: '대빵',
       isManager: false,
       isAdmin: true
     };
