@@ -120,7 +120,9 @@ export default class OrderSearchExpand extends React.Component {
               this.setState(
                 { searchFrom: startDate, searchTo: endDate },
                 () => {
-                  this.props.onOrderSearchChange(this.getQueryObj());
+                  if (startDate !== null && endDate !== null) {
+                    this.props.onOrderSearchChange(this.getQueryObj());
+                  }
                 }
               );
             }}

@@ -105,7 +105,7 @@ export default class AccountList extends React.Component {
       for (let key in account) {
         if (
           key !== '_id' &&
-          (account[key] && account[key].indexOf(query) > -1)
+          (account[key] && account[key].toLowerCase().indexOf(query) > -1)
         ) {
           matchQuery = true;
         }

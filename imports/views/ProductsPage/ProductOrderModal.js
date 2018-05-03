@@ -122,7 +122,7 @@ export default class ProductOrderModal extends React.Component {
   avoidWeekend(date) {
     if (date.day() === 6) {
       date = date.subtract(1, 'days');
-    } else if (date.day() === 7) {
+    } else if (date.day() === 0) {
       date = date.add(1, 'days');
     }
     return date;

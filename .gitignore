@@ -3,5 +3,5 @@ node_modules/
 settings.json
 settings-development.json
 settings-production.json
-accounts
+accounts.json
 products-*
