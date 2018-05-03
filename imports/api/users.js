@@ -27,6 +27,10 @@ Accounts.validateLoginAttempt(function(data) {
   }
 });
 
+Accounts.config({
+  loginExpirationInDays: 0.05
+})
+
 Meteor.methods({
   'users.setPassword'(userID, password) {
     Accounts.setPassword(userID, password, { logout: false });

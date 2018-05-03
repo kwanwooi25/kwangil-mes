@@ -13,7 +13,7 @@
   overflow-y: auto;
   outline: none;
   width: 90%;
-  max-width: 16rem;
+  max-width: 20rem;
   padding-bottom: $space-sm;
 }
 
@@ -41,7 +41,7 @@
   border-bottom-right-radius: $border-radius;
   display: flex;
   flex-direction: column;
-  padding: $space-sm;
+  padding: $space-md $space-lg;
 }
 
 .boxed-view__content label {
@@ -53,9 +53,9 @@
 .boxed-view__content__select,
 .boxed-view__content__button {
   border-radius: $border-radius;
-  margin-bottom: $space-sm;
+  margin-bottom: $space-md;
   outline: none;
-  padding: $space-xs;
+  padding: $space-sm;
 }
 
 .boxed-view__content__input,
@@ -86,6 +86,7 @@
   border: 1px solid $color-primary--500;
   color: white;
   margin: 0;
+  padding: $space-sm;
 
   &:hover,
   &:focus {

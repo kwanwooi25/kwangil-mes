@@ -44,6 +44,10 @@
   margin-left: $space-lg;
 }
 
+.plate-list-item__plateSize-container {
+  padding: $space-sm 0;
+}
+
 .plate-list-item__plateSize {
   font-size: $font-size--lg;
   font-weight: $font-weight--bold;
