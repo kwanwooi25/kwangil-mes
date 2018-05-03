@@ -91,6 +91,7 @@ export default class OrdersPage extends React.Component {
               accountsData={this.state.accountsData}
               productsData={this.state.productsData}
               ordersData={this.state.ordersData}
+              queryObj={this.state.queryObj}
             />
           </div>
 

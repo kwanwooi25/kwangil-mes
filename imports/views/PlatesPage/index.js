@@ -84,6 +84,7 @@ export default class PlatesPage extends React.Component {
               isManager={this.state.isManager}
               productsData={this.state.productsData}
               platesData={this.state.platesData}
+              queryObj={this.state.queryObj}
             />
           </div>
 

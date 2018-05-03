@@ -63,7 +63,7 @@ export default class ProductsPage extends React.Component {
         accountsSubscription.ready() &&
         productsSubscription.ready() &&
         platesSubscription.ready();
-        
+
       this.setState({ accountsData, productsData, platesData, isDataReady });
     });
   }
@@ -86,7 +86,9 @@ export default class ProductsPage extends React.Component {
             <ProductPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
+              accountsData={this.state.accountsData}
               productsData={this.state.productsData}
+              queryObj={this.state.queryObj}
             />
           </div>
 

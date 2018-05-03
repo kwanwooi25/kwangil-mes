@@ -56,7 +56,6 @@ export default class DeliveryPageHeaderButtons extends React.Component {
   onClickExportExcel() {
     const list = document.getElementById('delivery-list');
     const filename = `광일_출고목록_${this.state.deliveryDate.format('YYMMDD')}.csv`;
-    const slice = Array.prototype.slice;
 
     // get order list
     const lis = list.querySelectorAll('li');

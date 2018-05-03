@@ -10,6 +10,7 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
   accountsData
   productsData
   ordersData
+  query
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -18,12 +19,10 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
   }
 
   onClickExportExcel() {
-    const list = document.getElementById('completed-order-list');
     const filename = '광일_납품대기목록.csv';
-    const slice = Array.prototype.slice;
+    const query = this.props.query;
 
     // get order list
-    const lis = list.querySelectorAll('li');
     const orders = [];
     const keys = [
       '_id',
@@ -45,9 +44,40 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
       'deliveredAt'
     ];
 
-    for (let i = 0; i < lis.length; i++) {
-      orders.push(this.props.ordersData.find(order => order._id === lis[i].id));
-    }
+    this.props.ordersData
+      .sort((a, b) => {
+        const a_deliverBefore = a.data.deliverBefore;
+        const b_deliverBefore = b.data.deliverBefore;
+        if (a_deliverBefore > b_deliverBefore) return 1;
+        if (a_deliverBefore < b_deliverBefore) return -1;
+        return 0;
+      })
+      .map(order => {
+        const product = this.props.productsData.find(
+          product => product._id === order.data.productID
+        );
+        let account;
+        if (product) {
+          account = this.props.accountsData.find(
+            account => account._id === product.accountID
+          );
+        }
+
+        let matchQuery = false;
+
+        if (
+          (account && account.name.indexOf(query) > -1 ||
+            product && product.name.indexOf(query) > -1) &&
+          order.data.isCompleted &&
+          !order.data.isDelivered
+        ) {
+          matchQuery = true;
+        }
+
+        if (matchQuery) {
+          orders.push(order);
+        }
+      });
 
     // generate header csv
     let headerCSV =

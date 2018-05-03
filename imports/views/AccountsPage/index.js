@@ -72,6 +72,7 @@ export default class AccountsPage extends React.Component {
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
               accountsData={this.state.accountsData}
+              query={this.state.query}
             />
           </div>
         </div>

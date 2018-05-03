@@ -94,6 +94,7 @@ export default class CompletedOrdersPage extends React.Component {
               accountsData={this.state.accountsData}
               productsData={this.state.productsData}
               ordersData={this.state.ordersData}
+              query={this.state.query}
             />
           </div>
         </div>

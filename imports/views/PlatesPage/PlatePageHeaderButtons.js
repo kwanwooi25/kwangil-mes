@@ -12,31 +12,20 @@ export default class PlatePageHeaderButtons extends React.Component {
   isManager
   productsData
   platesData
+  queryObj
   =========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      productsData: props.productsData,
-      platesData: props.platesData,
-      isModalNewOpen: false
+      isModalNewOpen: false,
+      isModalNewMultiOpen: false
     };
 
     this.onClickNew = this.onClickNew.bind(this);
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
     this.onClickExportExcel = this.onClickExportExcel.bind(this);
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      productsData: props.productsData,
-      platesData: props.platesData
-    });
   }
 
   onClickNew() {
@@ -52,12 +41,10 @@ export default class PlatePageHeaderButtons extends React.Component {
   }
 
   onClickExportExcel() {
-    const list = document.getElementById('plate-list');
     const filename = '광일_동판목록.csv';
-    const slice = Array.prototype.slice;
+    const queryObj = this.props.queryObj;
 
     // get plate list
-    const lis = list.querySelectorAll('li');
     const plates = [];
     const keys = [
       '_id',
@@ -70,9 +57,56 @@ export default class PlatePageHeaderButtons extends React.Component {
       'memo'
     ];
 
-    for (let i = 0; i < lis.length; i++) {
-      plates.push(this.state.platesData.find(plate => plate._id === lis[i].id));
-    }
+    // filter data
+    this.props.platesData.map(plate => {
+      // store product names in an array
+      const productNames = [];
+      plate.forProductList.map(({ productID }) => {
+        const product = this.props.productsData.find(
+          product => product._id === productID
+        );
+        if (product) {
+          productNames.push(product.name);
+        } else {
+          productNames.push('[삭제된 품목]');
+        }
+      });
+
+      let matchProductNameQuery = false;
+      let matchRoundQuery = false;
+      let matchLengthQuery = false;
+      let matchMaterialQuery = false;
+
+      // return true if any of product names contain query text
+      productNames.forEach(productName => {
+        if (productName.indexOf(queryObj.productName) > -1) {
+          matchProductNameQuery = true;
+        }
+      });
+
+      if (String(plate.round).indexOf(queryObj.round) > -1) {
+        matchRoundQuery = true;
+      }
+
+      if (String(plate.length).indexOf(queryObj.length) > -1) {
+        matchLengthQuery = true;
+      }
+
+      if (queryObj.plateMaterial === 'both') {
+        matchMaterialQuery = true;
+      } else if (plate.material.indexOf(queryObj.plateMaterial) > -1) {
+        matchMaterialQuery = true;
+      }
+
+      if (
+        matchProductNameQuery &&
+        matchRoundQuery &&
+        matchLengthQuery &&
+        matchMaterialQuery
+      ) {
+        plates.push(plate);
+      }
+    });
 
     // generate header csv
     let headerCSV = '동판ID,둘레,기장,구분,위치,사용품목,이력,메모';
@@ -92,7 +126,7 @@ export default class PlatePageHeaderButtons extends React.Component {
                   't',
                   plate[key]
                     .map(({ productID, printContent }) => {
-                      const product = this.state.productsData.find(
+                      const product = this.props.productsData.find(
                         product => product._id === productID
                       );
                       let productInfoText = '';
@@ -139,7 +173,7 @@ export default class PlatePageHeaderButtons extends React.Component {
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>
         </button>
-        {this.state.isAdmin ? (
+        {this.props.isAdmin ? (
           <button
             className="button button-with-icon-span page-header__button"
             onClick={this.onClickNewMulti}
@@ -150,7 +184,7 @@ export default class PlatePageHeaderButtons extends React.Component {
         ) : (
           undefined
         )}
-        {this.state.isAdmin || this.state.isManager ? (
+        {this.props.isAdmin || this.props.isManager ? (
           <button
             className="button button-with-icon-span page-header__button"
             onClick={this.onClickNew}
@@ -166,8 +200,8 @@ export default class PlatePageHeaderButtons extends React.Component {
           <PlateModal
             isOpen={this.state.isModalNewOpen}
             onModalClose={this.onModalClose}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
           />
         )}
 

@@ -10,15 +10,14 @@ export default class ProductPageHeaderButtons extends React.Component {
   >> props <<
   isAdmin
   isManager
+  accountsData
   productsData
+  queryObj
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      productsData: props.productsData,
       isModalNewOpen: false,
       isModalNewMultiOpen: false
     };
@@ -27,14 +26,6 @@ export default class ProductPageHeaderButtons extends React.Component {
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
     this.onClickExportExcel = this.onClickExportExcel.bind(this);
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      productsData: props.productsData
-    });
   }
 
   onClickNew() {
@@ -50,12 +41,10 @@ export default class ProductPageHeaderButtons extends React.Component {
   }
 
   onClickExportExcel() {
-    const list = document.getElementById('product-list');
     const filename = '광일_제품목록.csv';
-    const slice = Array.prototype.slice;
+    const queryObj = this.props.queryObj;
 
     // get account list
-    const lis = list.querySelectorAll('li');
     const products = [];
     const keys = [
       'accountID',
@@ -93,18 +82,86 @@ export default class ProductPageHeaderButtons extends React.Component {
       'stockQuantity'
     ];
 
-    for (let i = 0; i < lis.length; i++) {
-      products.push(
-        this.state.productsData.find(product => product._id === lis[i].id)
+    // filter data
+    this.props.productsData.map(product => {
+      const account = this.props.accountsData.find(
+        account => account._id === product.accountID
       );
-    }
+      let accountName = '';
+      if (account) {
+        accountName = account.name;
+      } else {
+        accountName = '[삭제된 업체]';
+      }
+
+      let accountNameMatch = false;
+      let productNameMatch = false;
+      let productSizeMatch = false;
+      let extColorMatch = false;
+      let printColorMatch = false;
+
+      if (
+        accountName &&
+        accountName.toLowerCase().indexOf(queryObj.accountName) > -1
+      ) {
+        accountNameMatch = true;
+      }
+
+      if (
+        product.name &&
+        product.name.toLowerCase().indexOf(queryObj.name) > -1
+      ) {
+        productNameMatch = true;
+      }
+
+      if (
+        product.thick &&
+        String(product.thick).indexOf(queryObj.thick) > -1 &&
+        product.length &&
+        String(product.length).indexOf(queryObj.length) > -1 &&
+        product.width &&
+        String(product.width).indexOf(queryObj.width) > -1
+      ) {
+        productSizeMatch = true;
+      }
+
+      if (
+        product.extColor &&
+        product.extColor.toLowerCase().indexOf(queryObj.extColor) > -1
+      ) {
+        extColorMatch = true;
+      }
+
+      if (queryObj.printColor && product.isPrint) {
+        if (
+          (product.printFrontColor &&
+            product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
+          (product.printBackColor &&
+            product.printBackColor.indexOf(queryObj.printColor) > -1)
+        ) {
+          printColorMatch = true;
+        }
+      } else {
+        printColorMatch = true;
+      }
+
+      if (
+        accountNameMatch &&
+        productNameMatch &&
+        productSizeMatch &&
+        extColorMatch &&
+        printColorMatch
+      ) {
+        products.push(product);
+      }
+    });
 
     // generate header csv
     let headerCSV =
       '업체ID,업체명,제품ID,제품명,두께,길이,너비,무지_인쇄,원단색상,대전방지,처리,압출메모,도안URL,전면도수,전면색상,전면위치,후면도수,후면색상,후면위치,인쇄메모,가공위치,초음파가공,가루포장,바람구멍,바람구멍개수,바람구멍크기,바람구멍위치,가공메모,포장방법,포장수량,전량납품,포장메모,재고수량';
 
     // for managers
-    if (this.state.isAdmin || this.state.isManager) {
+    if (this.props.isAdmin || this.props.isManager) {
       keys.push(['price', 'history', 'memo']);
       headerCSV += ',가격,작업이력,메모';
     }
@@ -137,7 +194,7 @@ export default class ProductPageHeaderButtons extends React.Component {
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>
         </button>
-        {this.state.isAdmin && (
+        {this.props.isAdmin && (
           <button
             className="button button-with-icon-span page-header__button"
             onClick={this.onClickNewMulti}
@@ -146,7 +203,7 @@ export default class ProductPageHeaderButtons extends React.Component {
             <span>대량등록</span>
           </button>
         )}
-        {(this.state.isAdmin || this.state.isManager) && (
+        {(this.props.isAdmin || this.props.isManager) && (
           <button
             className="button button-with-icon-span page-header__button"
             onClick={this.onClickNew}
@@ -160,8 +217,8 @@ export default class ProductPageHeaderButtons extends React.Component {
           <ProductModal
             isOpen={this.state.isModalNewOpen}
             onModalClose={this.onModalClose}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
           />
         )}
 

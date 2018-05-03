@@ -11,14 +11,12 @@ export default class AccountPageHeaderButtons extends React.Component {
   isAdmin
   isManager
   accountsData
+  query
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
       isModalNewOpen: false,
       isModalNewMultiOpen: false
     };
@@ -27,14 +25,6 @@ export default class AccountPageHeaderButtons extends React.Component {
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData
-    });
   }
 
   onClickNew() {
@@ -50,12 +40,10 @@ export default class AccountPageHeaderButtons extends React.Component {
   }
 
   onClickExportExcel() {
-    const list = document.getElementById('account-list');
     const filename = '광일_거래처목록.csv';
-    const slice = Array.prototype.slice;
+    const query = this.props.query;
 
     // get account list
-    const lis = list.querySelectorAll('li');
     const accounts = [];
     const keys = [
       '_id',
@@ -69,11 +57,18 @@ export default class AccountPageHeaderButtons extends React.Component {
       'memo'
     ];
 
-    for (let i = 0; i < lis.length; i++) {
-      accounts.push(
-        this.state.accountsData.find(account => account._id === lis[i].id)
-      );
-    }
+    this.props.accountsData.map(account => {
+      let match = false;
+      for (let key in account) {
+        if (
+          key !== '_id' &&
+          (account[key] && account[key].indexOf(query) > -1)
+        ) {
+          match = true;
+        }
+      }
+      if (match) accounts.push(account);
+    });
 
     // generate header csv
     const headerCSV =
@@ -106,7 +101,7 @@ export default class AccountPageHeaderButtons extends React.Component {
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>
         </button>
-        {this.state.isAdmin && (
+        {this.props.isAdmin && (
           <button
             className="button button-with-icon-span page-header__button"
             onClick={this.onClickNewMulti}
@@ -115,7 +110,7 @@ export default class AccountPageHeaderButtons extends React.Component {
             <span>대량등록</span>
           </button>
         )}
-        {(this.state.isAdmin || this.state.isManager) && (
+        {(this.props.isAdmin || this.props.isManager) && (
           <button
             className="button button-with-icon-span page-header__button"
             onClick={this.onClickNew}
