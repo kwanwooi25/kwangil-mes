@@ -90,12 +90,15 @@ export default class OrderSearchExpand extends React.Component {
   }
 
   onReset() {
+    this.refs.searchByAccountName.value = '';
+    this.refs.searchByProductName.value = '';
+    this.refs.isPrintQuery = 'both';
     this.setState({
       searchFrom: moment().subtract(2, "weeks"),
       searchTo: moment(),
       isPrintQuery: "both",
-      accountName: "",
-      productName: "",
+      searchByAccountName: "",
+      searchByProductName: "",
       showCompletedOrder: false
     }, () => {
       this.props.onOrderSearchChange(this.getQueryObj());
@@ -179,6 +182,7 @@ export default class OrderSearchExpand extends React.Component {
           />
           <select
             className="select order-isPrint-select"
+            ref="isPrintQuery"
             name="isPrintQuery"
             value={this.state.isPrintQuery}
             onChange={this.onChange}
