@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { subsCache } from '../../../client/main';
+
 import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
 import { PlatesData } from '../../api/plates';
@@ -50,19 +52,17 @@ export default class ProductsPage extends React.Component {
         });
       }
     });
-
     // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
-      const accountsSubscription = Meteor.subscribe('accounts');
-      const productsSubscription = Meteor.subscribe('products');
-      const platesSubscription = Meteor.subscribe('plates');
-      const accountsData = AccountsData.find().fetch();
-      const productsData = ProductsData.find().fetch();
-      const platesData = PlatesData.find().fetch();
-      const isDataReady =
-        accountsSubscription.ready() &&
-        productsSubscription.ready() &&
-        platesSubscription.ready();
+    Tracker.autorun(() => {
+      const isDataReady = subsCache.ready();
+      const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
+      const productsData = ProductsData.find(
+        {},
+        {
+          sort: { name: 1, thick: 1, length: 1, width: 1 }
+        }
+      ).fetch();
+      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
 
       this.setState({ accountsData, productsData, platesData, isDataReady });
     });
@@ -70,7 +70,6 @@ export default class ProductsPage extends React.Component {
 
   componentWillUnmount() {
     this.authTracker.stop();
-    this.databaseTracker.stop();
   }
 
   onProductSearchChange(queryObj) {

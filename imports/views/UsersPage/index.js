@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { subsCache } from '../../../client/main';
+
 import { setLayout } from '../../api/setLayout';
 
 import PageHeaderSearch from '../components/PageHeaderSearch';
@@ -28,17 +30,10 @@ export default class UsersPage extends React.Component {
 
     // tracks data change
     this.databaseTracker = Tracker.autorun(() => {
-      const usersSubscription = Meteor.subscribe('users');
-      const isDataReady = usersSubscription.ready();
-      this.setState({
-        usersData: Meteor.users.find().fetch(),
-        isDataReady
-      });
+      const isDataReady = subsCache.ready();
+      const usersData = Meteor.users.find().fetch();
+      this.setState({ usersData, isDataReady });
     });
-  }
-
-  componentWillUnmount() {
-    this.databaseTracker.stop();
   }
 
   onInputSearchChange(query) {

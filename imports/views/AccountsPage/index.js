@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { subsCache } from '../../../client/main';
+
 import { AccountsData } from '../../api/accounts';
 import { setLayout } from '../../api/setLayout';
 
@@ -39,20 +41,15 @@ export default class AccountsPage extends React.Component {
       }
     });
 
-    // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
-      const accountsSubscription = Meteor.subscribe('accounts');
-      const isDataReady = accountsSubscription.ready();
-      this.setState({
-        accountsData: AccountsData.find().fetch(),
-        isDataReady
-      });
+    Tracker.autorun(() => {
+      const isDataReady = subsCache.ready();
+      const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
+      this.setState({ accountsData, isDataReady });
     });
   }
 
   componentWillUnmount() {
     this.authTracker.stop();
-    this.databaseTracker.stop();
   }
 
   onInputSearchChange(query) {

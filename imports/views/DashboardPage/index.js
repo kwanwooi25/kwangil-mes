@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
+import { subsCache } from '../../../client/main';
+
 import { setLayout } from '../../api/setLayout';
 
 import { OrdersData } from '../../api/orders';
@@ -29,22 +31,12 @@ export default class DashboardPage extends React.Component {
     });
 
     // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
-      const productsSubscription = Meteor.subscribe('products');
-      const ordersSubscription = Meteor.subscribe('orders');
-      const deliverySubscription = Meteor.subscribe('delivery');
-      const ordersData = OrdersData.find().fetch();
-      const isDataReady =
-        productsSubscription.ready() &&
-        ordersSubscription.ready() &&
-        deliverySubscription.ready();
+    Tracker.autorun(() => {
+      const isDataReady = subsCache.ready();
+      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
 
       this.setState({ ordersData, isDataReady });
     });
-  }
-
-  componentWillUnmount() {
-    this.databaseTracker.stop();
   }
 
   getOrdersSummary() {
