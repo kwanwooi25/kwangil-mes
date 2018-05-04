@@ -48,6 +48,12 @@ export default class DeliveryPage extends React.Component {
       }
     });
 
+    const subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+    subsCache.subscribe('orders');
+    subsCache.subscribe('delivery');
+
     // tracks data change
     Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
@@ -58,16 +64,10 @@ export default class DeliveryPage extends React.Component {
           sort: { name: 1, thick: 1, length: 1, width: 1 }
         }
       ).fetch();
-      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
-      const deliveryData = DeliveryData.find({}, { sort: { _id: 1 } }).fetch();
+      const ordersData = OrdersData.find({}, { sort: { round: 1 } }).fetch();
+      const deliveryData = DeliveryData.find({}, { sort: { round: 1 } }).fetch();
 
-      this.setState({
-        accountsData,
-        productsData,
-        ordersData,
-        deliveryData,
-        isDataReady
-      });
+      this.setState({ accountsData, productsData, ordersData, deliveryData, isDataReady });
     });
   }
 

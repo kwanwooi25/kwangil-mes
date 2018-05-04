@@ -30,10 +30,13 @@ export default class DashboardPage extends React.Component {
       setLayout(30);
     });
 
+    const subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('orders');
+
     // tracks data change
     Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
-      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
+      const ordersData = OrdersData.find({}, { sort: { round: 1 } }).fetch();
 
       this.setState({ ordersData, isDataReady });
     });

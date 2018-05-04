@@ -28,10 +28,14 @@ export default class UsersPage extends React.Component {
       setLayout(30);
     });
 
+    const subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+
     // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
+    Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
       const usersData = Meteor.users.find().fetch();
+
       this.setState({ usersData, isDataReady });
     });
   }

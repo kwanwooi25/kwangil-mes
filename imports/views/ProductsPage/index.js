@@ -1,10 +1,7 @@
 import React from 'react';
 
-import { subsCache } from '../../../client/main';
-
 import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
-import { PlatesData } from '../../api/plates';
 import { setLayout } from '../../api/setLayout';
 
 import ProductPageHeaderButtons from './ProductPageHeaderButtons';
@@ -20,7 +17,7 @@ export default class ProductsPage extends React.Component {
       isManager: false,
       accountsData: [],
       productsData: [],
-      platesData: [],
+      filteredProductsData: [],
       isDataReady: false,
       queryObj: {
         accountName: '',
@@ -52,6 +49,12 @@ export default class ProductsPage extends React.Component {
         });
       }
     });
+
+    const subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+    subsCache.subscribe('plates'); // for product detail view
+
     // tracks data change
     Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
@@ -62,9 +65,10 @@ export default class ProductsPage extends React.Component {
           sort: { name: 1, thick: 1, length: 1, width: 1 }
         }
       ).fetch();
-      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
 
-      this.setState({ accountsData, productsData, platesData, isDataReady });
+      this.setState({ accountsData, productsData,isDataReady }, () => {
+        this.filterData();
+      });
     });
   }
 
@@ -73,7 +77,82 @@ export default class ProductsPage extends React.Component {
   }
 
   onProductSearchChange(queryObj) {
-    this.setState({ queryObj });
+    this.setState({ queryObj }, () => { this.filterData() });
+  }
+
+  filterData() {
+    const queryObj = this.state.queryObj;
+    let filteredProductsData = [];
+
+    // filter data
+    this.state.productsData.map(product => {
+      const account = this.state.accountsData.find(
+        account => account._id === product.accountID
+      );
+
+      let accountNameMatch = false;
+      let productNameMatch = false;
+      let productSizeMatch = false;
+      let extColorMatch = false;
+      let printColorMatch = false;
+
+      if (
+        account &&
+        account.name.toLowerCase().indexOf(queryObj.accountName) > -1
+      ) {
+        accountNameMatch = true;
+      }
+
+      if (
+        product.name &&
+        product.name.toLowerCase().indexOf(queryObj.name) > -1
+      ) {
+        productNameMatch = true;
+      }
+
+      if (
+        product.thick &&
+        String(product.thick).indexOf(queryObj.thick) > -1 &&
+        product.length &&
+        String(product.length).indexOf(queryObj.length) > -1 &&
+        product.width &&
+        String(product.width).indexOf(queryObj.width) > -1
+      ) {
+        productSizeMatch = true;
+      }
+
+      if (
+        product.extColor &&
+        product.extColor.toLowerCase().indexOf(queryObj.extColor) > -1
+      ) {
+        extColorMatch = true;
+      }
+
+      if (queryObj.printColor && product.isPrint) {
+        if (
+          (product.printFrontColor &&
+            product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
+          (product.printBackColor &&
+            product.printBackColor.indexOf(queryObj.printColor) > -1)
+        ) {
+          printColorMatch = true;
+        }
+      } else {
+        printColorMatch = true;
+      }
+
+      if (
+        accountNameMatch &&
+        productNameMatch &&
+        productSizeMatch &&
+        extColorMatch &&
+        printColorMatch
+      ) {
+        filteredProductsData.push(product);
+      }
+    });
+
+    this.setState({ filteredProductsData });
   }
 
   render() {
@@ -86,8 +165,7 @@ export default class ProductsPage extends React.Component {
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
               accountsData={this.state.accountsData}
-              productsData={this.state.productsData}
-              queryObj={this.state.queryObj}
+              filteredProductsData={this.state.filteredProductsData}
             />
           </div>
 
@@ -100,10 +178,8 @@ export default class ProductsPage extends React.Component {
           <ProductList
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
-            queryObj={this.state.queryObj}
             accountsData={this.state.accountsData}
-            productsData={this.state.productsData}
-            platesData={this.state.platesData}
+            filteredProductsData={this.state.filteredProductsData}
             isDataReady={this.state.isDataReady}
           />
         </div>

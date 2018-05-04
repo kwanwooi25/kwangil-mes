@@ -12,25 +12,17 @@ import ConfirmationModal from '../components/ConfirmationModal';
 export default class CompletedOrderList extends React.Component {
   /*=========================================================================
   >> props <<
-  query : query string to filter list
   isAdmin
   isManager
   accountsData
   productsData
-  ordersData
+  filteredOrdersData
   isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      query: props.query,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      ordersData: props.ordersData,
-      isDataReady: props.isDataReady,
       isDeliveryOrderModalOpen: false,
       selectedOrders: [],
       confirmationTitle: '',
@@ -41,19 +33,6 @@ export default class CompletedOrderList extends React.Component {
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
     this.showDeliveryOrderModal = this.showDeliveryOrderModal.bind(this);
     this.hideDeliveryOrderModal = this.hideDeliveryOrderModal.bind(this);
-  }
-
-  // set state on props change
-  componentWillReceiveProps(props) {
-    this.setState({
-      query: props.query,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      ordersData: props.ordersData,
-      isDataReady: props.isDataReady
-    });
   }
 
   onCheckboxChange(e) {
@@ -104,8 +83,8 @@ export default class CompletedOrderList extends React.Component {
     }
   }
 
-  getCompletedOrderList(query) {
-    return this.state.ordersData
+  getCompletedOrderList() {
+    return this.props.filteredOrdersData
       .sort((a, b) => {
         const a_deliverBefore = a.data.deliverBefore;
         const b_deliverBefore = b.data.deliverBefore;
@@ -114,49 +93,32 @@ export default class CompletedOrderList extends React.Component {
         return 0;
       })
       .map(order => {
-        const product = this.state.productsData.find(
+        const product = this.props.productsData.find(
           product => product._id === order.data.productID
         );
-        let account;
-        if (product) {
-          account = this.state.accountsData.find(
-            account => account._id === product.accountID
-          );
-        }
+        const account = this.props.accountsData.find(
+          account => account._id === product.accountID
+        );
 
-        let matchQuery = false;
-
-        if (
-          (account && account.name.indexOf(query) > -1 ||
-            product && product.name.indexOf(query) > -1) &&
-          order.data.isCompleted &&
-          !order.data.isDelivered
-        ) {
-          matchQuery = true;
-        }
-
-        // only show product that has matching query text
-        if (matchQuery) {
-          return (
-            <CompletedOrderListItem
-              key={order._id}
-              isAdmin={this.state.isAdmin}
-              isManager={this.state.isManager}
-              account={account}
-              product={product}
-              order={order}
-              onCheckboxChange={this.onCheckboxChange}
-              showDeliveryOrderModal={this.showDeliveryOrderModal}
-            />
-          );
-        }
+        return (
+          <CompletedOrderListItem
+            key={order._id}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
+            account={account}
+            product={product}
+            order={order}
+            onCheckboxChange={this.onCheckboxChange}
+            showDeliveryOrderModal={this.showDeliveryOrderModal}
+          />
+        );
       });
   }
 
   render() {
     return (
       <div className="list-container">
-        {(this.state.isAdmin || this.state.isManager) && (
+        {(this.props.isAdmin || this.props.isManager) && (
           <CompletedOrderListHeader
             onCheckboxChange={this.onCheckboxChange}
             isSelectedMulti={this.state.isSelectedMulti}
@@ -166,8 +128,8 @@ export default class CompletedOrderList extends React.Component {
         )}
 
         <ul id="completed-order-list" className="list">
-          {this.state.isDataReady ? (
-            this.getCompletedOrderList(this.state.query)
+          {this.props.isDataReady ? (
+            this.getCompletedOrderList()
           ) : (
             <Spinner />
           )}

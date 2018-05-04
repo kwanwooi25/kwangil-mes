@@ -13,24 +13,17 @@ import ConfirmationModal from '../components/ConfirmationModal';
 export default class OrderList extends React.Component {
   /*=========================================================================
   >> props <<
-  query : query string to filter list
   isAdmin
   isManager
   accountsData
   productsData
   ordersData
+  isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      queryObj: props.queryObj,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      ordersData: props.ordersData,
-      isDataReady: props.isDataReady,
       isCompleteOrderModalOpen: false,
       isProductOrderModalOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -52,19 +45,6 @@ export default class OrderList extends React.Component {
     this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
       this
     );
-  }
-
-  // set state on props change
-  componentWillReceiveProps(props) {
-    this.setState({
-      queryObj: props.queryObj,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      ordersData: props.ordersData,
-      isDataReady: props.isDataReady
-    });
   }
 
   onCheckboxChange(e) {
@@ -97,7 +77,7 @@ export default class OrderList extends React.Component {
   }
 
   updateOrderStatus(orderID, statusValue) {
-    const order = this.state.ordersData.find(order => order._id === orderID);
+    const order = this.props.ordersData.find(order => order._id === orderID);
     let data = order.data;
     data.status = statusValue;
 
@@ -138,8 +118,8 @@ export default class OrderList extends React.Component {
     ];
 
     selectedOrders.map(orderID => {
-      const order = this.state.ordersData.find(order => order._id === orderID);
-      const product = this.state.productsData.find(
+      const order = this.props.ordersData.find(order => order._id === orderID);
+      const product = this.props.productsData.find(
         product => product._id === order.data.productID
       );
       const orderInfoText = `${product.name} (${product.thick}x${
@@ -172,84 +152,36 @@ export default class OrderList extends React.Component {
     }
   }
 
-  getOrderList(queryObj) {
-    return this.state.ordersData.map(order => {
-      const product = this.state.productsData.find(
+  getOrderList() {
+    return this.props.ordersData.map(order => {
+      const product = this.props.productsData.find(
         product => product._id === order.data.productID
       );
-      let account;
-      if (product) {
-        account = this.state.accountsData.find(
-          account => account._id === product.accountID
-        );
-      }
-
-      let dateRangeMatch = false;
-      let accountNameMatch = false;
-      let productNameMatch = false;
-      let isPrintMatch = false;
-      let showCompletedMatch = false;
-
-      const orderedAt = moment(order.data.orderedAt);
-      const searchFrom = moment(queryObj.searchFrom);
-      const searchTo = moment(queryObj.searchTo);
-
-      if (searchFrom <= orderedAt && orderedAt <= searchTo) {
-        dateRangeMatch = true;
-      }
-
-      if (account && account.name.indexOf(queryObj.accountName) > -1) {
-        accountNameMatch = true;
-      }
-
-      if (product && product.name.indexOf(queryObj.productName) > -1) {
-        productNameMatch = true;
-      }
-
-      if (
-        queryObj.isPrintQuery === 'both' ||
-        (queryObj.isPrintQuery === 'false' && !product.isPrint) ||
-        (queryObj.isPrintQuery === 'true' && product.isPrint)
-      ) {
-        isPrintMatch = true;
-      }
-
-      if (!order.data.isCompleted ||
-        (order.data.isCompleted && queryObj.showCompletedOrder)) {
-        showCompletedMatch = true;
-      }
-
-      // only show product that has matching query text
-      if (
-        dateRangeMatch &&
-        accountNameMatch &&
-        productNameMatch &&
-        isPrintMatch &&
-        showCompletedMatch
-      ) {
-        return (
-          <OrderListItem
-            key={order._id}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
-            account={account}
-            product={product}
-            order={order}
-            onCheckboxChange={this.onCheckboxChange}
-            updateOrderStatus={this.updateOrderStatus}
-            showCompleteOrderModal={this.showCompleteOrderModal}
-            showProductOrderModal={this.showProductOrderModal}
-            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-          />
-        );
-      }
+      const account = this.props.accountsData.find(
+        account => account._id === product.accountID
+      );
+      return (
+        <OrderListItem
+          key={order._id}
+          isAdmin={this.props.isAdmin}
+          isManager={this.props.isManager}
+          account={account}
+          product={product}
+          order={order}
+          onCheckboxChange={this.onCheckboxChange}
+          updateOrderStatus={this.updateOrderStatus}
+          showCompleteOrderModal={this.showCompleteOrderModal}
+          showProductOrderModal={this.showProductOrderModal}
+          showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+        />
+      );
     });
   }
 
   render() {
     return (
       <div className="list-container">
-        {(this.state.isAdmin || this.state.isManager) && (
+        {(this.props.isAdmin || this.props.isManager) && (
           <OrderListHeader
             onCheckboxChange={this.onCheckboxChange}
             isSelectedMulti={this.state.isSelectedMulti}
@@ -260,8 +192,8 @@ export default class OrderList extends React.Component {
         )}
 
         <ul id="order-list" className="list">
-          {this.state.isDataReady ? (
-            this.getOrderList(this.state.queryObj)
+          {this.props.isDataReady ? (
+            this.getOrderList()
           ) : (
             <Spinner />
           )}
@@ -280,8 +212,8 @@ export default class OrderList extends React.Component {
             isOpen={this.state.isProductOrderModalOpen}
             orderID={this.state.selectedOrderID}
             onModalClose={this.hideProductOrderModal}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
           />
         )}
 

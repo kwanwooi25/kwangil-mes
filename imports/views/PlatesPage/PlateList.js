@@ -9,26 +9,17 @@ import ConfirmationModal from '../components/ConfirmationModal';
 export default class PlateList extends React.Component {
   /*=========================================================================
   >> props <<
-  queryObj : query object to filter product list
   isAdmin
   isManager
-  accountsData
   productsData
-  platesData
+  filteredPlatesData
   isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      queryObj: props.queryObj,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      platesData: props.platesData,
-      isDataReady: props.isDataReady,
-      itemsToShow: 100,
+      itemsToShow: 20,
       isPlateModalOpen: false,
       isDeleteConfirmationModalOpen: false,
       selectedPlateID: '',
@@ -48,19 +39,6 @@ export default class PlateList extends React.Component {
       this
     );
     this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
-  }
-
-  // set state on props change
-  componentWillReceiveProps(props) {
-    this.setState({
-      queryObj: props.queryObj,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      platesData: props.platesData,
-      isDataReady: props.isDataReady
-    });
   }
 
   onListScroll(e) {
@@ -122,7 +100,7 @@ export default class PlateList extends React.Component {
     ];
 
     selectedPlates.map(plateID => {
-      const plate = this.state.platesData.find(plate => plate._id === plateID);
+      const plate = this.props.filteredPlatesData.find(plate => plate._id === plateID);
       let plateInfoText = `${plate.round} x ${plate.length}`;
 
       confirmationDescription.push(plateInfoText);
@@ -139,7 +117,7 @@ export default class PlateList extends React.Component {
     this.setState({ isDeleteConfirmationModalOpen: false });
 
     if (answer) {
-      this.state.selectedPlates.map(plateID => {
+      this.props.selectedPlates.map(plateID => {
         Meteor.call('plates.remove', plateID);
       });
 
@@ -158,69 +136,15 @@ export default class PlateList extends React.Component {
     this.showDeleteConfirmationModal(this.state.selectedPlates);
   }
 
-  getPlateList(queryObj) {
-    let filteredPlatesData = [];
-
-    // filter data
-    this.state.platesData.map(plate => {
-      // store product names in an array
-      const productNames = [];
-      plate.forProductList.map(({ productID }) => {
-        const product = this.state.productsData.find(
-          product => product._id === productID
-        );
-        if (product) {
-          productNames.push(product.name);
-        } else {
-          productNames.push('[삭제된 품목]');
-        }
-      });
-
-      let matchProductNameQuery = false;
-      let matchRoundQuery = false;
-      let matchLengthQuery = false;
-      let matchMaterialQuery = false;
-
-      // return true if any of product names contain query text
-      productNames.forEach(productName => {
-        if (productName.indexOf(queryObj.productName) > -1) {
-          matchProductNameQuery = true;
-        }
-      });
-
-      if (String(plate.round).indexOf(queryObj.round) > -1) {
-        matchRoundQuery = true;
-      }
-
-      if (String(plate.length).indexOf(queryObj.length) > -1) {
-        matchLengthQuery = true;
-      }
-
-      if (queryObj.plateMaterial === 'both') {
-        matchMaterialQuery = true;
-      } else if (plate.material.indexOf(queryObj.plateMaterial) > -1) {
-        matchMaterialQuery = true;
-      }
-
-      if (
-        matchProductNameQuery &&
-        matchRoundQuery &&
-        matchLengthQuery &&
-        matchMaterialQuery
-      ) {
-        filteredPlatesData.push(plate);
-      }
-    });
-
-    // render filtered plates
-    return filteredPlatesData.slice(0, this.state.itemsToShow).map(plate => {
+  getPlateList() {
+    return this.props.filteredPlatesData.slice(0, this.state.itemsToShow).map(plate => {
       return (
         <PlateListItem
           key={plate._id}
-          isAdmin={this.state.isAdmin}
-          isManager={this.state.isManager}
+          isAdmin={this.props.isAdmin}
+          isManager={this.props.isManager}
           plate={plate}
-          productsData={this.state.productsData}
+          productsData={this.props.productsData}
           onCheckboxChange={this.onCheckboxChange}
           showPlateModal={this.showPlateModal}
           showDeleteConfirmationModal={this.showDeleteConfirmationModal}
@@ -232,7 +156,7 @@ export default class PlateList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {(this.state.isAdmin || this.state.isManager) && (
+        {(this.props.isAdmin || this.props.isManager) && (
           <div className="list-header">
             <Checkbox
               name="selectAll"
@@ -253,8 +177,8 @@ export default class PlateList extends React.Component {
         )}
 
         <ul id="plate-list" className="list" onScroll={this.onListScroll}>
-          {this.state.isDataReady ? (
-            this.getPlateList(this.state.queryObj)
+          {this.props.isDataReady ? (
+            this.getPlateList()
           ) : (
             <Spinner />
           )}
@@ -265,8 +189,8 @@ export default class PlateList extends React.Component {
             isOpen={this.state.isPlateModalOpen}
             plateID={this.state.selectedPlateID}
             onModalClose={this.hidePlateModal}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
           />
         )}
 

@@ -8,22 +8,16 @@ import ConfirmationModal from '../components/ConfirmationModal';
 export default class AccountList extends React.Component {
   /*=========================================================================
   >> props <<
-  query : query string to filter account list
   isAdmin
   isManager
-  accountsData
+  filteredAccountsData
   isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      query: props.query,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      isDataReady: props.isDataReady,
-      itemsToShow: 100,
+      itemsToShow: 20,
       isAccountModalOpen: false,
       isDetailViewOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -40,17 +34,6 @@ export default class AccountList extends React.Component {
     this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
       this
     );
-  }
-
-  // set state on props change
-  componentWillReceiveProps(props) {
-    this.setState({
-      query: props.query,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      isDataReady: props.isDataReady
-    });
   }
 
   onListScroll(e) {
@@ -76,7 +59,7 @@ export default class AccountList extends React.Component {
   }
 
   showDeleteConfirmationModal(selectedAccountID) {
-    const account = this.state.accountsData.find(
+    const account = this.props.filteredAccountsData.find(
       account => account._id == selectedAccountID
     );
     const selectedAccountName = account.name;
@@ -96,33 +79,15 @@ export default class AccountList extends React.Component {
     }
   }
 
-  getAccountList(query) {
-    let filteredAccountsData = [];
-
-    // filter data
-    this.state.accountsData.map(account => {
-      let matchQuery = false;
-      for (let key in account) {
-        if (
-          key !== '_id' &&
-          (account[key] && account[key].toLowerCase().indexOf(query) > -1)
-        ) {
-          matchQuery = true;
-        }
-      }
-
-      if (matchQuery) filteredAccountsData.push(account);
-    });
-
-    // render filtered accounts
-    return filteredAccountsData
+  getAccountList() {
+    return this.props.filteredAccountsData
       .slice(0, this.state.itemsToShow)
       .map(account => {
         return (
           <AccountListItem
             key={account._id}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
             account={account}
             showAccountDetailViewModal={this.showAccountDetailViewModal}
             showEditAccountModal={this.showEditAccountModal}
@@ -136,8 +101,8 @@ export default class AccountList extends React.Component {
     return (
       <div className="list-container">
         <ul id="account-list" className="list" onScroll={this.onListScroll}>
-          {this.state.isDataReady ? (
-            this.getAccountList(this.state.query)
+          {this.props.isDataReady ? (
+            this.getAccountList()
           ) : (
             <Spinner />
           )}

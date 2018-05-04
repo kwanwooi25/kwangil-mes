@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { subsCache } from '../../../client/main';
-
 import { AccountsData } from '../../api/accounts';
 import { setLayout } from '../../api/setLayout';
 
@@ -18,6 +16,7 @@ export default class AccountsPage extends React.Component {
       isManager: false,
       query: '',
       accountsData: [],
+      filteredAccountsData: [],
       isDataReady: false
     };
 
@@ -41,10 +40,17 @@ export default class AccountsPage extends React.Component {
       }
     });
 
+    const subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+
+    // tracks data change
     Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
       const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
-      this.setState({ accountsData, isDataReady });
+
+      this.setState({ accountsData, isDataReady }, () => {
+        this.filterData();
+      });
     });
   }
 
@@ -53,7 +59,28 @@ export default class AccountsPage extends React.Component {
   }
 
   onInputSearchChange(query) {
-    this.setState({ query });
+    this.setState({ query }, () => { this.filterData() });
+  }
+
+  filterData() {
+    let filteredAccountsData = [];
+
+    // filter data
+    this.state.accountsData.map(account => {
+      let matchQuery = false;
+      for (let key in account) {
+        if (
+          key !== '_id' &&
+          (account[key] && account[key].toLowerCase().indexOf(this.state.query) > -1)
+        ) {
+          matchQuery = true;
+        }
+      }
+
+      if (matchQuery) filteredAccountsData.push(account);
+    });
+
+    this.setState({ filteredAccountsData });
   }
 
   render() {
@@ -68,18 +95,16 @@ export default class AccountsPage extends React.Component {
             <AccountPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
-              accountsData={this.state.accountsData}
-              query={this.state.query}
+              filteredAccountsData={this.state.filteredAccountsData}
             />
           </div>
         </div>
 
         <div className="page-content">
           <AccountList
-            query={this.state.query}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
-            accountsData={this.state.accountsData}
+            filteredAccountsData={this.state.filteredAccountsData}
             isDataReady={this.state.isDataReady}
           />
         </div>

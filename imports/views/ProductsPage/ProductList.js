@@ -10,26 +10,17 @@ import ConfirmationModal from '../components/ConfirmationModal';
 export default class ProductList extends React.Component {
   /*=========================================================================
   >> props <<
-  queryObj : query object to filter product list
   isAdmin
   isManager
   accountsData
-  productsData
-  platesData
+  filteredProductsData
   isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      productsCount: props.productsData.length,
-      isDataReady: props.isDataReady,
-      itemsToShow: 100,
-      queryObj: props.queryObj,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
+      itemsToShow: 20,
       isProductOrderModalOpen: false,
       isProductModalOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -52,19 +43,6 @@ export default class ProductList extends React.Component {
       this
     );
     this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
-  }
-
-  // set state on props change
-  componentWillReceiveProps(props) {
-    this.setState({
-      queryObj: props.queryObj,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      productsCount: props.productsData.length,
-      isDataReady: props.isDataReady
-    });
   }
 
   onListScroll(e) {
@@ -140,7 +118,7 @@ export default class ProductList extends React.Component {
     ];
 
     selectedProducts.map(productID => {
-      const product = this.state.productsData.find(
+      const product = this.props.filteredProductsData.find(
         product => product._id === productID
       );
       let productInfoText = `${product.name} (${product.thick}x${
@@ -176,96 +154,19 @@ export default class ProductList extends React.Component {
     this.showDeleteConfirmationModal(this.state.selectedProducts);
   }
 
-  getProductList(queryObj) {
-    let filteredProductsData = [];
-
-    // filter data
-    this.state.productsData.map(product => {
-      const account = this.state.accountsData.find(
-        account => account._id === product.accountID
-      );
-      let accountName = '';
-      if (account) {
-        accountName = account.name;
-      } else {
-        accountName = '[삭제된 업체]';
-      }
-
-      let accountNameMatch = false;
-      let productNameMatch = false;
-      let productSizeMatch = false;
-      let extColorMatch = false;
-      let printColorMatch = false;
-
-      if (
-        accountName &&
-        accountName.toLowerCase().indexOf(queryObj.accountName) > -1
-      ) {
-        accountNameMatch = true;
-      }
-
-      if (
-        product.name &&
-        product.name.toLowerCase().indexOf(queryObj.name) > -1
-      ) {
-        productNameMatch = true;
-      }
-
-      if (
-        product.thick &&
-        String(product.thick).indexOf(queryObj.thick) > -1 &&
-        product.length &&
-        String(product.length).indexOf(queryObj.length) > -1 &&
-        product.width &&
-        String(product.width).indexOf(queryObj.width) > -1
-      ) {
-        productSizeMatch = true;
-      }
-
-      if (
-        product.extColor &&
-        product.extColor.toLowerCase().indexOf(queryObj.extColor) > -1
-      ) {
-        extColorMatch = true;
-      }
-
-      if (queryObj.printColor && product.isPrint) {
-        if (
-          (product.printFrontColor &&
-            product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
-          (product.printBackColor &&
-            product.printBackColor.indexOf(queryObj.printColor) > -1)
-        ) {
-          printColorMatch = true;
-        }
-      } else {
-        printColorMatch = true;
-      }
-
-      if (
-        accountNameMatch &&
-        productNameMatch &&
-        productSizeMatch &&
-        extColorMatch &&
-        printColorMatch
-      ) {
-        filteredProductsData.push(product);
-      }
-    });
-
-    // render filtered products
-    return filteredProductsData
+  getProductList() {
+    return this.props.filteredProductsData
       .slice(0, this.state.itemsToShow)
       .map(product => {
-        const account = this.state.accountsData.find(
+        const account = this.props.accountsData.find(
           account => account._id === product.accountID
         );
 
         return (
           <ProductListItem
             key={product._id}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
             account={account}
             product={product}
             onCheckboxChange={this.onCheckboxChange}
@@ -280,7 +181,7 @@ export default class ProductList extends React.Component {
   render() {
     return (
       <div className="list-container">
-        {this.state.isAdmin || this.state.isManager ? (
+        {this.props.isAdmin || this.props.isManager ? (
           <div className="list-header">
             <Checkbox
               name="selectAll"
@@ -303,8 +204,8 @@ export default class ProductList extends React.Component {
         )}
 
         <ul id="product-list" className="list" onScroll={this.onListScroll}>
-          {this.state.isDataReady ? (
-            this.getProductList(this.state.queryObj)
+          {this.props.isDataReady ? (
+            this.getProductList()
           ) : (
             <Spinner />
           )}
@@ -315,8 +216,8 @@ export default class ProductList extends React.Component {
             isOpen={this.state.isProductOrderModalOpen}
             productID={this.state.selectedProductID}
             onModalClose={this.hideProductOrderModal}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
           />
         )}
 
@@ -325,8 +226,8 @@ export default class ProductList extends React.Component {
             isOpen={this.state.isProductModalOpen}
             productID={this.state.selectedProductID}
             onModalClose={this.hideProductModal}
-            isAdmin={this.state.isAdmin}
-            isManager={this.state.isManager}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
           />
         )}
 

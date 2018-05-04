@@ -11,8 +11,7 @@ export default class ProductPageHeaderButtons extends React.Component {
   isAdmin
   isManager
   accountsData
-  productsData
-  queryObj
+  filteredProductsData
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -43,9 +42,7 @@ export default class ProductPageHeaderButtons extends React.Component {
   onClickExportExcel() {
     const filename = '광일_제품목록.csv';
     const queryObj = this.props.queryObj;
-
-    // get account list
-    const products = [];
+    const products = this.props.filteredProductsData;
     const keys = [
       'accountID',
       'accountName',
@@ -81,80 +78,6 @@ export default class ProductPageHeaderButtons extends React.Component {
       'packMemo',
       'stockQuantity'
     ];
-
-    // filter data
-    this.props.productsData.map(product => {
-      const account = this.props.accountsData.find(
-        account => account._id === product.accountID
-      );
-      let accountName = '';
-      if (account) {
-        accountName = account.name;
-      } else {
-        accountName = '[삭제된 업체]';
-      }
-
-      let accountNameMatch = false;
-      let productNameMatch = false;
-      let productSizeMatch = false;
-      let extColorMatch = false;
-      let printColorMatch = false;
-
-      if (
-        accountName &&
-        accountName.toLowerCase().indexOf(queryObj.accountName) > -1
-      ) {
-        accountNameMatch = true;
-      }
-
-      if (
-        product.name &&
-        product.name.toLowerCase().indexOf(queryObj.name) > -1
-      ) {
-        productNameMatch = true;
-      }
-
-      if (
-        product.thick &&
-        String(product.thick).indexOf(queryObj.thick) > -1 &&
-        product.length &&
-        String(product.length).indexOf(queryObj.length) > -1 &&
-        product.width &&
-        String(product.width).indexOf(queryObj.width) > -1
-      ) {
-        productSizeMatch = true;
-      }
-
-      if (
-        product.extColor &&
-        product.extColor.toLowerCase().indexOf(queryObj.extColor) > -1
-      ) {
-        extColorMatch = true;
-      }
-
-      if (queryObj.printColor && product.isPrint) {
-        if (
-          (product.printFrontColor &&
-            product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
-          (product.printBackColor &&
-            product.printBackColor.indexOf(queryObj.printColor) > -1)
-        ) {
-          printColorMatch = true;
-        }
-      } else {
-        printColorMatch = true;
-      }
-
-      if (
-        accountNameMatch &&
-        productNameMatch &&
-        productSizeMatch &&
-        extColorMatch &&
-        printColorMatch
-      ) {
-        products.push(product);
-      }
-    });
 
     // generate header csv
     let headerCSV =

@@ -23,6 +23,7 @@ export default class CompletedOrdersPage extends React.Component {
       accountsData: [],
       productsData: [],
       ordersData: [],
+      filteredOrdersData: [],
       deliveryData: [],
       isDataReady: false,
       query: ''
@@ -48,6 +49,12 @@ export default class CompletedOrdersPage extends React.Component {
       }
     });
 
+    const subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+    subsCache.subscribe('orders');
+    subsCache.subscribe('delivery');
+
     // tracks data change
     Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
@@ -58,15 +65,11 @@ export default class CompletedOrdersPage extends React.Component {
           sort: { name: 1, thick: 1, length: 1, width: 1 }
         }
       ).fetch();
-      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
-      const deliveryData = DeliveryData.find({}, { sort: { _id: 1 } }).fetch();
+      const ordersData = OrdersData.find({}, { sort: { round: 1 } }).fetch();
+      const deliveryData = DeliveryData.find({}, { sort: { round: 1 } }).fetch();
 
-      this.setState({
-        accountsData,
-        productsData,
-        ordersData,
-        deliveryData,
-        isDataReady
+      this.setState({ accountsData, productsData, ordersData, deliveryData, isDataReady }, () => {
+        this.filterData();
       });
     });
   }
@@ -76,7 +79,35 @@ export default class CompletedOrdersPage extends React.Component {
   }
 
   onInputSearchChange(query) {
-    this.setState({ query });
+    this.setState({ query }, () => { this.filterData() });
+  }
+
+  filterData() {
+    const query = this.state.query;
+    let filteredOrdersData = [];
+
+    this.state.ordersData.map(order => {
+      const product = this.state.productsData.find(
+        product => product._id === order.data.productID
+      );
+      let account;
+      if (product) {
+        account = this.state.accountsData.find(
+          account => account._id === product.accountID
+        );
+      }
+
+      if (
+        (account && account.name.toLowerCase().indexOf(query) > -1 ||
+          product && product.name.toLowerCase().indexOf(query) > -1) &&
+        order.data.isCompleted &&
+        !order.data.isDelivered
+      ) {
+        filteredOrdersData.push(order);
+      }
+    });
+
+    this.setState({ filteredOrdersData });
   }
 
   render() {
@@ -91,20 +122,18 @@ export default class CompletedOrdersPage extends React.Component {
               isManager={this.state.isManager}
               accountsData={this.state.accountsData}
               productsData={this.state.productsData}
-              ordersData={this.state.ordersData}
-              query={this.state.query}
+              filteredOrdersData={this.state.filteredOrdersData}
             />
           </div>
         </div>
 
         <div className="page-content">
           <CompletedOrderList
-            query={this.state.query}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             accountsData={this.state.accountsData}
             productsData={this.state.productsData}
-            ordersData={this.state.ordersData}
+            filteredOrdersData={this.state.filteredOrdersData}
             isDataReady={this.state.isDataReady}
           />
         </div>

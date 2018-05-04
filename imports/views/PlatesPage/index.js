@@ -21,6 +21,7 @@ export default class PlatesPage extends React.Component {
       accountsData: [],
       productsData: [],
       platesData: [],
+      filteredPlatesData: [],
       queryObj: {
         productName: '',
         plateMaterial: '',
@@ -49,6 +50,11 @@ export default class PlatesPage extends React.Component {
       }
     });
 
+    const subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+    subsCache.subscribe('plates');
+
     // tracks data change
     Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
@@ -61,7 +67,9 @@ export default class PlatesPage extends React.Component {
       ).fetch();
       const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
 
-      this.setState({ accountsData, productsData, platesData, isDataReady });
+      this.setState({ accountsData, productsData, platesData, isDataReady }, () => {
+        this.filterData();
+      });
     });
   }
 
@@ -70,7 +78,63 @@ export default class PlatesPage extends React.Component {
   }
 
   onPlateSearchChange(queryObj) {
-    this.setState({ queryObj });
+    this.setState({ queryObj }, () => { this.filterData() });
+  }
+
+  filterData() {
+    const queryObj = this.state.queryObj;
+    let filteredPlatesData = [];
+
+    // filter data
+    this.state.platesData.map(plate => {
+      // store product names in an array
+      const productNames = [];
+      plate.forProductList.map(({ productID }) => {
+        const product = this.state.productsData.find(
+          product => product._id === productID
+        );
+        if (product) {
+          productNames.push(product.name);
+        }
+      });
+
+      let matchProductNameQuery = false;
+      let matchRoundQuery = false;
+      let matchLengthQuery = false;
+      let matchMaterialQuery = false;
+
+      // return true if any of product names contain query text
+      productNames.forEach(productName => {
+        if (productName.toLowerCase().indexOf(queryObj.productName) > -1) {
+          matchProductNameQuery = true;
+        }
+      });
+
+      if (String(plate.round).indexOf(queryObj.round) > -1) {
+        matchRoundQuery = true;
+      }
+
+      if (String(plate.length).indexOf(queryObj.length) > -1) {
+        matchLengthQuery = true;
+      }
+
+      if (queryObj.plateMaterial === 'both') {
+        matchMaterialQuery = true;
+      } else if (plate.material.indexOf(queryObj.plateMaterial) > -1) {
+        matchMaterialQuery = true;
+      }
+
+      if (
+        matchProductNameQuery &&
+        matchRoundQuery &&
+        matchLengthQuery &&
+        matchMaterialQuery
+      ) {
+        filteredPlatesData.push(plate);
+      }
+    });
+
+    this.setState({ filteredPlatesData });
   }
 
   render() {
@@ -83,8 +147,7 @@ export default class PlatesPage extends React.Component {
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
               productsData={this.state.productsData}
-              platesData={this.state.platesData}
-              queryObj={this.state.queryObj}
+              filteredPlatesData={this.state.filteredPlatesData}
             />
           </div>
 
@@ -95,10 +158,8 @@ export default class PlatesPage extends React.Component {
           <PlateList
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
-            queryObj={this.state.queryObj}
-            accountsData={this.state.accountsData}
             productsData={this.state.productsData}
-            platesData={this.state.platesData}
+            filteredPlatesData={this.state.filteredPlatesData}
             isDataReady={this.state.isDataReady}
           />
         </div>

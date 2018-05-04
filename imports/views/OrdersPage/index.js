@@ -22,6 +22,7 @@ export default class OrdersPage extends React.Component {
       accountsData: [],
       productsData: [],
       ordersData: [],
+      filteredOrdersData: [],
       isDataReady: false,
       queryObj: {
         searchFrom: moment()
@@ -55,6 +56,11 @@ export default class OrdersPage extends React.Component {
       }
     });
 
+    const subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+    subsCache.subscribe('orders');
+
     // tracks data change
     Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
@@ -65,9 +71,11 @@ export default class OrdersPage extends React.Component {
           sort: { name: 1, thick: 1, length: 1, width: 1 }
         }
       ).fetch();
-      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
+      const ordersData = OrdersData.find({}, { sort: { round: 1 } }).fetch();
 
-      this.setState({ accountsData, productsData, ordersData, isDataReady });
+      this.setState({ accountsData, productsData, ordersData, isDataReady }, () => {
+        this.filterData();
+      });
     });
   }
 
@@ -76,7 +84,72 @@ export default class OrdersPage extends React.Component {
   }
 
   onOrderSearchChange(queryObj) {
-    this.setState({ queryObj });
+    this.setState({ queryObj }, () => { this.filterData() });
+  }
+
+  filterData() {
+    const queryObj = this.state.queryObj;
+    let filteredOrdersData = [];
+
+    // filter data
+    this.state.ordersData.map(order => {
+      const product = this.state.productsData.find(
+        product => product._id === order.data.productID
+      );
+      let account;
+      if (product) {
+        account = this.state.accountsData.find(
+          account => account._id === product.accountID
+        );
+      }
+
+      let dateRangeMatch = false;
+      let accountNameMatch = false;
+      let productNameMatch = false;
+      let isPrintMatch = false;
+      let showCompletedMatch = false;
+
+      const orderedAt = moment(order.data.orderedAt);
+      const searchFrom = moment(queryObj.searchFrom);
+      const searchTo = moment(queryObj.searchTo);
+
+      if (searchFrom <= orderedAt && orderedAt <= searchTo) {
+        dateRangeMatch = true;
+      }
+
+      if (account && account.name.indexOf(queryObj.accountName) > -1) {
+        accountNameMatch = true;
+      }
+
+      if (product && product.name.indexOf(queryObj.productName) > -1) {
+        productNameMatch = true;
+      }
+
+      if (
+        queryObj.isPrintQuery === 'both' ||
+        (queryObj.isPrintQuery === 'false' && !product.isPrint) ||
+        (queryObj.isPrintQuery === 'true' && product.isPrint)
+      ) {
+        isPrintMatch = true;
+      }
+
+      if (!order.data.isCompleted ||
+        (order.data.isCompleted && queryObj.showCompletedOrder)) {
+        showCompletedMatch = true;
+      }
+
+      if (
+        dateRangeMatch &&
+        accountNameMatch &&
+        productNameMatch &&
+        isPrintMatch &&
+        showCompletedMatch
+      ) {
+        filteredOrdersData.push(order);
+      }
+    });
+
+    this.setState({ filteredOrdersData });
   }
 
   render() {
@@ -86,12 +159,9 @@ export default class OrdersPage extends React.Component {
           <div className="page-header__row">
             <h1 className="page-header__title">작업지시목록</h1>
             <OrderPageHeaderButtons
-              isAdmin={this.state.isAdmin}
-              isManager={this.state.isManager}
               accountsData={this.state.accountsData}
               productsData={this.state.productsData}
-              ordersData={this.state.ordersData}
-              queryObj={this.state.queryObj}
+              filteredOrdersData={this.state.filteredOrdersData}
             />
           </div>
 
@@ -100,12 +170,11 @@ export default class OrdersPage extends React.Component {
 
         <div className="page-content">
           <OrderList
-            queryObj={this.state.queryObj}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             accountsData={this.state.accountsData}
             productsData={this.state.productsData}
-            ordersData={this.state.ordersData}
+            filteredOrdersData={this.state.filteredOrdersData}
             isDataReady={this.state.isDataReady}
           />
         </div>

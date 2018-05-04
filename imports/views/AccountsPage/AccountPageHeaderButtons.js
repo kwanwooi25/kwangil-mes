@@ -10,8 +10,7 @@ export default class AccountPageHeaderButtons extends React.Component {
   >> props <<
   isAdmin
   isManager
-  accountsData
-  query
+  filteredAccountsData
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -41,10 +40,7 @@ export default class AccountPageHeaderButtons extends React.Component {
 
   onClickExportExcel() {
     const filename = '광일_거래처목록.csv';
-    const query = this.props.query;
-
-    // get account list
-    const accounts = [];
+    const accounts = this.props.filteredAccountsData;
     const keys = [
       '_id',
       'name',
@@ -56,19 +52,6 @@ export default class AccountPageHeaderButtons extends React.Component {
       'address',
       'memo'
     ];
-
-    this.props.accountsData.map(account => {
-      let match = false;
-      for (let key in account) {
-        if (
-          key !== '_id' &&
-          (account[key] && account[key].indexOf(query) > -1)
-        ) {
-          match = true;
-        }
-      }
-      if (match) accounts.push(account);
-    });
 
     // generate header csv
     const headerCSV =
