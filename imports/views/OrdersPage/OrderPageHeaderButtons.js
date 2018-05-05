@@ -13,12 +13,20 @@ export default class OrderPageHeaderButtons extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      filteredOrdersData: props.filteredOrdersData
+    }
+
     this.onClickExportExcel = this.onClickExportExcel.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ filteredOrdersData: props.filteredOrdersData });
   }
 
   onClickExportExcel() {
     const filename = '광일_작업지시내역.csv';
-    const orders = this.props.filteredOrdersData;
+    const orders = this.state.filteredOrdersData;
     const keys = [
       '_id',
       'orderedAt',

@@ -23,6 +23,7 @@ export default class CompletedOrderList extends React.Component {
     super(props);
 
     this.state = {
+      filteredOrdersData: props.filteredOrdersData,
       isDeliveryOrderModalOpen: false,
       selectedOrders: [],
       confirmationTitle: '',
@@ -33,6 +34,10 @@ export default class CompletedOrderList extends React.Component {
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
     this.showDeliveryOrderModal = this.showDeliveryOrderModal.bind(this);
     this.hideDeliveryOrderModal = this.hideDeliveryOrderModal.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ filteredOrdersData: props.filteredOrdersData });
   }
 
   onCheckboxChange(e) {
@@ -84,7 +89,7 @@ export default class CompletedOrderList extends React.Component {
   }
 
   getCompletedOrderList() {
-    return this.props.filteredOrdersData
+    return this.state.filteredOrdersData
       .sort((a, b) => {
         const a_deliverBefore = a.data.deliverBefore;
         const b_deliverBefore = b.data.deliverBefore;

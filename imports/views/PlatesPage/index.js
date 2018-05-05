@@ -1,10 +1,5 @@
 import React from 'react';
 
-import { subsCache } from '../../../client/main';
-
-import { AccountsData } from '../../api/accounts';
-import { ProductsData } from '../../api/products';
-import { PlatesData } from '../../api/plates';
 import { setLayout } from '../../api/setLayout';
 
 import PlatePageHeaderButtons from './PlatePageHeaderButtons';
@@ -18,9 +13,7 @@ export default class PlatesPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      accountsData: [],
-      productsData: [],
-      platesData: [],
+      platesData: props.platesData,
       filteredPlatesData: [],
       queryObj: {
         productName: '',
@@ -50,31 +43,18 @@ export default class PlatesPage extends React.Component {
       }
     });
 
-    const subsCache = new SubsCache(-1, -1);
-    subsCache.subscribe('accounts');
-    subsCache.subscribe('products');
-    subsCache.subscribe('plates');
+    this.filterData();
+  }
 
-    // tracks data change
-    Tracker.autorun(() => {
-      const isDataReady = subsCache.ready();
-      const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
-      const productsData = ProductsData.find(
-        {},
-        {
-          sort: { name: 1, thick: 1, length: 1, width: 1 }
-        }
-      ).fetch();
-      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
-
-      this.setState({ accountsData, productsData, platesData, isDataReady }, () => {
-        this.filterData();
-      });
+  componentWillReceiveProps() {
+    this.setState({ platesData: props.platesData }, () => {
+      this.filterData();
     });
   }
 
   componentWillUnmount() {
     this.authTracker.stop();
+    console.log('PlatesPage unmounted');
   }
 
   onPlateSearchChange(queryObj) {
@@ -90,7 +70,7 @@ export default class PlatesPage extends React.Component {
       // store product names in an array
       const productNames = [];
       plate.forProductList.map(({ productID }) => {
-        const product = this.state.productsData.find(
+        const product = this.props.productsData.find(
           product => product._id === productID
         );
         if (product) {
@@ -146,7 +126,7 @@ export default class PlatesPage extends React.Component {
             <PlatePageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
-              productsData={this.state.productsData}
+              productsData={this.props.productsData}
               filteredPlatesData={this.state.filteredPlatesData}
             />
           </div>
@@ -158,9 +138,9 @@ export default class PlatesPage extends React.Component {
           <PlateList
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
-            productsData={this.state.productsData}
+            productsData={this.props.productsData}
             filteredPlatesData={this.state.filteredPlatesData}
-            isDataReady={this.state.isDataReady}
+            isDataReady={this.props.isDataReady}
           />
         </div>
       </div>

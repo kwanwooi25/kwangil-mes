@@ -19,6 +19,7 @@ export default class PlateList extends React.Component {
     super(props);
 
     this.state = {
+      filteredPlatesData: props.filteredPlatesData,
       itemsToShow: 20,
       isPlateModalOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -39,6 +40,10 @@ export default class PlateList extends React.Component {
       this
     );
     this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ filteredPlatesData: props.filteredPlatesData });
   }
 
   onListScroll(e) {
@@ -100,7 +105,9 @@ export default class PlateList extends React.Component {
     ];
 
     selectedPlates.map(plateID => {
-      const plate = this.props.filteredPlatesData.find(plate => plate._id === plateID);
+      const plate = this.state.filteredPlatesData.find(
+        plate => plate._id === plateID
+      );
       let plateInfoText = `${plate.round} x ${plate.length}`;
 
       confirmationDescription.push(plateInfoText);
@@ -117,7 +124,7 @@ export default class PlateList extends React.Component {
     this.setState({ isDeleteConfirmationModalOpen: false });
 
     if (answer) {
-      this.props.selectedPlates.map(plateID => {
+      this.state.selectedPlates.map(plateID => {
         Meteor.call('plates.remove', plateID);
       });
 
@@ -137,20 +144,22 @@ export default class PlateList extends React.Component {
   }
 
   getPlateList() {
-    return this.props.filteredPlatesData.slice(0, this.state.itemsToShow).map(plate => {
-      return (
-        <PlateListItem
-          key={plate._id}
-          isAdmin={this.props.isAdmin}
-          isManager={this.props.isManager}
-          plate={plate}
-          productsData={this.props.productsData}
-          onCheckboxChange={this.onCheckboxChange}
-          showPlateModal={this.showPlateModal}
-          showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-        />
-      );
-    })
+    return this.state.filteredPlatesData
+      .slice(0, this.state.itemsToShow)
+      .map(plate => {
+        return (
+          <PlateListItem
+            key={plate._id}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
+            plate={plate}
+            productsData={this.props.productsData}
+            onCheckboxChange={this.onCheckboxChange}
+            showPlateModal={this.showPlateModal}
+            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+          />
+        );
+      });
   }
 
   render() {
@@ -177,11 +186,7 @@ export default class PlateList extends React.Component {
         )}
 
         <ul id="plate-list" className="list" onScroll={this.onListScroll}>
-          {this.props.isDataReady ? (
-            this.getPlateList()
-          ) : (
-            <Spinner />
-          )}
+          {this.props.isDataReady ? this.getPlateList() : <Spinner />}
         </ul>
 
         {this.state.isPlateModalOpen && (

@@ -20,6 +20,7 @@ export default class ProductList extends React.Component {
     super(props);
 
     this.state = {
+      filteredProductsData: props.filteredProductsData,
       itemsToShow: 20,
       isProductOrderModalOpen: false,
       isProductModalOpen: false,
@@ -43,6 +44,10 @@ export default class ProductList extends React.Component {
       this
     );
     this.onDeleteMultiClick = this.onDeleteMultiClick.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ filteredProductsData: props.filteredProductsData });
   }
 
   onListScroll(e) {
@@ -118,7 +123,7 @@ export default class ProductList extends React.Component {
     ];
 
     selectedProducts.map(productID => {
-      const product = this.props.filteredProductsData.find(
+      const product = this.state.filteredProductsData.find(
         product => product._id === productID
       );
       let productInfoText = `${product.name} (${product.thick}x${
@@ -155,7 +160,7 @@ export default class ProductList extends React.Component {
   }
 
   getProductList() {
-    return this.props.filteredProductsData
+    return this.state.filteredProductsData
       .slice(0, this.state.itemsToShow)
       .map(product => {
         const account = this.props.accountsData.find(

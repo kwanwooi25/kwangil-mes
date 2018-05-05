@@ -17,6 +17,7 @@ export default class AccountList extends React.Component {
     super(props);
 
     this.state = {
+      filteredAccountsData: props.filteredAccountsData,
       itemsToShow: 20,
       isAccountModalOpen: false,
       isDetailViewOpen: false,
@@ -34,6 +35,12 @@ export default class AccountList extends React.Component {
     this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
       this
     );
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({
+      filteredAccountsData: props.filteredAccountsData
+    });
   }
 
   onListScroll(e) {
@@ -59,7 +66,7 @@ export default class AccountList extends React.Component {
   }
 
   showDeleteConfirmationModal(selectedAccountID) {
-    const account = this.props.filteredAccountsData.find(
+    const account = this.state.filteredAccountsData.find(
       account => account._id == selectedAccountID
     );
     const selectedAccountName = account.name;
@@ -80,7 +87,7 @@ export default class AccountList extends React.Component {
   }
 
   getAccountList() {
-    return this.props.filteredAccountsData
+    return this.state.filteredAccountsData
       .slice(0, this.state.itemsToShow)
       .map(account => {
         return (

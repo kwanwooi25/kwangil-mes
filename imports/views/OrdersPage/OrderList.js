@@ -17,13 +17,14 @@ export default class OrderList extends React.Component {
   isManager
   accountsData
   productsData
-  ordersData
+  filteredOrdersData
   isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
+      filteredOrdersData: props.filteredOrdersData,
       isCompleteOrderModalOpen: false,
       isProductOrderModalOpen: false,
       isDeleteConfirmationModalOpen: false,
@@ -45,6 +46,10 @@ export default class OrderList extends React.Component {
     this.hideDeleteConfirmationModal = this.hideDeleteConfirmationModal.bind(
       this
     );
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ filteredOrdersData: props.filteredOrdersData });
   }
 
   onCheckboxChange(e) {
@@ -77,7 +82,9 @@ export default class OrderList extends React.Component {
   }
 
   updateOrderStatus(orderID, statusValue) {
-    const order = this.props.ordersData.find(order => order._id === orderID);
+    const order = this.state.filteredOrdersData.find(
+      order => order._id === orderID
+    );
     let data = order.data;
     data.status = statusValue;
 
@@ -118,7 +125,9 @@ export default class OrderList extends React.Component {
     ];
 
     selectedOrders.map(orderID => {
-      const order = this.props.ordersData.find(order => order._id === orderID);
+      const order = this.state.filteredOrdersData.find(
+        order => order._id === orderID
+      );
       const product = this.props.productsData.find(
         product => product._id === order.data.productID
       );
@@ -153,7 +162,7 @@ export default class OrderList extends React.Component {
   }
 
   getOrderList() {
-    return this.props.ordersData.map(order => {
+    return this.state.filteredOrdersData.map(order => {
       const product = this.props.productsData.find(
         product => product._id === order.data.productID
       );
@@ -192,11 +201,7 @@ export default class OrderList extends React.Component {
         )}
 
         <ul id="order-list" className="list">
-          {this.props.isDataReady ? (
-            this.getOrderList()
-          ) : (
-            <Spinner />
-          )}
+          {this.props.isDataReady ? this.getOrderList() : <Spinner />}
         </ul>
 
         {this.state.isCompleteOrderModalOpen && (

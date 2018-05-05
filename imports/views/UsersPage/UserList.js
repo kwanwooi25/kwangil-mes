@@ -16,9 +16,6 @@ export default class UserList extends React.Component {
     super(props);
 
     this.state = {
-      query: props.query,
-      usersData: props.usersData,
-      isDataReady: props.isDataReady,
       isUserModalOpen: false,
       isDeleteConfirmationModalOpen: false,
       selectedUserID: '',
@@ -36,15 +33,6 @@ export default class UserList extends React.Component {
     );
   }
 
-  // set state on props change
-  componentWillReceiveProps(props) {
-    this.setState({
-      query: props.query,
-      usersData: props.usersData,
-      isDataReady: props.isDataReady
-    });
-  }
-
   showUserModal(selectedUserID, editFor) {
     this.setState({
       isUserModalOpen: true,
@@ -58,7 +46,7 @@ export default class UserList extends React.Component {
   }
 
   showDeleteConfirmationModal(selectedUserID) {
-    const user = this.state.usersData.find(user => user._id == selectedUserID);
+    const user = this.props.usersData.find(user => user._id == selectedUserID);
     const selectedUsername = `${user.profile.displayName} (${user.username})`;
 
     this.setState({
@@ -80,22 +68,18 @@ export default class UserList extends React.Component {
     }
   }
 
-  getUserList(query) {
-    return this.state.usersData.map(user => {
+  getUserList() {
+    return this.props.usersData.map(user => {
       const profile = user.profile;
 
-      let matchQuery = false;
+      let match = false;
 
-      if (profile.displayName.indexOf(query) > -1) {
-        matchQuery = true;
+      if (profile.displayName.toLowerCase().indexOf(this.props.query) > -1) {
+        match = true;
       }
 
-      // if (user.profile.isAdmin) {
-      //   matchQuery = false;
-      // }
-
       // only show user that has matching query text
-      if (matchQuery) {
+      if (match) {
         return (
           <UserListItem
             key={user._id}
@@ -112,7 +96,7 @@ export default class UserList extends React.Component {
     return (
       <div className="list-container">
         <ul id="user-list" className="list">
-          {this.state.isDataReady ? (
+          {this.props.isDataReady ? (
             this.getUserList(this.state.query)
           ) : (
             <Spinner />

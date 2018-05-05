@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 
+import { avoidWeekend } from '../../api/avoidWeekend';
 import { exportCSV } from '../../api/exportCSV';
 import { printDeliveryOrder } from '../../api/printDeliveryOrder';
 
@@ -9,24 +10,42 @@ import DatePicker from '../../custom/DatePicker/DatePicker';
 export default class DeliveryPageHeaderButtons extends React.Component {
   /*=========================================================================
   >> props <<
-  isAdmin
-  isManager
   accountsData
   productsData
   ordersData
+  selectedDelivery
   onDeliveryDateChange
   ==========================================================================*/
   constructor(props) {
     super(props);
 
-    this.state = {
-      deliveryDate: moment()
+    const delivery = props.selectedDelivery;
+
+    let hasOrdersList = false;
+    if (delivery && delivery.orderList.length !== 0) {
+      hasOrdersList = true;
     }
+
+    this.state = {
+      hasOrdersList,
+      deliveryDate: avoidWeekend(moment())
+    };
 
     this.onPrevClick = this.onPrevClick.bind(this);
     this.onNextClick = this.onNextClick.bind(this);
     this.onClickExportExcel = this.onClickExportExcel.bind(this);
     this.onPrintDeliveryOrderClick = this.onPrintDeliveryOrderClick.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    const delivery = props.selectedDelivery;
+
+    let hasOrdersList = false;
+    if (delivery && delivery.orderList.length !== 0) {
+      hasOrdersList = true;
+    }
+
+    this.setState({ hasOrdersList });
   }
 
   onPrevClick() {
@@ -36,7 +55,9 @@ export default class DeliveryPageHeaderButtons extends React.Component {
     } else {
       deliveryDate.subtract(1, 'days');
     }
-    this.setState({ deliveryDate }, () => { this.onDateChange() });
+    this.setState({ deliveryDate }, () => {
+      this.onDateChange();
+    });
   }
 
   onNextClick() {
@@ -46,7 +67,9 @@ export default class DeliveryPageHeaderButtons extends React.Component {
     } else {
       deliveryDate.add(1, 'days');
     }
-    this.setState({ deliveryDate }, () => { this.onDateChange() });
+    this.setState({ deliveryDate }, () => {
+      this.onDateChange();
+    });
   }
 
   onDateChange() {
@@ -54,20 +77,21 @@ export default class DeliveryPageHeaderButtons extends React.Component {
   }
 
   onClickExportExcel() {
-    const list = document.getElementById('delivery-list');
-    const filename = `광일_출고목록_${this.state.deliveryDate.format('YYMMDD')}.csv`;
-
-    // get order list
-    const lis = list.querySelectorAll('li');
+    const filename = `광일_출고목록_${this.state.deliveryDate.format(
+      'YYMMDD'
+    )}.csv`;
+    const delivery = this.props.deliveryData.find(
+      delivery => delivery._id === this.state.deliveryDate.format('YYYY-MM-DD')
+    );
     const orders = [];
     const keys = [
       '_id',
       'orderedAt',
-      'accountName',   // AccountsData
-      'productName',   // ProductsData
-      'productThick',  // ProductsData
+      'accountName', // AccountsData
+      'productName', // ProductsData
+      'productThick', // ProductsData
       'productLength', // ProductsData
-      'productWidth',  // ProductsData
+      'productWidth', // ProductsData
       'orderQuantity',
       'plateStatus',
       'deliverBefore',
@@ -80,9 +104,9 @@ export default class DeliveryPageHeaderButtons extends React.Component {
       'deliveredAt'
     ];
 
-    for (let i = 0; i < lis.length; i++) {
-      orders.push(this.props.ordersData.find(order => order._id === lis[i].id));
-    }
+    delivery.ordersList.map(({ orderID }) => {
+      orders.push(this.props.ordersData.find(order => order._id === orderID));
+    });
 
     // generate header csv
     let headerCSV =
@@ -132,10 +156,7 @@ export default class DeliveryPageHeaderButtons extends React.Component {
   render() {
     return (
       <div className="page-header__buttons">
-        <button
-          className="button button-cancel"
-          onClick={this.onPrevClick}
-        >
+        <button className="button button-cancel" onClick={this.onPrevClick}>
           <i className="fa fa-chevron-left fa-lg" />
         </button>
 
@@ -144,7 +165,9 @@ export default class DeliveryPageHeaderButtons extends React.Component {
           date={this.state.deliveryDate}
           onDateChange={deliveryDate => {
             if (deliveryDate === null) deliveryDate = moment();
-            this.setState({ deliveryDate }, () => { this.onDateChange() });
+            this.setState({ deliveryDate }, () => {
+              this.onDateChange();
+            });
           }}
           isOutsideRange={() => {
             return false;
@@ -152,16 +175,14 @@ export default class DeliveryPageHeaderButtons extends React.Component {
           anchorDirection="right"
         />
 
-        <button
-          className="button button-cancel"
-          onClick={this.onNextClick}
-        >
+        <button className="button button-cancel" onClick={this.onNextClick}>
           <i className="fa fa-chevron-right fa-lg" />
         </button>
 
         <button
           className="button button-with-icon-span page-header__button"
           onClick={this.onClickExportExcel}
+          disabled={!this.state.hasOrdersList}
         >
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>
@@ -170,6 +191,7 @@ export default class DeliveryPageHeaderButtons extends React.Component {
         <button
           className="button button-with-icon-span page-header__button"
           onClick={this.onPrintDeliveryOrderClick}
+          disabled={!this.state.hasOrdersList}
         >
           <i className="fa fa-print fa-lg" />
           <span>출력</span>

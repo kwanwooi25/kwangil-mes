@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { subsCache } from '../../../client/main';
-
 import { setLayout } from '../../api/setLayout';
 
 import PageHeaderSearch from '../components/PageHeaderSearch';
@@ -14,8 +12,8 @@ export default class UsersPage extends React.Component {
 
     this.state = {
       query: '',
-      usersData: [],
-      isDataReady: false
+      usersData: props.usersData,
+      isDataReady: props.isDataReady
     };
 
     this.onInputSearchChange = this.onInputSearchChange.bind(this);
@@ -27,16 +25,12 @@ export default class UsersPage extends React.Component {
     window.addEventListener('resize', () => {
       setLayout(30);
     });
+  }
 
-    const subsCache = new SubsCache(-1, -1);
-    subsCache.subscribe('accounts');
-
-    // tracks data change
-    Tracker.autorun(() => {
-      const isDataReady = subsCache.ready();
-      const usersData = Meteor.users.find().fetch();
-
-      this.setState({ usersData, isDataReady });
+  componentWillReceiveProps(props) {
+    this.setState({
+      usersData: props.usersData,
+      isDataReady: props.isDataReady
     });
   }
 

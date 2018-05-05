@@ -11,27 +11,19 @@ import ConfirmationModal from '../components/ConfirmationModal';
 export default class DeliveryList extends React.Component {
   /*=========================================================================
   >> props <<
-  deliveryDate
   isAdmin
   isManager
   accountsData
   productsData
   ordersData
   deliveryData
+  selectedDelivery
   isDataReady
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
-      deliveryDate: props.deliveryDate,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      ordersData: props.ordersData,
-      deliveryData: props.deliveryData,
-      isDataReady: props.isDataReady,
       isConfirmationModalOpen: false,
       selectedOrders: [],
       confirmationTitle: '',
@@ -43,20 +35,6 @@ export default class DeliveryList extends React.Component {
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
     this.showConfirmationModal = this.showConfirmationModal.bind(this);
     this.hideConfirmationModal = this.hideConfirmationModal.bind(this);
-  }
-
-  // set state on props change
-  componentWillReceiveProps(props) {
-    this.setState({
-      deliveryDate: props.deliveryDate,
-      isAdmin: props.isAdmin,
-      isManager: props.isManager,
-      accountsData: props.accountsData,
-      productsData: props.productsData,
-      ordersData: props.ordersData,
-      deliveryData: props.deliveryData,
-      isDataReady: props.isDataReady
-    });
   }
 
   onCheckboxChange(e) {
@@ -105,8 +83,8 @@ export default class DeliveryList extends React.Component {
     }
 
     selectedOrders.map(orderID => {
-      const order = this.state.ordersData.find(order => order._id === orderID);
-      const product = this.state.productsData.find(
+      const order = this.props.ordersData.find(order => order._id === orderID);
+      const product = this.props.productsData.find(
         product => product._id === order.data.productID
       );
       const deliveryInfoText = `${product.name} (${product.thick}x${
@@ -130,7 +108,7 @@ export default class DeliveryList extends React.Component {
 
     if (answer) {
       this.state.selectedOrders.map(orderID => {
-        const order = this.state.ordersData.find(
+        const order = this.props.ordersData.find(
           order => order._id === orderID
         );
 
@@ -140,7 +118,7 @@ export default class DeliveryList extends React.Component {
         } else if (this.state.confirmFor === 'cancel') {
           let removeFromDeliveryID = '';
           let orderIDToRemove = '';
-          this.state.deliveryData.map(delivery => {
+          this.props.deliveryData.map(delivery => {
             let checkOrderID = delivery.orderList
               .map(order => order.orderID)
               .indexOf(order._id);
@@ -149,7 +127,7 @@ export default class DeliveryList extends React.Component {
               removeFromDeliveryID = delivery._id;
             }
           });
-          let delivery = this.state.deliveryData.find(
+          let delivery = this.props.deliveryData.find(
             delivery => delivery._id === removeFromDeliveryID
           );
 
@@ -177,60 +155,70 @@ export default class DeliveryList extends React.Component {
     }
   }
 
-  getDeliveryList(deliveryDate) {
-    const delivery = this.props.deliveryData.find(
-      delivery => delivery._id === deliveryDate
-    );
-    let ordersToDeliver = [];
-
+  getDeliveryList() {
+    const delivery = this.props.selectedDelivery;
     if (delivery) {
-      delivery.orderList.map(({ orderID, deliverBy }) => {
-        let order = this.props.ordersData.find(order => order._id === orderID);
-        order.deliverBy = deliverBy;
-        ordersToDeliver.push(order);
-      });
+      let ordersToDeliver = [];
 
-      return ordersToDeliver
-        .sort((a, b) => {
-          const a_deliverBefore = a.data.deliverBefore;
-          const b_deliverBefore = b.data.deliverBefore;
-          if (a_deliverBefore > b_deliverBefore) return 1;
-          if (a_deliverBefore < b_deliverBefore) return -1;
-          return 0;
-        })
-        .map(order => {
-          const product = this.state.productsData.find(
-            product => product._id === order.data.productID
+      if (delivery.orderList.length !== 0) {
+        delivery.orderList.map(({ orderID, deliverBy }) => {
+          let order = this.props.ordersData.find(
+            order => order._id === orderID
           );
-          let account;
-          if (product) {
-            account = this.state.accountsData.find(
-              account => account._id === product.accountID
-            );
-          }
-
-          if (account && product) {
-            return (
-              <DeliveryListItem
-                key={order._id}
-                isAdmin={this.state.isAdmin}
-                isManager={this.state.isManager}
-                account={account}
-                product={product}
-                order={order}
-                onCheckboxChange={this.onCheckboxChange}
-                showConfirmationModal={this.showConfirmationModal}
-              />
-            );
-          }
+          order.deliverBy = deliverBy;
+          ordersToDeliver.push(order);
         });
+
+        return ordersToDeliver
+          .sort((a, b) => {
+            const a_deliverBefore = a.data.deliverBefore;
+            const b_deliverBefore = b.data.deliverBefore;
+            if (a_deliverBefore > b_deliverBefore) return 1;
+            if (a_deliverBefore < b_deliverBefore) return -1;
+            return 0;
+          })
+          .map(order => {
+            const product = this.props.productsData.find(
+              product => product._id === order.data.productID
+            );
+            let account;
+            if (product) {
+              account = this.props.accountsData.find(
+                account => account._id === product.accountID
+              );
+            }
+
+            if (account && product) {
+              return (
+                <DeliveryListItem
+                  key={order._id}
+                  isAdmin={this.props.isAdmin}
+                  isManager={this.props.isManager}
+                  account={account}
+                  product={product}
+                  order={order}
+                  onCheckboxChange={this.onCheckboxChange}
+                  showConfirmationModal={this.showConfirmationModal}
+                />
+              );
+            }
+          });
+      } else {
+        return this.onNothingToDisplay();
+      }
+    } else {
+      return this.onNothingToDisplay();
     }
+  }
+
+  onNothingToDisplay() {
+    return <p>No orders added on the date</p>;
   }
 
   render() {
     return (
       <div className="list-container">
-        {(this.state.isAdmin || this.state.isManager) && (
+        {(this.props.isAdmin || this.props.isManager) && (
           <DeliveryListHeader
             onCheckboxChange={this.onCheckboxChange}
             isSelectedMulti={this.state.isSelectedMulti}
@@ -240,11 +228,7 @@ export default class DeliveryList extends React.Component {
         )}
 
         <ul id="delivery-list" className="list">
-          {this.state.isDataReady ? (
-            this.getDeliveryList(this.state.deliveryDate)
-          ) : (
-            <Spinner />
-          )}
+          {this.props.isDataReady ? this.getDeliveryList() : <Spinner />}
         </ul>
 
         {this.state.isConfirmationModalOpen && (

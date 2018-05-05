@@ -7,6 +7,7 @@ import { ProductsData } from '../../api/products';
 import { DeliveryData } from '../../api/delivery';
 import { AccountsData } from '../../api/accounts';
 import { comma, uncomma } from '../../api/comma';
+import { avoidWeekend } from '../../api/avoidWeekend';
 
 import Checkbox from '../../custom/Checkbox';
 import TextInput from '../../custom/TextInput';
@@ -36,7 +37,7 @@ export default class DeliveryOrderModal extends React.Component {
     }
 
     this.state = {
-      deliverAt: moment(),
+      deliverAt: avoidWeekend(moment()),
       deliverByArray,
       deliverBySelectArray,
       deliverByEmptyArray,

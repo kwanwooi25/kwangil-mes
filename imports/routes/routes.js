@@ -6,6 +6,15 @@ import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 /*=============================================
+ IMPORTS DATA COLLECTIONS
+=============================================*/
+import { AccountsData } from '../api/accounts';
+import { ProductsData } from '../api/products';
+import { PlatesData } from '../api/plates';
+import { OrdersData } from '../api/orders';
+import { DeliveryData } from '../api/delivery';
+
+/*=============================================
  IMPORTS COMPONENTS
 =============================================*/
 import LoginPage from '../views/LoginPage';
@@ -20,32 +29,37 @@ import DeliveryPage from '../views/DeliveryPage';
 import UsersPage from '../views/UsersPage';
 import NotFoundPage from '../views/NotFoundPage';
 
-const unauthenticatedPages = ['/'];
-const authenticatedPages = ['/dashboard', '/accounts', '/products', '/plates', '/orders', '/orders-completed', '/delivery', '/users'];
+// export const routes = (
+//   <BrowserRouter>
+//     <div>
+//       {!!Meteor.userId() ? <Header /> : undefined}
+//       <Switch>
+//         <Route exact path="/" component={LoginPage} />
+//         <Route path="/dashboard" component={DashboardPage} />
+//         <Route path="/accounts" component={AccountsPage} />
+//         <Route path="/products" component={ProductsPage} />
+//         <Route path="/plates" component={PlatesPage} />
+//         <Route path="/orders" component={OrdersPage} />
+//         <Route path="/orders-completed" component={CompletedOrdersPage} />
+//         <Route path="/delivery" component={DeliveryPage} />
+//         <Route path="/users" component={UsersPage} />
+//         <Route path="*" component={NotFoundPage} />
+//       </Switch>
+//     </div>
+//   </BrowserRouter>
+// );
 
-export const routes = (
-  <BrowserRouter>
-    <div>
-      {!!Meteor.userId() ? (
-        <Header />
-      ) : (
-        undefined
-      )}
-      <Switch>
-        <Route exact path="/" component={LoginPage} />
-        <Route path="/dashboard" component={DashboardPage} />
-        <Route path="/accounts" component={AccountsPage} />
-        <Route path="/products" component={ProductsPage} />
-        <Route path="/plates" component={PlatesPage} />
-        <Route path="/orders" component={OrdersPage} />
-        <Route path="/orders-completed" component={CompletedOrdersPage} />
-        <Route path="/delivery" component={DeliveryPage} />
-        <Route path="/users" component={UsersPage} />
-        <Route path="*" component={NotFoundPage} />
-      </Switch>
-    </div>
-  </BrowserRouter>
-);
+const unauthenticatedPages = ['/'];
+const authenticatedPages = [
+  '/dashboard',
+  '/accounts',
+  '/products',
+  '/plates',
+  '/orders',
+  '/orders-completed',
+  '/delivery',
+  '/users'
+];
 
 // watch user's authentication for conditional routing
 export const onAuthChange = isAuthenticated => {
@@ -59,3 +73,193 @@ export const onAuthChange = isAuthenticated => {
     location.pathname = '/';
   }
 };
+
+export default class Routes extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isAccountsDataReady: false,
+      isProductsDataReady: false,
+      isPlatesDataReady: false,
+      isOrdersDataReady: false,
+      isDeliveryDataReady: false,
+      accountsData: [],
+      productsData: [],
+      platesData: [],
+      ordersData: [],
+      deliveryData: []
+    };
+  }
+
+  componentDidMount() {
+    const subsCache = new SubsCache(-1, -1);
+    const accountsSubscription = subsCache.subscribe('accounts');
+    const productsSubscription = subsCache.subscribe('products');
+    const platesSubscription = subsCache.subscribe('plates');
+    const ordersSubscription = subsCache.subscribe('orders');
+    const deliverySubscription = subsCache.subscribe('delivery');
+    const usersSubscription = subsCache.subscribe('users');
+
+    // tracks data change
+    Tracker.autorun(() => {
+      const isAccountsDataReady = accountsSubscription.ready();
+      const isProductsDataReady = productsSubscription.ready();
+      const isPlatesDataReady = platesSubscription.ready();
+      const isOrdersDataReady = ordersSubscription.ready();
+      const isDeliveryDataReady = deliverySubscription.ready();
+      const isUsersDataReady = usersSubscription.ready();
+      const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
+      const productsData = ProductsData.find(
+        {},
+        {
+          sort: { name: 1, thick: 1, length: 1, width: 1 }
+        }
+      ).fetch();
+      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
+      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
+      const deliveryData = DeliveryData.find({}, { sort: { _id: 1 } }).fetch();
+      const usersData = Meteor.users.find().fetch();
+
+      this.setState({
+        isAccountsDataReady,
+        isProductsDataReady,
+        isPlatesDataReady,
+        isOrdersDataReady,
+        isDeliveryDataReady,
+        isUsersDataReady,
+        accountsData,
+        productsData,
+        platesData,
+        ordersData,
+        deliveryData,
+        usersData
+      });
+    });
+  }
+
+  render() {
+    return (
+      <BrowserRouter>
+        <div>
+          {!!Meteor.userId() ? <Header /> : undefined}
+          <Switch>
+            <Route exact path="/" component={LoginPage} />
+            <Route
+              path="/dashboard"
+              render={() => (
+                <DashboardPage
+                  isDataReady={
+                    this.state.isProductsDataReady &&
+                    this.state.isOrdersDataReady
+                  }
+                  productsData={this.state.productsData}
+                  ordersData={this.state.ordersData}
+                  deliveryData={this.state.deliveryData}
+                />
+              )}
+            />
+            <Route
+              path="/accounts"
+              render={() => (
+                <AccountsPage
+                  isDataReady={this.state.isAccountsDataReady}
+                  accountsData={this.state.accountsData}
+                />
+              )}
+            />
+            <Route
+              path="/products"
+              render={() => (
+                <ProductsPage
+                  isDataReady={
+                    this.state.isAccountsDataReady &&
+                    this.state.isProductsDataReady &&
+                    this.state.isPlatesDataReady
+                  }
+                  accountsData={this.state.accountsData}
+                  productsData={this.state.productsData}
+                  platesData={this.state.platesData}
+                />
+              )}
+            />
+            <Route
+              path="/plates"
+              render={() => (
+                <PlatesPage
+                  isDataReady={
+                    this.state.isAccountsDataReady &&
+                    this.state.isProductsDataReady &&
+                    this.state.isPlatesDataReady
+                  }
+                  accountsData={this.state.accountsData}
+                  productsData={this.state.productsData}
+                  platesData={this.state.platesData}
+                />
+              )}
+            />
+            <Route
+              path="/orders"
+              render={() => (
+                <OrdersPage
+                  isDataReady={
+                    this.state.isAccountsDataReady &&
+                    this.state.isProductsDataReady &&
+                    this.state.isOrdersDataReady
+                  }
+                  accountsData={this.state.accountsData}
+                  productsData={this.state.productsData}
+                  ordersData={this.state.ordersData}
+                />
+              )}
+            />
+            <Route
+              path="/orders-completed"
+              render={() => (
+                <CompletedOrdersPage
+                  isDataReady={
+                    this.state.isAccountsDataReady &&
+                    this.state.isProductsDataReady &&
+                    this.state.isOrdersDataReady &&
+                    this.state.isDeliveryDataReady
+                  }
+                  accountsData={this.state.accountsData}
+                  productsData={this.state.productsData}
+                  ordersData={this.state.ordersData}
+                  deliveryData={this.state.deliveryData}
+                />
+              )}
+            />
+            <Route
+              path="/delivery"
+              render={() => (
+                <DeliveryPage
+                  isDataReady={
+                    this.state.isAccountsDataReady &&
+                    this.state.isProductsDataReady &&
+                    this.state.isOrdersDataReady &&
+                    this.state.isDeliveryDataReady
+                  }
+                  accountsData={this.state.accountsData}
+                  productsData={this.state.productsData}
+                  ordersData={this.state.ordersData}
+                  deliveryData={this.state.deliveryData}
+                />
+              )}
+            />
+            <Route
+              path="/users"
+              render={() => (
+                <UsersPage
+                  isDataReady={this.state.isUsersDataReady}
+                  usersData={this.state.usersData}
+                />
+              )}
+            />
+            <Route path="*" component={NotFoundPage} />
+          </Switch>
+        </div>
+      </BrowserRouter>
+    );
+  }
+}

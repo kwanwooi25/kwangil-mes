@@ -16,6 +16,7 @@ export default class AccountPageHeaderButtons extends React.Component {
     super(props);
 
     this.state = {
+      filteredAccountsData: props.filteredAccountsData,
       isModalNewOpen: false,
       isModalNewMultiOpen: false
     };
@@ -24,6 +25,10 @@ export default class AccountPageHeaderButtons extends React.Component {
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onClickNew = this.onClickNew.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ filteredAccountsData: props.filteredAccountsData });
   }
 
   onClickNew() {
@@ -40,7 +45,7 @@ export default class AccountPageHeaderButtons extends React.Component {
 
   onClickExportExcel() {
     const filename = '광일_거래처목록.csv';
-    const accounts = this.props.filteredAccountsData;
+    const accounts = this.state.filteredAccountsData;
     const keys = [
       '_id',
       'name',

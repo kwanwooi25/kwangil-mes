@@ -11,13 +11,14 @@ export default class PlatePageHeaderButtons extends React.Component {
   isAdmin
   isManager
   productsData
-  platesData
+  filteredPlatesData
   queryObj
   =========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
+      filteredPlatesData: props.filteredPlatesData,
       isModalNewOpen: false,
       isModalNewMultiOpen: false
     };
@@ -26,6 +27,10 @@ export default class PlatePageHeaderButtons extends React.Component {
     this.onClickNewMulti = this.onClickNewMulti.bind(this);
     this.onModalClose = this.onModalClose.bind(this);
     this.onClickExportExcel = this.onClickExportExcel.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({ filteredPlatesData: props.filteredPlatesData });
   }
 
   onClickNew() {
@@ -42,10 +47,7 @@ export default class PlatePageHeaderButtons extends React.Component {
 
   onClickExportExcel() {
     const filename = '광일_동판목록.csv';
-    const queryObj = this.props.queryObj;
-
-    // get plate list
-    const plates = [];
+    const plates = this.state.filteredPlatesData;
     const keys = [
       '_id',
       'round',
@@ -56,57 +58,6 @@ export default class PlatePageHeaderButtons extends React.Component {
       'history',
       'memo'
     ];
-
-    // filter data
-    this.props.platesData.map(plate => {
-      // store product names in an array
-      const productNames = [];
-      plate.forProductList.map(({ productID }) => {
-        const product = this.props.productsData.find(
-          product => product._id === productID
-        );
-        if (product) {
-          productNames.push(product.name);
-        } else {
-          productNames.push('[삭제된 품목]');
-        }
-      });
-
-      let matchProductNameQuery = false;
-      let matchRoundQuery = false;
-      let matchLengthQuery = false;
-      let matchMaterialQuery = false;
-
-      // return true if any of product names contain query text
-      productNames.forEach(productName => {
-        if (productName.indexOf(queryObj.productName) > -1) {
-          matchProductNameQuery = true;
-        }
-      });
-
-      if (String(plate.round).indexOf(queryObj.round) > -1) {
-        matchRoundQuery = true;
-      }
-
-      if (String(plate.length).indexOf(queryObj.length) > -1) {
-        matchLengthQuery = true;
-      }
-
-      if (queryObj.plateMaterial === 'both') {
-        matchMaterialQuery = true;
-      } else if (plate.material.indexOf(queryObj.plateMaterial) > -1) {
-        matchMaterialQuery = true;
-      }
-
-      if (
-        matchProductNameQuery &&
-        matchRoundQuery &&
-        matchLengthQuery &&
-        matchMaterialQuery
-      ) {
-        plates.push(plate);
-      }
-    });
 
     // generate header csv
     let headerCSV = '동판ID,둘레,기장,구분,위치,사용품목,이력,메모';

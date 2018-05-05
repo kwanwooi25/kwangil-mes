@@ -9,21 +9,29 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
   isManager
   accountsData
   productsData
-  ordersData
-  query
+  filteredOrdersData
   ==========================================================================*/
   constructor(props) {
     super(props);
 
+    this.state = {
+      filteredOrdersData: props.filteredOrdersData,
+      hasOrdersList: props.filteredOrdersData.length !== 0
+    }
+
     this.onClickExportExcel = this.onClickExportExcel.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({
+      filteredOrdersData: props.filteredOrdersData,
+      hasOrdersList: props.filteredOrdersData.length !== 0
+    });
   }
 
   onClickExportExcel() {
     const filename = '광일_납품대기목록.csv';
-    const query = this.props.query;
-
-    // get order list
-    const orders = [];
+    const orders = this.state.filteredOrdersData;
     const keys = [
       '_id',
       'orderedAt',
@@ -43,41 +51,6 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
       'completedAt',
       'deliveredAt'
     ];
-
-    this.props.ordersData
-      .sort((a, b) => {
-        const a_deliverBefore = a.data.deliverBefore;
-        const b_deliverBefore = b.data.deliverBefore;
-        if (a_deliverBefore > b_deliverBefore) return 1;
-        if (a_deliverBefore < b_deliverBefore) return -1;
-        return 0;
-      })
-      .map(order => {
-        const product = this.props.productsData.find(
-          product => product._id === order.data.productID
-        );
-        let account;
-        if (product) {
-          account = this.props.accountsData.find(
-            account => account._id === product.accountID
-          );
-        }
-
-        let matchQuery = false;
-
-        if (
-          (account && account.name.indexOf(query) > -1 ||
-            product && product.name.indexOf(query) > -1) &&
-          order.data.isCompleted &&
-          !order.data.isDelivered
-        ) {
-          matchQuery = true;
-        }
-
-        if (matchQuery) {
-          orders.push(order);
-        }
-      });
 
     // generate header csv
     let headerCSV =
@@ -126,6 +99,7 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
         <button
           className="button button-with-icon-span page-header__button"
           onClick={this.onClickExportExcel}
+          disabled={!this.state.hasOrdersList}
         >
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>

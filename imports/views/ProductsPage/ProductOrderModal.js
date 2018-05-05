@@ -7,6 +7,7 @@ import { ProductsData } from '../../api/products';
 import { OrdersData } from '../../api/orders';
 import { AccountsData } from '../../api/accounts';
 import { comma, uncomma } from '../../api/comma';
+import { avoidWeekend } from '../../api/avoidWeekend'
 
 import DatePickerWithMessage from '../../custom/DatePicker/DatePickerWithMessage';
 import TextInput from '../../custom/TextInput';
@@ -113,19 +114,8 @@ export default class ProductOrderModal extends React.Component {
     if (this.state.product.isPrint) {
       leadtime = 10;
     }
-    const deliverBefore = this.avoidWeekend(orderedAt.add(leadtime, 'days'));
+    const deliverBefore = avoidWeekend(orderedAt.add(leadtime, 'days'));
     this.setState({ deliverBefore });
-  }
-
-  // function to set deliverBefore date to be weekdays
-  // passes moment() object
-  avoidWeekend(date) {
-    if (date.day() === 6) {
-      date = date.subtract(1, 'days');
-    } else if (date.day() === 0) {
-      date = date.add(1, 'days');
-    }
-    return date;
   }
 
   getProductInfo() {
