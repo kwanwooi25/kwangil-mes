@@ -12,8 +12,8 @@ export default class UsersPage extends React.Component {
 
     this.state = {
       query: '',
-      usersData: props.usersData,
-      isDataReady: props.isDataReady
+      usersData: [],
+      isDataReady: false
     };
 
     this.onInputSearchChange = this.onInputSearchChange.bind(this);
@@ -25,13 +25,15 @@ export default class UsersPage extends React.Component {
     window.addEventListener('resize', () => {
       setLayout(30);
     });
-  }
 
-  componentWillReceiveProps(props) {
-    this.setState({
-      usersData: props.usersData,
-      isDataReady: props.isDataReady
-    });
+    // data tracker
+    Tracker.autorun(() => {
+      const usersSubscription = Meteor.subscribe('users');
+      const isDataReady = usersSubscription.ready();
+      const usersData = Meteor.users.find().fetch();
+
+      this.setState({ isDataReady, usersData });
+    })
   }
 
   onInputSearchChange(query) {

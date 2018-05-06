@@ -2,6 +2,7 @@
  IMPORTS LIBRARIES
 =============================================*/
 import { Meteor } from 'meteor/meteor';
+import { UserStatus } from 'meteor/ostrio:user-status';
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
@@ -93,48 +94,61 @@ export default class Routes extends React.Component {
   }
 
   componentDidMount() {
-    const subsCache = new SubsCache(-1, -1);
-    const accountsSubscription = subsCache.subscribe('accounts');
-    const productsSubscription = subsCache.subscribe('products');
-    const platesSubscription = subsCache.subscribe('plates');
-    const ordersSubscription = subsCache.subscribe('orders');
-    const deliverySubscription = subsCache.subscribe('delivery');
-    const usersSubscription = subsCache.subscribe('users');
+    // data subscription
+    const accountsSubscription = Meteor.subscribe('accounts');
+    const productsSubscription = Meteor.subscribe('products');
+    const platesSubscription = Meteor.subscribe('plates');
+    const ordersSubscription = Meteor.subscribe('orders');
+    const deliverySubscription = Meteor.subscribe('delivery');
+    const usersSubscription = Meteor.subscribe('users');
 
     // tracks data change
     Tracker.autorun(() => {
-      const isAccountsDataReady = accountsSubscription.ready();
-      const isProductsDataReady = productsSubscription.ready();
-      const isPlatesDataReady = platesSubscription.ready();
-      const isOrdersDataReady = ordersSubscription.ready();
-      const isDeliveryDataReady = deliverySubscription.ready();
-      const isUsersDataReady = usersSubscription.ready();
-      const accountsData = AccountsData.find({}, { sort: { name: 1 } }).fetch();
-      const productsData = ProductsData.find(
-        {},
-        {
-          sort: { name: 1, thick: 1, length: 1, width: 1 }
-        }
-      ).fetch();
-      const platesData = PlatesData.find({}, { sort: { round: 1 } }).fetch();
-      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
-      const deliveryData = DeliveryData.find({}, { sort: { _id: 1 } }).fetch();
-      const usersData = Meteor.users.find().fetch();
 
-      this.setState({
-        isAccountsDataReady,
-        isProductsDataReady,
-        isPlatesDataReady,
-        isOrdersDataReady,
-        isDeliveryDataReady,
-        isUsersDataReady,
-        accountsData,
-        productsData,
-        platesData,
-        ordersData,
-        deliveryData,
-        usersData
-      });
+      // logout user when user has been idle for 1 hour
+      if (UserStatus.status.get() === 'idle') {
+        setTimeout(() => { Accounts.logout() }, 3600000);
+      }
+
+      // tracks data change when user is logged in
+      if (Meteor.user()) {
+        const isAccountsDataReady = accountsSubscription.ready();
+        const isProductsDataReady = productsSubscription.ready();
+        const isPlatesDataReady = platesSubscription.ready();
+        const isOrdersDataReady = ordersSubscription.ready();
+        const isDeliveryDataReady = deliverySubscription.ready();
+        const isUsersDataReady = usersSubscription.ready();
+
+        const accountsCursor = AccountsData.find({}, { sort: { name: 1 } });
+        const productsCursor = ProductsData.find(
+          {},
+          {
+            sort: { name: 1, thick: 1, length: 1, width: 1 }
+          }
+        );
+        const platesCursor = PlatesData.find({}, { sort: { round: 1 } });
+        const ordersCursor = OrdersData.find({}, { sort: { _id: 1 } });
+        const deliveryCursor = DeliveryData.find({}, { sort: { _id: 1 } });
+
+        const accountsData = accountsCursor.fetch();
+        const productsData = productsCursor.fetch();
+        const platesData = platesCursor.fetch();
+        const ordersData = ordersCursor.fetch();
+        const deliveryData = deliveryCursor.fetch();
+
+        this.setState({
+          isAccountsDataReady,
+          isProductsDataReady,
+          isPlatesDataReady,
+          isOrdersDataReady,
+          isDeliveryDataReady,
+          accountsData,
+          productsData,
+          platesData,
+          ordersData,
+          deliveryData
+        });
+      }
     });
   }
 
@@ -165,6 +179,7 @@ export default class Routes extends React.Component {
                 <AccountsPage
                   isDataReady={this.state.isAccountsDataReady}
                   accountsData={this.state.accountsData}
+                  accountsDataChange={this.state.accountsDataChange}
                 />
               )}
             />
@@ -247,15 +262,7 @@ export default class Routes extends React.Component {
                 />
               )}
             />
-            <Route
-              path="/users"
-              render={() => (
-                <UsersPage
-                  isDataReady={this.state.isUsersDataReady}
-                  usersData={this.state.usersData}
-                />
-              )}
-            />
+            <Route path="/users" component={UsersPage} />
             <Route path="*" component={NotFoundPage} />
           </Switch>
         </div>

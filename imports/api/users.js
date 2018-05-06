@@ -8,6 +8,7 @@ if (Meteor.isServer) {
   });
 }
 
+// admin account can update or remove users data
 Meteor.users.allow({
   update: function(userId, user) {
     return Meteor.users.findOne(userId).profile.isAdmin;
@@ -26,10 +27,6 @@ Accounts.validateLoginAttempt(function(data) {
     return true;
   }
 });
-
-Accounts.config({
-  loginExpirationInDays: 0.05
-})
 
 Meteor.methods({
   'users.setPassword'(userID, password) {

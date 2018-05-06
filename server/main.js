@@ -11,13 +11,15 @@ import '../imports/api/slingshot';
 import '../imports/api/images';
 
 Meteor.startup(() => {
+
+  // create admin account on first running app
   if (!Meteor.users.find().count()) {
     const username = 'admin';
     const password = 'admin';
     const profile = {
       displayName: '관리자',
-      department: '관리부',
-      position: '대빵',
+      department: '',
+      position: '',
       isManager: false,
       isAdmin: true
     };

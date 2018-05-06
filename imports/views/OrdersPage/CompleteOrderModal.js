@@ -6,6 +6,7 @@ import { OrdersData } from '../../api/orders';
 import { ProductsData } from '../../api/products';
 import { AccountsData } from '../../api/accounts';
 import { comma, uncomma } from '../../api/comma';
+import { avoidWeekend } from '../../api/avoidWeekend';
 
 import Checkbox from '../../custom/Checkbox';
 import TextInput from '../../custom/TextInput';
@@ -51,7 +52,7 @@ export default class CompleteOrderModal extends React.Component {
     }
 
     this.state = {
-      completedAt: moment(),
+      completedAt: avoidWeekend(moment()),
       completedQuantityArray,
       isCompletedArray,
       completedQuantityEmptyArray,
@@ -299,7 +300,7 @@ export default class CompleteOrderModal extends React.Component {
               id="completedAt"
               date={this.state.completedAt}
               onDateChange={completedAt => {
-                if (completedAt === null) completedAt = moment();
+                if (completedAt === null) completedAt = avoidWeekend(moment());
                 this.setState({ completedAt });
               }}
               isOutsideRange={() => {

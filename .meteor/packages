@@ -25,6 +25,5 @@ fortawesome:fontawesome
 edgee:slingshot
 nathantreid:static-assets
 alanning:roles
-ccorcos:subs-cache
 babel-compiler@7.0.6
-meteorhacks:subs-manager
+ostrio:user-status
