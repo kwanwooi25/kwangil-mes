@@ -18,14 +18,19 @@ Meteor.users.allow({
   }
 });
 
-// prevent auto login on account creation
 Accounts.validateLoginAttempt(function(data) {
   let diff = new Date() - new Date(data.user.createdAt);
+
+  // prevent auto login on account creation
   if (diff < 2000) {
     return false;
   } else {
     return true;
   }
+});
+
+Accounts.config({
+    loginExpirationInDays: (1 / 24) * 12 // 12hours
 });
 
 Meteor.methods({

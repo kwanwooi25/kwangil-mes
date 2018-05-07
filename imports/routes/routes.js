@@ -102,12 +102,18 @@ export default class Routes extends React.Component {
     const deliverySubscription = Meteor.subscribe('delivery');
     const usersSubscription = Meteor.subscribe('users');
 
+    let idleTimer = null;
+
     // tracks data change
     Tracker.autorun(() => {
 
       // logout user when user has been idle for 1 hour
       if (UserStatus.status.get() === 'idle') {
-        setTimeout(() => { Accounts.logout() }, 3600000);
+        idleTimer = setTimeout(() => {
+          Accounts.logout();
+        }, 3600000);
+      } else if (UserStatus.status.get() === 'online') {
+        clearTimeout(idleTimer);
       }
 
       // tracks data change when user is logged in
