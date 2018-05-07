@@ -17,6 +17,7 @@ export default class OrderList extends React.Component {
   isManager
   accountsData
   productsData
+  ordersData
   filteredOrdersData
   isDataReady
   ==========================================================================*/
@@ -29,9 +30,8 @@ export default class OrderList extends React.Component {
       isProductOrderModalOpen: false,
       isDeleteConfirmationModalOpen: false,
       selectedOrderID: '',
-      selectedOrders: [],
+      selectedOrders: Session.get('selectedOrders') || [],
       confirmationDescription: [],
-      isSelectedMulti: false
     };
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
@@ -73,16 +73,14 @@ export default class OrderList extends React.Component {
       }
     }
     selectedOrders = selectedOrders.filter(value => value !== 'selectAll');
-    if (selectedOrders.length >= 2) {
-      this.setState({ isSelectedMulti: true });
-    } else {
-      this.setState({ isSelectedMulti: false });
-    }
-    this.setState({ selectedOrders });
+
+    this.setState({ selectedOrders }, () => {
+      Session.set('selectedOrders', selectedOrders);
+    });
   }
 
   updateOrderStatus(orderID, statusValue) {
-    const order = this.state.filteredOrdersData.find(
+    const order = this.state.ordersData.find(
       order => order._id === orderID
     );
     let data = order.data;
@@ -96,7 +94,9 @@ export default class OrderList extends React.Component {
   }
 
   showCompleteOrderModal(selectedOrders) {
-    this.setState({ isCompleteOrderModalOpen: true, selectedOrders });
+    this.setState({ isCompleteOrderModalOpen: true, selectedOrders }, () => {
+      Session.set('selectedOrders', selectedOrders);
+    });
   }
 
   hideCompleteOrderModal(answer) {
@@ -107,7 +107,9 @@ export default class OrderList extends React.Component {
       document.querySelector('input[name="selectAll"]').checked = false;
 
       // reset selectedOrders array
-      this.setState({ selectedOrders: [], isSelectedMulti: false });
+      this.setState({ selectedOrders: [] }, () => {
+        Session.set('selectedOrders', []);
+      });
     }
   }
 
@@ -125,7 +127,7 @@ export default class OrderList extends React.Component {
     ];
 
     selectedOrders.map(orderID => {
-      const order = this.state.filteredOrdersData.find(
+      const order = this.state.ordersData.find(
         order => order._id === orderID
       );
       const product = this.props.productsData.find(
@@ -142,6 +144,8 @@ export default class OrderList extends React.Component {
       isDeleteConfirmationModalOpen: true,
       selectedOrders,
       confirmationDescription
+    }, () => {
+      Session.set('selectedOrders', selectedOrders);
     });
   }
 
@@ -157,7 +161,9 @@ export default class OrderList extends React.Component {
       document.querySelector('input[name="selectAll"]').checked = false;
 
       // reset selectedOrders array
-      this.setState({ selectedOrders: [], isSelectedMulti: false });
+      this.setState({ selectedOrders: [] }, () => {
+        Session.set('selectedOrders', []);
+      });
     }
   }
 
@@ -169,9 +175,20 @@ export default class OrderList extends React.Component {
       const account = this.props.accountsData.find(
         account => account._id === product.accountID
       );
+      const selectedOrders = this.state.selectedOrders;
+      let isSelected = false;
+      if (selectedOrders) {
+        selectedOrders.map(orderID => {
+          if (order._id === orderID) {
+            isSelected = true;
+          }
+        })
+      }
+
       return (
         <OrderListItem
           key={order._id}
+          isSelected={isSelected}
           isAdmin={this.props.isAdmin}
           isManager={this.props.isManager}
           account={account}
@@ -193,7 +210,7 @@ export default class OrderList extends React.Component {
         {(this.props.isAdmin || this.props.isManager) && (
           <OrderListHeader
             onCheckboxChange={this.onCheckboxChange}
-            isSelectedMulti={this.state.isSelectedMulti}
+            isSelectedMulti={this.state.selectedOrders.length >= 2}
             selectedOrders={this.state.selectedOrders}
             showCompleteOrderModal={this.showCompleteOrderModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}

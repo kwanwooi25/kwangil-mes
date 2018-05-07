@@ -7,6 +7,7 @@ import ProductName from '../components/ProductName';
 export default class ProductListItem extends React.Component {
   /*=========================================================================
   >> props <<
+  isSelected
   isAdmin
   isManager
   account
@@ -80,6 +81,7 @@ export default class ProductListItem extends React.Component {
           <div className="product-checkbox-container">
             <Checkbox
               name={product._id}
+              checked={this.props.isSelected}
               onInputChange={this.props.onCheckboxChange}
             />
           </div>

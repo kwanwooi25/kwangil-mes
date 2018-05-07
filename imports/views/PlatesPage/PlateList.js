@@ -12,6 +12,7 @@ export default class PlateList extends React.Component {
   isAdmin
   isManager
   productsData
+  platesData
   filteredPlatesData
   isDataReady
   ==========================================================================*/
@@ -25,8 +26,7 @@ export default class PlateList extends React.Component {
       isDeleteConfirmationModalOpen: false,
       selectedPlateID: '',
       confirmationDescription: [],
-      isSelectedMulti: false,
-      selectedPlates: []
+      selectedPlates: Session.get('selectedPlates') || []
     };
 
     this.onListScroll = this.onListScroll.bind(this);
@@ -78,12 +78,10 @@ export default class PlateList extends React.Component {
       }
     }
     selectedPlates = selectedPlates.filter(value => value !== 'selectAll');
-    if (selectedPlates.length >= 2) {
-      this.setState({ isSelectedMulti: true });
-    } else {
-      this.setState({ isSelectedMulti: false });
-    }
-    this.setState({ selectedPlates });
+
+    this.setState({ selectedPlates }, () => {
+      Session.set('selectedPlates', selectedPlates);
+    });
   }
 
   // show plate modal (EDIT mode)
@@ -105,7 +103,7 @@ export default class PlateList extends React.Component {
     ];
 
     selectedPlates.map(plateID => {
-      const plate = this.state.filteredPlatesData.find(
+      const plate = this.props.platesData.find(
         plate => plate._id === plateID
       );
       let plateInfoText = `${plate.round} x ${plate.length}`;
@@ -117,6 +115,8 @@ export default class PlateList extends React.Component {
       isDeleteConfirmationModalOpen: true,
       selectedPlates,
       confirmationDescription
+    }, () => {
+      Session.set('selectedPlates', selectedPlates);
     });
   }
 
@@ -135,21 +135,34 @@ export default class PlateList extends React.Component {
       }
 
       // reset selectedPlates array
-      this.setState({ selectedPlates: [] });
+      this.setState({ selectedPlates: [] }, () => {
+        Session.set('selectedPlates', []);
+      });
     }
   }
 
   onDeleteMultiClick() {
-    this.showDeleteConfirmationModal(this.state.selectedPlates);
+    this.showDeleteConfirmationModal(Session.get('selectedPlates'));
   }
 
   getPlateList() {
     return this.state.filteredPlatesData
       .slice(0, this.state.itemsToShow)
       .map(plate => {
+        const selectedPlates = this.state.selectedPlates;
+        let isSelected = false;
+        if (selectedPlates) {
+          selectedPlates.map(plateID => {
+            if (plate._id === plateID) {
+              isSelected = true;
+            }
+          })
+        }
+
         return (
           <PlateListItem
             key={plate._id}
+            isSelected={isSelected}
             isAdmin={this.props.isAdmin}
             isManager={this.props.isManager}
             plate={plate}
@@ -176,7 +189,7 @@ export default class PlateList extends React.Component {
               <button
                 className="button button-with-icon-span list-header-button"
                 onClick={this.onDeleteMultiClick}
-                disabled={!this.state.isSelectedMulti}
+                disabled={this.state.selectedPlates.length <= 1}
               >
                 <i className="fa fa-trash fa-lg" />
                 <span>삭제</span>

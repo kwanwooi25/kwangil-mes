@@ -46,7 +46,7 @@ export default class PlatesPage extends React.Component {
     this.filterData();
   }
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps(props) {
     this.setState({ platesData: props.platesData }, () => {
       this.filterData();
     });
@@ -139,6 +139,7 @@ export default class PlatesPage extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             productsData={this.props.productsData}
+            platesData={this.props.platesData}
             filteredPlatesData={this.state.filteredPlatesData}
             isDataReady={this.props.isDataReady}
           />

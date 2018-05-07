@@ -13,6 +13,7 @@ import OrderName from '../components/OrderName';
 export default class OrderListItem extends React.Component {
   /*=========================================================================
   >> props <<
+  isSelected
   isAdmin
   isManager
   account
@@ -142,6 +143,7 @@ export default class OrderListItem extends React.Component {
           <div className="order-checkbox-container">
             <Checkbox
               name={order._id}
+              checked={this.props.isSelected}
               onInputChange={this.props.onCheckboxChange}
               disabled={order.data.isCompleted}
             />

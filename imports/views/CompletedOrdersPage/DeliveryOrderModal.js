@@ -18,7 +18,7 @@ export default class DeliveryOrderModal extends React.Component {
   /*=========================================================================
   >> props <<
   isOpen       : if modal is open
-  selectedOrders
+  selectedCompletedOrders
   onModalClose : function to execute on modal close
   ==========================================================================*/
 
@@ -28,7 +28,7 @@ export default class DeliveryOrderModal extends React.Component {
     let deliverByArray = [];
     let deliverBySelectArray = [];
     let deliverByEmptyArray = [];
-    const ordersCount = props.selectedOrders.length;
+    const ordersCount = props.selectedCompletedOrders.length;
 
     for (let i = 0; i < ordersCount; i++) {
       deliverByArray.push('');
@@ -80,7 +80,7 @@ export default class DeliveryOrderModal extends React.Component {
     for (let i = 0; i < this.state.ordersCount; i++) {
       const targetName = `deliverByArray[${i}]`;
       const value = this.state.deliverByArray[i];
-      const order = OrdersData.findOne({ _id: this.props.selectedOrders[i] });
+      const order = OrdersData.findOne({ _id: this.props.selectedCompletedOrders[i] });
       const product = ProductsData.findOne({ _id: order.data.productID });
       const orderInfoText = `
         ${product.name} (${product.thick}x${product.length}x${product.width}) = ${comma(uncomma(order.data.completedQuantity))}매`;
@@ -140,8 +140,8 @@ export default class DeliveryOrderModal extends React.Component {
     }
   }
 
-  getDeliveryList(selectedOrders) {
-    return selectedOrders.map((orderID, index) => {
+  getDeliveryList(selectedCompletedOrders) {
+    return selectedCompletedOrders.map((orderID, index) => {
       const order = OrdersData.findOne({ _id: orderID });
       const product = ProductsData.findOne({ _id: order.data.productID });
       const account = AccountsData.findOne({ _id: product.accountID });
@@ -230,7 +230,7 @@ export default class DeliveryOrderModal extends React.Component {
         </div>
         <div className="boxed-view__content">
           <ul id="order-list-to-deliver">
-            {this.getDeliveryList(this.props.selectedOrders)}
+            {this.getDeliveryList(this.props.selectedCompletedOrders)}
           </ul>
           <div className="delivery-order-modal__deliverAt-container">
             <label

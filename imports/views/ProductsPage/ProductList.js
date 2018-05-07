@@ -13,6 +13,7 @@ export default class ProductList extends React.Component {
   isAdmin
   isManager
   accountsData
+  productsData
   filteredProductsData
   isDataReady
   ==========================================================================*/
@@ -27,8 +28,7 @@ export default class ProductList extends React.Component {
       isDeleteConfirmationModalOpen: false,
       selectedProductID: '',
       confirmationDescription: [],
-      isSelectedMulti: false,
-      selectedProducts: []
+      selectedProducts: Session.get('selectedProducts') || []
     };
 
     this.onListScroll = this.onListScroll.bind(this);
@@ -63,6 +63,7 @@ export default class ProductList extends React.Component {
 
   onCheckboxChange(e) {
     let selectedProducts = this.state.selectedProducts;
+
     if (e.target.name === 'selectAll') {
       selectedProducts = [];
       const checkboxes = document.querySelectorAll(
@@ -84,12 +85,10 @@ export default class ProductList extends React.Component {
       }
     }
     selectedProducts = selectedProducts.filter(value => value !== 'selectAll');
-    if (selectedProducts.length >= 2) {
-      this.setState({ isSelectedMulti: true });
-    } else {
-      this.setState({ isSelectedMulti: false });
-    }
-    this.setState({ selectedProducts });
+
+    this.setState({ selectedProducts }, () => {
+      Session.set('selectedProducts', selectedProducts);
+    });
   }
 
   // show product order modal
@@ -123,7 +122,7 @@ export default class ProductList extends React.Component {
     ];
 
     selectedProducts.map(productID => {
-      const product = this.state.filteredProductsData.find(
+      const product = this.props.productsData.find(
         product => product._id === productID
       );
       let productInfoText = `${product.name} (${product.thick}x${
@@ -136,6 +135,8 @@ export default class ProductList extends React.Component {
       isDeleteConfirmationModalOpen: true,
       selectedProducts,
       confirmationDescription
+    }, () => {
+      Session.set('selectedProducts', selectedProducts);
     });
   }
 
@@ -151,7 +152,9 @@ export default class ProductList extends React.Component {
       document.querySelector('input[name="selectAll"]').checked = false;
 
       // reset selectedProducts array
-      this.setState({ selectedProducts: [] });
+      this.setState({ selectedProducts: [] }, () => {
+        Session.set('selectedProducts', []);
+      });
     }
   }
 
@@ -166,10 +169,20 @@ export default class ProductList extends React.Component {
         const account = this.props.accountsData.find(
           account => account._id === product.accountID
         );
+        const selectedProducts = this.state.selectedProducts;
+        let isSelected = false;
+        if (selectedProducts) {
+          selectedProducts.map(productID => {
+            if (product._id === productID) {
+              isSelected = true;
+            }
+          })
+        }
 
         return (
           <ProductListItem
             key={product._id}
+            isSelected={isSelected}
             isAdmin={this.props.isAdmin}
             isManager={this.props.isManager}
             account={account}
@@ -197,7 +210,7 @@ export default class ProductList extends React.Component {
               <button
                 className="button button-with-icon-span list-header-button"
                 onClick={this.onDeleteMultiClick}
-                disabled={!this.state.isSelectedMulti}
+                disabled={this.state.selectedProducts.length <= 1}
               >
                 <i className="fa fa-trash fa-lg" />
                 <span>삭제</span>

@@ -165,6 +165,7 @@ export default class ProductsPage extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             accountsData={this.props.accountsData}
+            productsData={this.props.productsData}
             filteredProductsData={this.state.filteredProductsData}
             isDataReady={this.props.isDataReady}
           />

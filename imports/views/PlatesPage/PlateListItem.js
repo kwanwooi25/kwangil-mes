@@ -7,6 +7,7 @@ import PlateName from '../components/PlateName';
 export default class PlateListItem extends React.Component {
   /*=========================================================================
   >> props <<
+  isSelected
   isAdmin
   isManager
   plate
@@ -101,6 +102,7 @@ export default class PlateListItem extends React.Component {
           <div className="plate-list-item__checkbox-container">
             <Checkbox
               name={plate._id}
+              checked={this.props.isSelected}
               onInputChange={this.props.onCheckboxChange}
             />
           </div>

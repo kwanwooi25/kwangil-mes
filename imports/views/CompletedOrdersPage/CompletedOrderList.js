@@ -16,6 +16,7 @@ export default class CompletedOrderList extends React.Component {
   isManager
   accountsData
   productsData
+  ordersData
   filteredOrdersData
   isDataReady
   ==========================================================================*/
@@ -25,10 +26,9 @@ export default class CompletedOrderList extends React.Component {
     this.state = {
       filteredOrdersData: props.filteredOrdersData,
       isDeliveryOrderModalOpen: false,
-      selectedOrders: [],
+      selectedCompletedOrders: Session.get('selectedCompletedOrders') || [],
       confirmationTitle: '',
-      confirmationDescription: [],
-      isSelectedMulti: false
+      confirmationDescription: []
     };
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
@@ -41,9 +41,9 @@ export default class CompletedOrderList extends React.Component {
   }
 
   onCheckboxChange(e) {
-    let selectedOrders = this.state.selectedOrders;
+    let selectedCompletedOrders = this.state.selectedCompletedOrders;
     if (e.target.name === 'selectAll') {
-      selectedOrders = [];
+      selectedCompletedOrders = [];
       const checkboxes = document.querySelectorAll(
         '#completed-order-list input[type="checkbox"]:not(:disabled)'
       );
@@ -51,26 +51,24 @@ export default class CompletedOrderList extends React.Component {
       for (let i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = e.target.checked;
         if (e.target.checked) {
-          selectedOrders.push(checkboxes[i].name);
+          selectedCompletedOrders.push(checkboxes[i].name);
         }
       }
     } else {
-      selectedOrders = selectedOrders.filter(value => value !== e.target.name);
+      selectedCompletedOrders = selectedCompletedOrders.filter(value => value !== e.target.name);
       if (e.target.checked) {
-        selectedOrders.push(e.target.name);
+        selectedCompletedOrders.push(e.target.name);
       }
     }
-    selectedOrders = selectedOrders.filter(value => value !== 'selectAll');
-    if (selectedOrders.length >= 2) {
-      this.setState({ isSelectedMulti: true });
-    } else {
-      this.setState({ isSelectedMulti: false });
-    }
-    this.setState({ selectedOrders });
+    selectedCompletedOrders = selectedCompletedOrders.filter(value => value !== 'selectAll');
+
+    this.setState({ selectedCompletedOrders }, () => {
+      Session.set('selectedCompletedOrders', selectedCompletedOrders);
+    });
   }
 
-  showDeliveryOrderModal(selectedOrders) {
-    this.setState({ isDeliveryOrderModalOpen: true, selectedOrders });
+  showDeliveryOrderModal(selectedCompletedOrders) {
+    this.setState({ isDeliveryOrderModalOpen: true, selectedCompletedOrders });
   }
 
   hideDeliveryOrderModal(answer) {
@@ -83,8 +81,10 @@ export default class CompletedOrderList extends React.Component {
         checkboxes[i].checked = false;
       }
 
-      // reset selectedOrders array
-      this.setState({ selectedOrders: [], isSelectedMulti: false });
+      // reset selectedCompletedOrders array
+      this.setState({ selectedCompletedOrders: [] }, () => {
+        Session.set('selectedCompletedOrders', []);
+      });
     }
   }
 
@@ -104,10 +104,20 @@ export default class CompletedOrderList extends React.Component {
         const account = this.props.accountsData.find(
           account => account._id === product.accountID
         );
+        const selectedCompletedOrders = this.state.selectedCompletedOrders;
+        let isSelected = false;
+        if (selectedCompletedOrders) {
+          selectedCompletedOrders.map(orderID => {
+            if (order._id === orderID) {
+              isSelected = true;
+            }
+          })
+        }
 
         return (
           <CompletedOrderListItem
             key={order._id}
+            isSelected={isSelected}
             isAdmin={this.props.isAdmin}
             isManager={this.props.isManager}
             account={account}
@@ -126,8 +136,8 @@ export default class CompletedOrderList extends React.Component {
         {(this.props.isAdmin || this.props.isManager) && (
           <CompletedOrderListHeader
             onCheckboxChange={this.onCheckboxChange}
-            isSelectedMulti={this.state.isSelectedMulti}
-            selectedOrders={this.state.selectedOrders}
+            isSelectedMulti={this.state.selectedCompletedOrders.length >= 2}
+            selectedCompletedOrders={this.state.selectedCompletedOrders}
             showDeliveryOrderModal={this.showDeliveryOrderModal}
           />
         )}
@@ -143,7 +153,7 @@ export default class CompletedOrderList extends React.Component {
         {this.state.isDeliveryOrderModalOpen && (
           <DeliveryOrderModal
             isOpen={this.state.isDeliveryOrderModalOpen}
-            selectedOrders={this.state.selectedOrders}
+            selectedCompletedOrders={this.state.selectedCompletedOrders}
             onModalClose={this.hideDeliveryOrderModal}
           />
         )}

@@ -27,3 +27,4 @@ nathantreid:static-assets
 alanning:roles
 babel-compiler@7.0.6
 ostrio:user-status
+session

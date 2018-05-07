@@ -157,6 +157,7 @@ export default class OrdersPage extends React.Component {
             isManager={this.state.isManager}
             accountsData={this.props.accountsData}
             productsData={this.props.productsData}
+            ordersData={this.props.ordersData}
             filteredOrdersData={this.state.filteredOrdersData}
             isDataReady={this.props.isDataReady}
           />
