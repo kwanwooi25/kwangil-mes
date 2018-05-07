@@ -64,14 +64,11 @@ export default class AccountsPage extends React.Component {
     // filter data
     this.state.accountsData.map(account => {
       let match = false;
-      for (let key in account) {
-        if (
-          key !== '_id' &&
-          (account[key] &&
-            account[key].toLowerCase().indexOf(this.state.query) > -1)
-        ) {
-          match = true;
-        }
+      if (
+        account &&
+        account.name.toLowerCase().indexOf(this.state.query) > -1
+      ) {
+        match = true;
       }
 
       if (match) filteredAccountsData.push(account);
@@ -99,6 +96,7 @@ export default class AccountsPage extends React.Component {
 
         <div className="page-content">
           <AccountList
+            query={this.state.query}
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             filteredAccountsData={this.state.filteredAccountsData}
@@ -109,7 +107,6 @@ export default class AccountsPage extends React.Component {
     );
   }
 }
-
 
 // import React from 'react';
 //

@@ -63,6 +63,7 @@ export default class AccountListItem extends React.Component {
             className="account-name"
             accountID={account._id}
             accountName={account.name}
+            query={this.props.query}
           />
           <div className="account-contact-container">
             {account.phone_1 && (

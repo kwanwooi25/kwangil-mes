@@ -91,15 +91,15 @@ export default class AccountList extends React.Component {
       .slice(0, this.state.itemsToShow)
       .map(account => {
         return (
-          <AccountListItem
-            key={account._id}
-            isAdmin={this.props.isAdmin}
-            isManager={this.props.isManager}
-            account={account}
-            showAccountDetailViewModal={this.showAccountDetailViewModal}
-            showEditAccountModal={this.showEditAccountModal}
-            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-          />
+            <AccountListItem
+              key={account._id}
+              isAdmin={this.props.isAdmin}
+              isManager={this.props.isManager}
+              account={account}
+              showAccountDetailViewModal={this.showAccountDetailViewModal}
+              showEditAccountModal={this.showEditAccountModal}
+              showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+            />
         );
       });
   }
@@ -108,11 +108,7 @@ export default class AccountList extends React.Component {
     return (
       <div className="list-container">
         <ul id="account-list" className="list" onScroll={this.onListScroll}>
-          {this.props.isDataReady ? (
-            this.getAccountList()
-          ) : (
-            <Spinner />
-          )}
+          {this.props.isDataReady ? this.getAccountList() : <Spinner />}
         </ul>
 
         {this.state.isAccountModalOpen && (
