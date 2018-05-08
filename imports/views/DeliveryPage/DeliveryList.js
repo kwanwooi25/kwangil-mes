@@ -6,6 +6,7 @@ import { comma } from '../../api/comma';
 import Spinner from '../../custom/Spinner';
 import DeliveryListHeader from './DeliveryListHeader';
 import DeliveryListItem from './DeliveryListItem';
+import NoResult from '../components/NoResult';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 export default class DeliveryList extends React.Component {
@@ -204,15 +205,11 @@ export default class DeliveryList extends React.Component {
             }
           });
       } else {
-        return this.onNothingToDisplay();
+        return <NoResult />;
       }
     } else {
-      return this.onNothingToDisplay();
+      return <NoResult />;
     }
-  }
-
-  onNothingToDisplay() {
-    return <p>No orders added on the date</p>;
   }
 
   render() {

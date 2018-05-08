@@ -6,6 +6,7 @@ import { comma } from '../../api/comma';
 import Spinner from '../../custom/Spinner';
 import CompletedOrderListHeader from './CompletedOrderListHeader';
 import CompletedOrderListItem from './CompletedOrderListItem';
+import NoResult from '../components/NoResult';
 import DeliveryOrderModal from './DeliveryOrderModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -60,12 +61,16 @@ export default class CompletedOrderList extends React.Component {
         }
       }
     } else {
-      selectedCompletedOrders = selectedCompletedOrders.filter(value => value !== e.target.name);
+      selectedCompletedOrders = selectedCompletedOrders.filter(
+        value => value !== e.target.name
+      );
       if (e.target.checked) {
         selectedCompletedOrders.push(e.target.name);
       }
     }
-    selectedCompletedOrders = selectedCompletedOrders.filter(value => value !== 'selectAll');
+    selectedCompletedOrders = selectedCompletedOrders.filter(
+      value => value !== 'selectAll'
+    );
 
     this.setState({ selectedCompletedOrders }, () => {
       Session.set('selectedCompletedOrders', selectedCompletedOrders);
@@ -94,46 +99,50 @@ export default class CompletedOrderList extends React.Component {
   }
 
   getCompletedOrderList() {
-    return this.state.filteredOrdersData
-      .sort((a, b) => {
-        const a_deliverBefore = a.data.deliverBefore;
-        const b_deliverBefore = b.data.deliverBefore;
-        if (a_deliverBefore > b_deliverBefore) return 1;
-        if (a_deliverBefore < b_deliverBefore) return -1;
-        return 0;
-      })
-      .map(order => {
-        const product = this.props.productsData.find(
-          product => product._id === order.data.productID
-        );
-        const account = this.props.accountsData.find(
-          account => account._id === product.accountID
-        );
-        const selectedCompletedOrders = this.state.selectedCompletedOrders;
-        let isSelected = false;
-        if (selectedCompletedOrders) {
-          selectedCompletedOrders.map(orderID => {
-            if (order._id === orderID) {
-              isSelected = true;
-            }
-          })
-        }
+    if (this.state.filteredOrdersData.length > 0) {
+      return this.state.filteredOrdersData
+        .sort((a, b) => {
+          const a_deliverBefore = a.data.deliverBefore;
+          const b_deliverBefore = b.data.deliverBefore;
+          if (a_deliverBefore > b_deliverBefore) return 1;
+          if (a_deliverBefore < b_deliverBefore) return -1;
+          return 0;
+        })
+        .map(order => {
+          const product = this.props.productsData.find(
+            product => product._id === order.data.productID
+          );
+          const account = this.props.accountsData.find(
+            account => account._id === product.accountID
+          );
+          const selectedCompletedOrders = this.state.selectedCompletedOrders;
+          let isSelected = false;
+          if (selectedCompletedOrders) {
+            selectedCompletedOrders.map(orderID => {
+              if (order._id === orderID) {
+                isSelected = true;
+              }
+            });
+          }
 
-        return (
-          <CompletedOrderListItem
-            key={order._id}
-            isSelected={isSelected}
-            isAdmin={this.props.isAdmin}
-            isManager={this.props.isManager}
-            account={account}
-            product={product}
-            order={order}
-            onCheckboxChange={this.onCheckboxChange}
-            showDeliveryOrderModal={this.showDeliveryOrderModal}
-            query={this.state.query}
-          />
-        );
-      });
+          return (
+            <CompletedOrderListItem
+              key={order._id}
+              isSelected={isSelected}
+              isAdmin={this.props.isAdmin}
+              isManager={this.props.isManager}
+              account={account}
+              product={product}
+              order={order}
+              onCheckboxChange={this.onCheckboxChange}
+              showDeliveryOrderModal={this.showDeliveryOrderModal}
+              query={this.state.query}
+            />
+          );
+        });
+    } else {
+      return <NoResult />;
+    }
   }
 
   render() {
@@ -149,11 +158,7 @@ export default class CompletedOrderList extends React.Component {
         )}
 
         <ul id="completed-order-list" className="list">
-          {this.props.isDataReady ? (
-            this.getCompletedOrderList()
-          ) : (
-            <Spinner />
-          )}
+          {this.props.isDataReady ? this.getCompletedOrderList() : <Spinner />}
         </ul>
 
         {this.state.isDeliveryOrderModalOpen && (

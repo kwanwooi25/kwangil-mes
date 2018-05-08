@@ -3,6 +3,7 @@ import React from 'react';
 import Spinner from '../../custom/Spinner';
 import Checkbox from '../../custom/Checkbox';
 import ProductListItem from './ProductListItem';
+import NoResult from '../components/NoResult';
 import ProductOrderModal from './ProductOrderModal';
 import ProductModal from './ProductModal';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -135,13 +136,16 @@ export default class ProductList extends React.Component {
       confirmationDescription.push(productInfoText);
     });
 
-    this.setState({
-      isDeleteConfirmationModalOpen: true,
-      selectedProducts,
-      confirmationDescription
-    }, () => {
-      Session.set('selectedProducts', selectedProducts);
-    });
+    this.setState(
+      {
+        isDeleteConfirmationModalOpen: true,
+        selectedProducts,
+        confirmationDescription
+      },
+      () => {
+        Session.set('selectedProducts', selectedProducts);
+      }
+    );
   }
 
   hideDeleteConfirmationModal(answer) {
@@ -167,38 +171,42 @@ export default class ProductList extends React.Component {
   }
 
   getProductList() {
-    return this.state.filteredProductsData
-      .slice(0, this.state.itemsToShow)
-      .map(product => {
-        const account = this.props.accountsData.find(
-          account => account._id === product.accountID
-        );
-        const selectedProducts = this.state.selectedProducts;
-        let isSelected = false;
-        if (selectedProducts) {
-          selectedProducts.map(productID => {
-            if (product._id === productID) {
-              isSelected = true;
-            }
-          })
-        }
+    if (this.state.filteredProductsData.length > 0) {
+      return this.state.filteredProductsData
+        .slice(0, this.state.itemsToShow)
+        .map(product => {
+          const account = this.props.accountsData.find(
+            account => account._id === product.accountID
+          );
+          const selectedProducts = this.state.selectedProducts;
+          let isSelected = false;
+          if (selectedProducts) {
+            selectedProducts.map(productID => {
+              if (product._id === productID) {
+                isSelected = true;
+              }
+            });
+          }
 
-        return (
-          <ProductListItem
-            key={product._id}
-            isSelected={isSelected}
-            isAdmin={this.props.isAdmin}
-            isManager={this.props.isManager}
-            account={account}
-            product={product}
-            onCheckboxChange={this.onCheckboxChange}
-            showProductOrderModal={this.showProductOrderModal}
-            showProductModal={this.showProductModal}
-            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-            queryObj={this.state.queryObj}
-          />
-        );
-      });
+          return (
+            <ProductListItem
+              key={product._id}
+              isSelected={isSelected}
+              isAdmin={this.props.isAdmin}
+              isManager={this.props.isManager}
+              account={account}
+              product={product}
+              onCheckboxChange={this.onCheckboxChange}
+              showProductOrderModal={this.showProductOrderModal}
+              showProductModal={this.showProductModal}
+              showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+              queryObj={this.state.queryObj}
+            />
+          );
+        });
+    } else {
+      return <NoResult />;
+    }
   }
 
   render() {
@@ -227,11 +235,7 @@ export default class ProductList extends React.Component {
         )}
 
         <ul id="product-list" className="list" onScroll={this.onListScroll}>
-          {this.props.isDataReady ? (
-            this.getProductList()
-          ) : (
-            <Spinner />
-          )}
+          {this.props.isDataReady ? this.getProductList() : <Spinner />}
         </ul>
 
         {this.state.isProductOrderModalOpen && (

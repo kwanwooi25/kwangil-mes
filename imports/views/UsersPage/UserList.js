@@ -2,6 +2,7 @@ import React from 'react';
 
 import Spinner from '../../custom/Spinner';
 import UserListItem from './UserListItem';
+import NoResult from '../components/NoResult';
 import UserModal from './UserModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -69,17 +70,16 @@ export default class UserList extends React.Component {
   }
 
   getUserList() {
-    return this.props.usersData.map(user => {
-      const profile = user.profile;
-
-      let match = false;
-
-      if (profile.displayName.toLowerCase().indexOf(this.props.query) > -1) {
-        match = true;
+    let filteredUsers = [];
+    this.props.usersData.map(user => {
+      const displayName = user.profile.displayName;
+      if (displayName.toLowerCase().indexOf(this.props.query) > -1) {
+        filteredUsers.push(user);
       }
+    });
 
-      // only show user that has matching query text
-      if (match) {
+    if (filteredUsers.length > 0) {
+      return filteredUsers.map(user => {
         return (
           <UserListItem
             key={user._id}
@@ -89,8 +89,10 @@ export default class UserList extends React.Component {
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
         );
-      }
-    });
+      });
+    } else {
+      return <NoResult />;
+    }
   }
 
   render() {
@@ -103,7 +105,7 @@ export default class UserList extends React.Component {
             <Spinner />
           )}
         </ul>
-        
+
         {this.state.isUserModalOpen && (
           <UserModal
             isOpen={this.state.isUserModalOpen}

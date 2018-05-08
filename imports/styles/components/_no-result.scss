@@ -1,0 +1,38 @@
+.no-result {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: $space-xl;
+  width: 100%;
+
+  i {
+    color: $color-primary--500;
+    font-size: 5rem;
+    font-weight: $font-weight--bold;
+  }
+}
+
+.no-result-message {
+  color: $color-primary--500;
+  font-size: $font-size--lg;
+}
+
+.not-found {
+  height: 100vh;
+}
+
+.go-home {
+  background: $color-primary--500;
+  border: 1px solid $color-primary--500;
+  border-radius: $border-radius;
+  color: white;
+  padding: $space-md;
+  text-decoration: none;
+
+  &:hover {
+    background: $color-primary--50;
+    box-shadow: $box-shadow--1;
+    color: $color-primary--500;
+  }
+}

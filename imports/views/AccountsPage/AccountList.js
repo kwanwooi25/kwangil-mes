@@ -2,6 +2,7 @@ import React from 'react';
 
 import Spinner from '../../custom/Spinner';
 import AccountListItem from './AccountListItem';
+import NoResult from '../components/NoResult';
 import AccountModal from './AccountModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -89,22 +90,27 @@ export default class AccountList extends React.Component {
   }
 
   getAccountList() {
-    return this.state.filteredAccountsData
-      .slice(0, this.state.itemsToShow)
-      .map(account => {
-        return (
-            <AccountListItem
-              key={account._id}
-              isAdmin={this.props.isAdmin}
-              isManager={this.props.isManager}
-              account={account}
-              showAccountDetailViewModal={this.showAccountDetailViewModal}
-              showEditAccountModal={this.showEditAccountModal}
-              showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-              query={this.state.query}
-            />
-        );
-      });
+    if (this.state.filteredAccountsData.length > 0) {
+      return this.state.filteredAccountsData
+        .slice(0, this.state.itemsToShow)
+        .map(account => {
+          return (
+              <AccountListItem
+                key={account._id}
+                isAdmin={this.props.isAdmin}
+                isManager={this.props.isManager}
+                account={account}
+                showAccountDetailViewModal={this.showAccountDetailViewModal}
+                showEditAccountModal={this.showEditAccountModal}
+                showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+                query={this.state.query}
+              />
+          );
+        });
+    } else {
+      return <NoResult />;
+    }
+
   }
 
   render() {

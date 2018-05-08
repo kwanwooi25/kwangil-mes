@@ -3,6 +3,7 @@ import React from 'react';
 import Spinner from '../../custom/Spinner';
 import Checkbox from '../../custom/Checkbox';
 import PlateListItem from './PlateListItem';
+import NoResult from '../components/NoResult';
 import PlateModal from './PlateModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -152,34 +153,38 @@ export default class PlateList extends React.Component {
   }
 
   getPlateList() {
-    return this.state.filteredPlatesData
-      .slice(0, this.state.itemsToShow)
-      .map(plate => {
-        const selectedPlates = this.state.selectedPlates;
-        let isSelected = false;
-        if (selectedPlates) {
-          selectedPlates.map(plateID => {
-            if (plate._id === plateID) {
-              isSelected = true;
-            }
-          });
-        }
+    if (this.state.filteredPlatesData.length > 0) {
+      return this.state.filteredPlatesData
+        .slice(0, this.state.itemsToShow)
+        .map(plate => {
+          const selectedPlates = this.state.selectedPlates;
+          let isSelected = false;
+          if (selectedPlates) {
+            selectedPlates.map(plateID => {
+              if (plate._id === plateID) {
+                isSelected = true;
+              }
+            });
+          }
 
-        return (
-          <PlateListItem
-            key={plate._id}
-            isSelected={isSelected}
-            isAdmin={this.props.isAdmin}
-            isManager={this.props.isManager}
-            plate={plate}
-            productsData={this.props.productsData}
-            onCheckboxChange={this.onCheckboxChange}
-            showPlateModal={this.showPlateModal}
-            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-            queryObj={this.state.queryObj}
-          />
-        );
-      });
+          return (
+            <PlateListItem
+              key={plate._id}
+              isSelected={isSelected}
+              isAdmin={this.props.isAdmin}
+              isManager={this.props.isManager}
+              plate={plate}
+              productsData={this.props.productsData}
+              onCheckboxChange={this.onCheckboxChange}
+              showPlateModal={this.showPlateModal}
+              showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+              queryObj={this.state.queryObj}
+            />
+          );
+        });
+    } else {
+      return <NoResult />;
+    }
   }
 
   render() {

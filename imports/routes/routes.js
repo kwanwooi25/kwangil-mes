@@ -30,26 +30,6 @@ import DeliveryPage from '../views/DeliveryPage';
 import UsersPage from '../views/UsersPage';
 import NotFoundPage from '../views/NotFoundPage';
 
-// export const routes = (
-//   <BrowserRouter>
-//     <div>
-//       {!!Meteor.userId() ? <Header /> : undefined}
-//       <Switch>
-//         <Route exact path="/" component={LoginPage} />
-//         <Route path="/dashboard" component={DashboardPage} />
-//         <Route path="/accounts" component={AccountsPage} />
-//         <Route path="/products" component={ProductsPage} />
-//         <Route path="/plates" component={PlatesPage} />
-//         <Route path="/orders" component={OrdersPage} />
-//         <Route path="/orders-completed" component={CompletedOrdersPage} />
-//         <Route path="/delivery" component={DeliveryPage} />
-//         <Route path="/users" component={UsersPage} />
-//         <Route path="*" component={NotFoundPage} />
-//       </Switch>
-//     </div>
-//   </BrowserRouter>
-// );
-
 const unauthenticatedPages = ['/'];
 const authenticatedPages = [
   '/dashboard',

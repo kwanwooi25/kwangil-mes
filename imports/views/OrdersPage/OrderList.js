@@ -6,6 +6,7 @@ import { comma } from '../../api/comma';
 import Spinner from '../../custom/Spinner';
 import OrderListHeader from './OrderListHeader';
 import OrderListItem from './OrderListItem';
+import NoResult from '../components/NoResult';
 import ProductOrderModal from '../ProductsPage/ProductOrderModal';
 import CompleteOrderModal from './CompleteOrderModal';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -33,7 +34,7 @@ export default class OrderList extends React.Component {
       isDeleteConfirmationModalOpen: false,
       selectedOrderID: '',
       selectedOrders: Session.get('selectedOrders') || [],
-      confirmationDescription: [],
+      confirmationDescription: []
     };
 
     this.onCheckboxChange = this.onCheckboxChange.bind(this);
@@ -85,9 +86,7 @@ export default class OrderList extends React.Component {
   }
 
   updateOrderStatus(orderID, statusValue) {
-    const order = this.state.ordersData.find(
-      order => order._id === orderID
-    );
+    const order = this.state.ordersData.find(order => order._id === orderID);
     let data = order.data;
     data.status = statusValue;
 
@@ -132,9 +131,7 @@ export default class OrderList extends React.Component {
     ];
 
     selectedOrders.map(orderID => {
-      const order = this.state.ordersData.find(
-        order => order._id === orderID
-      );
+      const order = this.state.ordersData.find(order => order._id === orderID);
       const product = this.props.productsData.find(
         product => product._id === order.data.productID
       );
@@ -145,13 +142,16 @@ export default class OrderList extends React.Component {
       confirmationDescription.push(orderInfoText);
     });
 
-    this.setState({
-      isDeleteConfirmationModalOpen: true,
-      selectedOrders,
-      confirmationDescription
-    }, () => {
-      Session.set('selectedOrders', selectedOrders);
-    });
+    this.setState(
+      {
+        isDeleteConfirmationModalOpen: true,
+        selectedOrders,
+        confirmationDescription
+      },
+      () => {
+        Session.set('selectedOrders', selectedOrders);
+      }
+    );
   }
 
   hideDeleteConfirmationModal(answer) {
@@ -173,41 +173,45 @@ export default class OrderList extends React.Component {
   }
 
   getOrderList() {
-    return this.state.filteredOrdersData.map(order => {
-      const product = this.props.productsData.find(
-        product => product._id === order.data.productID
-      );
-      const account = this.props.accountsData.find(
-        account => account._id === product.accountID
-      );
-      const selectedOrders = this.state.selectedOrders;
-      let isSelected = false;
-      if (selectedOrders) {
-        selectedOrders.map(orderID => {
-          if (order._id === orderID) {
-            isSelected = true;
-          }
-        })
-      }
+    if (this.state.filteredOrdersData.length > 0) {
+      return this.state.filteredOrdersData.map(order => {
+        const product = this.props.productsData.find(
+          product => product._id === order.data.productID
+        );
+        const account = this.props.accountsData.find(
+          account => account._id === product.accountID
+        );
+        const selectedOrders = this.state.selectedOrders;
+        let isSelected = false;
+        if (selectedOrders) {
+          selectedOrders.map(orderID => {
+            if (order._id === orderID) {
+              isSelected = true;
+            }
+          });
+        }
 
-      return (
-        <OrderListItem
-          key={order._id}
-          isSelected={isSelected}
-          isAdmin={this.props.isAdmin}
-          isManager={this.props.isManager}
-          account={account}
-          product={product}
-          order={order}
-          onCheckboxChange={this.onCheckboxChange}
-          updateOrderStatus={this.updateOrderStatus}
-          showCompleteOrderModal={this.showCompleteOrderModal}
-          showProductOrderModal={this.showProductOrderModal}
-          showDeleteConfirmationModal={this.showDeleteConfirmationModal}
-          queryObj={this.state.queryObj}
-        />
-      );
-    });
+        return (
+          <OrderListItem
+            key={order._id}
+            isSelected={isSelected}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
+            account={account}
+            product={product}
+            order={order}
+            onCheckboxChange={this.onCheckboxChange}
+            updateOrderStatus={this.updateOrderStatus}
+            showCompleteOrderModal={this.showCompleteOrderModal}
+            showProductOrderModal={this.showProductOrderModal}
+            showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+            queryObj={this.state.queryObj}
+          />
+        );
+      });
+    } else {
+      return <NoResult />;
+    }
   }
 
   render() {
