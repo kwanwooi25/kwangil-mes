@@ -1,5 +1,4 @@
 import React from 'react';
-import Mark from 'mark.js';
 
 import Spinner from '../../custom/Spinner';
 import AccountListItem from './AccountListItem';
@@ -43,14 +42,6 @@ export default class AccountList extends React.Component {
     this.setState({
       query: props.query,
       filteredAccountsData: props.filteredAccountsData
-    }, () => {
-      const accountNames = document.querySelectorAll(`.account-name`);
-      const highlightAccountName = new Mark(accountNames);
-      if (this.state.query) {
-        highlightAccountName.mark(this.state.query);
-      } else {
-        highlightAccountName.unmark();
-      }
     });
   }
 

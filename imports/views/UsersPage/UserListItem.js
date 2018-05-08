@@ -41,7 +41,8 @@ export default class UserListItem extends React.Component {
   render() {
     const user = this.props.user;
     const isCurrentUser = Meteor.userId() === user._id;
-    let listClassName = "user";
+    const query = this.props.query;
+    let listClassName = 'user';
 
     let userRole = '사용자';
     if (user.profile.isManager) {
@@ -50,15 +51,25 @@ export default class UserListItem extends React.Component {
       userRole = '최종관리자';
     }
 
-    if (isCurrentUser) listClassName += " current-user"
+    let displayName = user.profile.displayName;
+    if (query && displayName.toLowerCase().indexOf(query) > -1) {
+      const index = displayName.toLowerCase().indexOf(query);
+      const matchingText = displayName.substring(index, index + query.length);
+      displayName = displayName.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
+    }
+
+    if (isCurrentUser) {
+      listClassName += ' current-user';
+      displayName += '<i class="fa fa-user-circle its-me"></i>';
+    }
 
     return (
       <li className={listClassName} key={user._id} id={user._id}>
         <div className="user-list-item__user-detail-container">
-          <span>
-            {user.profile.displayName}
-            {isCurrentUser && <i className="fa fa-user-circle its-me"></i>}
-          </span>
+          <span dangerouslySetInnerHTML={{ __html: displayName }} />
           <span>{user.profile.department}</span>
           <span>{user.profile.position}</span>
           <span>{userRole}</span>

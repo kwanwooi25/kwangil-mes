@@ -1,5 +1,4 @@
 import React from 'react';
-import Mark from 'mark.js';
 
 import Spinner from '../../custom/Spinner';
 import Checkbox from '../../custom/Checkbox';
@@ -52,44 +51,6 @@ export default class ProductList extends React.Component {
     this.setState({
       queryObj: props.queryObj,
       filteredProductsData: props.filteredProductsData
-    }, () => {
-      // console.log(this.state.queryObj);
-      // const accountNames = document.querySelectorAll('.product-accountName');
-      // const productNames = document.querySelectorAll('.product-productName');
-      // const thicks = document.querySelectorAll('.product-size__thick');
-      // const lengths = document.querySelectorAll('.product-size__length');
-      // const widths = document.querySelectorAll('.product-size__width');
-      // const highlightAccountName = new Mark(accountNames);
-      // const highlightProductName = new Mark(productNames);
-      // const highlightThick = new Mark(thicks);
-      // const highlightLength = new Mark(lengths);
-      // const highlightWidth = new Mark(widths);
-      // const queryObj = this.state.queryObj;
-      // if (queryObj.accountName) {
-      //   highlightAccountName.mark(queryObj.accountName);
-      // } else {
-      //   highlightAccountName.unmark();
-      // }
-      // if (queryObj.name) {
-      //   highlightProductName.mark(queryObj.name);
-      // } else {
-      //   highlightProductName.unmark();
-      // }
-      // if (queryObj.thick) {
-      //   highlightThick.mark(queryObj.thick);
-      // } else {
-      //   highlightThick.unmark();
-      // }
-      // if (queryObj.length) {
-      //   highlightLength.mark(queryObj.length);
-      // } else {
-      //   highlightLength.unmark();
-      // }
-      // if (queryObj.width) {
-      //   highlightWidth.mark(queryObj.width);
-      // } else {
-      //   highlightWidth.unmark();
-      // }
     });
   }
 
@@ -234,14 +195,11 @@ export default class ProductList extends React.Component {
             showProductOrderModal={this.showProductOrderModal}
             showProductModal={this.showProductModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+            queryObj={this.state.queryObj}
           />
         );
       });
   }
-
-  // highlightQuery() {
-  //
-  // }
 
   render() {
     return (

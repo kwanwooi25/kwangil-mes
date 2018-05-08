@@ -8,6 +8,7 @@ export default class ProductName extends React.Component {
   className
   productID
   productName
+  query
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -30,13 +31,25 @@ export default class ProductName extends React.Component {
   }
 
   render() {
+    const query = this.props.query;
+    let productName = this.props.productName;
+
+    if (query && productName.toLowerCase().indexOf(query) > -1) {
+      const index = productName.toLowerCase().indexOf(query);
+      const matchingText = productName.substring(index, index + query.length);
+      productName = productName.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
+    }
+
     return (
       <div className={this.props.className + '-container'}>
         <a
           className={'link ' + this.props.className}
           onClick={this.onClick}
+          dangerouslySetInnerHTML={{ __html: productName }}
         >
-          {this.props.productName}
         </a>
 
         {this.state.isDetailViewOpen && (

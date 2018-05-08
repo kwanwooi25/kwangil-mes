@@ -16,6 +16,7 @@ export default class ProductListItem extends React.Component {
   showProductOrderModal
   showProductModal
   showDeleteConfirmationModal
+  queryObj
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -62,8 +63,12 @@ export default class ProductListItem extends React.Component {
   }
 
   render() {
+    const queryObj = this.props.queryObj;
     const product = this.props.product;
     const account = this.props.account;
+    let productThick = String(product.thick);
+    let productLength = String(product.length);
+    let productWidth = String(product.width);
     let printText = '';
     if (product.printFrontColorCount) {
       if (product.printBackColorCount) {
@@ -73,6 +78,45 @@ export default class ProductListItem extends React.Component {
       } else {
         printText = `(전면 ${product.printFrontColorCount}도)`;
       }
+    }
+
+    if (queryObj.thick && productThick.toLowerCase().indexOf(queryObj.thick) > -1) {
+      const index = productThick.toLowerCase().indexOf(queryObj.thick);
+      const matchingText = productThick.substring(
+        index,
+        index + queryObj.thick.length
+      );
+      productThick = productThick.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
+    }
+
+    if (
+      queryObj.length &&
+      productLength.toLowerCase().indexOf(queryObj.length) > -1
+    ) {
+      const index = productLength.toLowerCase().indexOf(queryObj.length);
+      const matchingText = productLength.substring(
+        index,
+        index + queryObj.length.length
+      );
+      productLength = productLength.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
+    }
+
+    if (queryObj.width && productWidth.toLowerCase().indexOf(queryObj.width) > -1) {
+      const index = productWidth.toLowerCase().indexOf(queryObj.width);
+      const matchingText = productWidth.substring(
+        index,
+        index + queryObj.width.length
+      );
+      productWidth = productWidth.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
     }
 
     return (
@@ -85,7 +129,9 @@ export default class ProductListItem extends React.Component {
               onInputChange={this.props.onCheckboxChange}
             />
           </div>
-        ): undefined}
+        ) : (
+          undefined
+        )}
         <div className="product-container">
           <div className="product-name-container">
             {account ? (
@@ -93,6 +139,7 @@ export default class ProductListItem extends React.Component {
                 className="product-accountName"
                 accountID={account._id}
                 accountName={account.name}
+                query={this.props.queryObj.accountName}
               />
             ) : (
               <div className="product-accountName-container">
@@ -103,15 +150,25 @@ export default class ProductListItem extends React.Component {
               className="product-productName"
               productID={product._id}
               productName={product.name}
+              query={this.props.queryObj.name}
             />
           </div>
           <div className="product-details-container">
             <div className="product-size-container">
-              <span className="product-size__thick">{product.thick}</span>
+              <span
+                className="product-size__thick"
+                dangerouslySetInnerHTML={{ __html: productThick }}
+              />
               <i className="fa fa-times" />
-              <span className="product-size__length">{product.length}</span>
+              <span
+                className="product-size__length"
+                dangerouslySetInnerHTML={{ __html: productLength }}
+              />
               <i className="fa fa-times" />
-              <span className="product-size__width">{product.width}</span>
+              <span
+                className="product-size__width"
+                dangerouslySetInnerHTML={{ __html: productWidth }}
+              />
             </div>
             <div className="product-isPrint-container">
               <span className="product-isPrint">

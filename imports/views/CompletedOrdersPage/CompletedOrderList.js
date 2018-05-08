@@ -19,11 +19,13 @@ export default class CompletedOrderList extends React.Component {
   ordersData
   filteredOrdersData
   isDataReady
+  query
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
+      query: props.query,
       filteredOrdersData: props.filteredOrdersData,
       isDeliveryOrderModalOpen: false,
       selectedCompletedOrders: Session.get('selectedCompletedOrders') || [],
@@ -37,7 +39,10 @@ export default class CompletedOrderList extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState({ filteredOrdersData: props.filteredOrdersData });
+    this.setState({
+      query: props.query,
+      filteredOrdersData: props.filteredOrdersData
+    });
   }
 
   onCheckboxChange(e) {
@@ -125,6 +130,7 @@ export default class CompletedOrderList extends React.Component {
             order={order}
             onCheckboxChange={this.onCheckboxChange}
             showDeliveryOrderModal={this.showDeliveryOrderModal}
+            query={this.state.query}
           />
         );
       });

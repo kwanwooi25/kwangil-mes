@@ -15,6 +15,7 @@ export default class PlateListItem extends React.Component {
   onCheckboxChange
   showPlateModal
   showDeleteConfirmationModal
+  queryObj
   =========================================================================*/
   constructor(props) {
     super(props);
@@ -77,6 +78,7 @@ export default class PlateListItem extends React.Component {
               className="plate-list-item__forProductName"
               productID={product._id}
               productName={product.name}
+              query={this.props.queryObj.productName}
             />
           ) : (
             <div className="plate-list-item__forProductName-container">
@@ -94,7 +96,6 @@ export default class PlateListItem extends React.Component {
 
   render() {
     const plate = this.props.plate;
-    const plateSize = `${plate.round} x ${plate.length}`;
 
     return (
       <li className="plate" key={plate._id} id={plate._id}>
@@ -111,7 +112,10 @@ export default class PlateListItem extends React.Component {
           <PlateName
             className="plate-list-item__plateSize"
             plateID={plate._id}
-            plateName={plateSize}
+            plateRound={plate.round}
+            plateLength={plate.length}
+            queryRound={this.props.queryObj.round}
+            queryLength={this.props.queryObj.length}
           />
           <div className="plate-list-item__forProductList-container">
             {this.getForProductList()}

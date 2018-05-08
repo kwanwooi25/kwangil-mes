@@ -24,6 +24,7 @@ export default class OrderListItem extends React.Component {
   showCompleteOrderModal
   showProductOrderModal
   showDeleteConfirmationModal
+  queryObj
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -184,11 +185,13 @@ export default class OrderListItem extends React.Component {
                 className="order-list__accountName"
                 accountID={account._id}
                 accountName={account.name}
+                query={this.props.queryObj.accountName}
               />
               <ProductName
                 className="order-list__productName"
                 productID={product._id}
                 productName={product.name}
+                query={this.props.queryObj.productName}
               />
             </div>
             <div className="order-product-size-container">

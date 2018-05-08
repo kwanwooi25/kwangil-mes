@@ -20,6 +20,7 @@ export default class CompletedOrderListItem extends React.Component {
   order
   onCheckboxChange
   showDeliveryOrderModal
+  query
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -140,11 +141,13 @@ export default class CompletedOrderListItem extends React.Component {
                 className="completed-order-list-item__accountName"
                 accountID={account._id}
                 accountName={account.name}
+                query={this.props.query}
               />
               <ProductName
                 className="completed-order-list-item__productName"
                 productID={product._id}
                 productName={product.name}
+                query={this.props.query}
               />
             </div>
             <div className="completed-order-list-item__size-container">
@@ -172,6 +175,5 @@ export default class CompletedOrderListItem extends React.Component {
         )}
       </li>
     );
-
   }
 }

@@ -8,7 +8,7 @@ import ConfirmationModal from '../components/ConfirmationModal';
 export default class UserList extends React.Component {
   /*=========================================================================
   >> props <<
-  query : query string to filter account list
+  query
   usersData
   isDataReady
   ==========================================================================*/
@@ -84,6 +84,7 @@ export default class UserList extends React.Component {
           <UserListItem
             key={user._id}
             user={user}
+            query={this.props.query}
             showUserModal={this.showUserModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
           />
@@ -102,6 +103,7 @@ export default class UserList extends React.Component {
             <Spinner />
           )}
         </ul>
+        
         {this.state.isUserModalOpen && (
           <UserModal
             isOpen={this.state.isUserModalOpen}
@@ -110,24 +112,7 @@ export default class UserList extends React.Component {
             editFor={this.state.editFor}
           />
         )}
-        {/* {this.state.isDetailViewOpen ? (
-          <AccountDetailView
-            isOpen={this.state.isDetailViewOpen}
-            accountID={this.state.selectedAccountID}
-            onModalClose={this.hideAccountDetailViewModal}
-          />
-          ) : (
-            undefined
-          )}
-          {this.state.isUserModalOpen ? (
-          <AccountModal
-            isOpen={this.state.isUserModalOpen}
-            accountID={this.state.selectedAccountID}
-            onModalClose={this.hideUserModal}
-          />
-          ) : (
-            undefined
-        )} */}
+
         {this.state.isDeleteConfirmationModalOpen && (
           <ConfirmationModal
             isOpen={this.state.isDeleteConfirmationModalOpen}

@@ -15,11 +15,13 @@ export default class PlateList extends React.Component {
   platesData
   filteredPlatesData
   isDataReady
+  queryObj
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
+      queryObj: props.queryObj,
       filteredPlatesData: props.filteredPlatesData,
       itemsToShow: 20,
       isPlateModalOpen: false,
@@ -43,7 +45,10 @@ export default class PlateList extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState({ filteredPlatesData: props.filteredPlatesData });
+    this.setState({
+      filteredPlatesData: props.filteredPlatesData,
+      queryObj: props.queryObj
+    });
   }
 
   onListScroll(e) {
@@ -103,21 +108,22 @@ export default class PlateList extends React.Component {
     ];
 
     selectedPlates.map(plateID => {
-      const plate = this.props.platesData.find(
-        plate => plate._id === plateID
-      );
+      const plate = this.props.platesData.find(plate => plate._id === plateID);
       let plateInfoText = `${plate.round} x ${plate.length}`;
 
       confirmationDescription.push(plateInfoText);
     });
 
-    this.setState({
-      isDeleteConfirmationModalOpen: true,
-      selectedPlates,
-      confirmationDescription
-    }, () => {
-      Session.set('selectedPlates', selectedPlates);
-    });
+    this.setState(
+      {
+        isDeleteConfirmationModalOpen: true,
+        selectedPlates,
+        confirmationDescription
+      },
+      () => {
+        Session.set('selectedPlates', selectedPlates);
+      }
+    );
   }
 
   hideDeleteConfirmationModal(answer) {
@@ -156,7 +162,7 @@ export default class PlateList extends React.Component {
             if (plate._id === plateID) {
               isSelected = true;
             }
-          })
+          });
         }
 
         return (
@@ -170,6 +176,7 @@ export default class PlateList extends React.Component {
             onCheckboxChange={this.onCheckboxChange}
             showPlateModal={this.showPlateModal}
             showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+            queryObj={this.state.queryObj}
           />
         );
       });

@@ -20,11 +20,13 @@ export default class OrderList extends React.Component {
   ordersData
   filteredOrdersData
   isDataReady
+  queryObj
   ==========================================================================*/
   constructor(props) {
     super(props);
 
     this.state = {
+      queryObj: props.queryObj,
       filteredOrdersData: props.filteredOrdersData,
       isCompleteOrderModalOpen: false,
       isProductOrderModalOpen: false,
@@ -49,7 +51,10 @@ export default class OrderList extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState({ filteredOrdersData: props.filteredOrdersData });
+    this.setState({
+      filteredOrdersData: props.filteredOrdersData,
+      queryObj: props.queryObj
+    });
   }
 
   onCheckboxChange(e) {
@@ -199,6 +204,7 @@ export default class OrderList extends React.Component {
           showCompleteOrderModal={this.showCompleteOrderModal}
           showProductOrderModal={this.showProductOrderModal}
           showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+          queryObj={this.state.queryObj}
         />
       );
     });

@@ -69,6 +69,10 @@
   }
 }
 
+.highlight {
+  background: $color-secondary--400;
+}
+
 @media (min-width: $break--sm) {
   .sm5 {
     width: 5% !important;

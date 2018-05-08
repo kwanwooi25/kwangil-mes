@@ -8,6 +8,7 @@ export default class AccountName extends React.Component {
   className
   accountID
   accountName
+  query
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -30,11 +31,25 @@ export default class AccountName extends React.Component {
   }
 
   render() {
+    const query = this.props.query;
+    let accountName = this.props.accountName;
+
+    if (query && accountName.toLowerCase().indexOf(query) > -1) {
+      const index = accountName.toLowerCase().indexOf(query);
+      const matchingText = accountName.substring(index, index + query.length);
+      accountName = accountName.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
+    }
+    
     return (
       <div className={this.props.className + '-container'}>
-        <a className={'link ' + this.props.className} onClick={this.onClick}>
-          {this.props.accountName}
-        </a>
+        <a
+          className={'link ' + this.props.className}
+          onClick={this.onClick}
+          dangerouslySetInnerHTML={{ __html: accountName }}
+        />
 
         {this.state.isDetailViewOpen && (
           <AccountDetailView

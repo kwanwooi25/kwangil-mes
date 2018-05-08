@@ -142,6 +142,7 @@ export default class PlatesPage extends React.Component {
             platesData={this.props.platesData}
             filteredPlatesData={this.state.filteredPlatesData}
             isDataReady={this.props.isDataReady}
+            queryObj={this.state.queryObj}
           />
         </div>
       </div>
