@@ -1,4 +1,5 @@
 import React from 'react';
+import Mark from 'mark.js';
 
 import AccountName from '../components/AccountName';
 
@@ -63,7 +64,6 @@ export default class AccountListItem extends React.Component {
             className="account-name"
             accountID={account._id}
             accountName={account.name}
-            query={this.props.query}
           />
           <div className="account-contact-container">
             {account.phone_1 && (

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import AccountDetailView from '../AccountsPage/AccountDetailView';
 
@@ -32,10 +32,7 @@ export default class AccountName extends React.Component {
   render() {
     return (
       <div className={this.props.className + '-container'}>
-        <a
-          className={'link ' + this.props.className}
-          onClick={this.onClick}
-        >
+        <a className={'link ' + this.props.className} onClick={this.onClick}>
           {this.props.accountName}
         </a>
 

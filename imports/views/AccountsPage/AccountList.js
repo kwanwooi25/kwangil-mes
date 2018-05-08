@@ -1,4 +1,5 @@
 import React from 'react';
+import Mark from 'mark.js';
 
 import Spinner from '../../custom/Spinner';
 import AccountListItem from './AccountListItem';
@@ -17,6 +18,7 @@ export default class AccountList extends React.Component {
     super(props);
 
     this.state = {
+      query: props.query,
       filteredAccountsData: props.filteredAccountsData,
       itemsToShow: 20,
       isAccountModalOpen: false,
@@ -39,7 +41,16 @@ export default class AccountList extends React.Component {
 
   componentWillReceiveProps(props) {
     this.setState({
+      query: props.query,
       filteredAccountsData: props.filteredAccountsData
+    }, () => {
+      const accountNames = document.querySelectorAll(`.account-name`);
+      const highlightAccountName = new Mark(accountNames);
+      if (this.state.query) {
+        highlightAccountName.mark(this.state.query);
+      } else {
+        highlightAccountName.unmark();
+      }
     });
   }
 
@@ -99,6 +110,7 @@ export default class AccountList extends React.Component {
               showAccountDetailViewModal={this.showAccountDetailViewModal}
               showEditAccountModal={this.showEditAccountModal}
               showDeleteConfirmationModal={this.showDeleteConfirmationModal}
+              query={this.state.query}
             />
         );
       });

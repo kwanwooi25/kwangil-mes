@@ -168,6 +168,7 @@ export default class ProductsPage extends React.Component {
             productsData={this.props.productsData}
             filteredProductsData={this.state.filteredProductsData}
             isDataReady={this.props.isDataReady}
+            queryObj={this.state.queryObj}
           />
         </div>
       </div>

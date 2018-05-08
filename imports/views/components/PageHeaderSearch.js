@@ -19,7 +19,7 @@ export default class PageHeaderSearch extends React.Component {
       e.target.classList.remove("hasValue");
     }
 
-    const query = e.target.value.trim().toLowerCase();
+    let query = e.target.value.trim().toLowerCase();
     this.props.onInputSearchChange(query);
   }
 
