@@ -11,6 +11,9 @@ export default class TextInput extends React.Component {
   onInputChange      : for onChange and onBlur function
   listID             : datalist id for autocomplete
   errorMessage
+  min
+  max
+  step
   ==========================================================================*/
   render() {
     return (
@@ -24,6 +27,9 @@ export default class TextInput extends React.Component {
           onChange={this.props.onInputChange}
           onBlur={this.props.onInputChange}
           list={this.props.listID}
+          min={this.props.min}
+          max={this.props.max}
+          step={this.props.step}
         />
         <span>{this.props.errorMessage}</span>
       </div>

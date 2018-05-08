@@ -66,7 +66,7 @@ export default class ProductSearchExpand extends React.Component {
           />
           <input
             className="input search-by-size"
-            type="text"
+            type="number"
             placeholder="두께"
             ref="searchByThick"
             name="searchByThick"
@@ -77,7 +77,7 @@ export default class ProductSearchExpand extends React.Component {
           />
           <input
             className="input search-by-size"
-            type="text"
+            type="number"
             placeholder="길이"
             ref="searchByLength"
             name="searchByLength"
@@ -88,7 +88,7 @@ export default class ProductSearchExpand extends React.Component {
           />
           <input
             className="input search-by-size"
-            type="text"
+            type="number"
             placeholder="너비"
             ref="searchByWidth"
             name="searchByWidth"

@@ -110,10 +110,19 @@
 }
 
 @media (min-width: $break--sm) {
-  .plate-modal__size-container,
-  .plate-modal__location-container,
+  .plate-modal__size-container {
+    order: -3;
+    width: 65%;
+  }
+
+  .plate-modal__location-container {
+    order: -1;
+    width: 100%;
+  }
+
   .plate-modal__material-container {
-    width: 33.3%;
+    order: -2;
+    width: 35%;
   }
 
   .plate-modal__forProductList__item__productInfo {

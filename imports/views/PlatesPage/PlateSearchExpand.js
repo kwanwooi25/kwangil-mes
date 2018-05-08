@@ -49,7 +49,7 @@ export default class PlateSearchExpand extends React.Component {
           />
           <input
             className="input search-by-size"
-            type="text"
+            type="number"
             placeholder="둘레"
             ref="searchByRound"
             name="searchByRound"
@@ -60,7 +60,7 @@ export default class PlateSearchExpand extends React.Component {
           />
           <input
             className="input search-by-size"
-            type="text"
+            type="number"
             placeholder="기장"
             ref="searchByLength"
             name="searchByLength"

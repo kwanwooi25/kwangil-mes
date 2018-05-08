@@ -39,9 +39,7 @@ export default class PlateModal extends React.Component {
         memo: plate.memo,
         nameEmpty: false,
         roundEmpty: false,
-        roundError: false,
         lengthEmpty: false,
-        lengthError: false,
         isConfirmationModalOpen: false,
         confirmationTitle: '',
         confirmationDescription: [],
@@ -63,9 +61,7 @@ export default class PlateModal extends React.Component {
         memo: '',
         nameEmpty: false,
         roundEmpty: false,
-        roundError: false,
         lengthEmpty: false,
-        lengthError: false,
         isConfirmationModalOpen: false,
         confirmationTitle: '',
         confirmationDescription: [],
@@ -94,15 +90,13 @@ export default class PlateModal extends React.Component {
       case 'round':
       case 'length':
         if (value === '') {
-          this.setState({ [`${name}Empty`]: true, [`${name}Error`]: false });
+          this.setState({ [`${name}Empty`]: true });
           inputContainer.classList.add('error');
           return false;
-        } else if (isNaN(value)) {
-          this.setState({ [`${name}Empty`]: false, [`${name}Error`]: true });
-          inputContainer.classList.add('error');
-          return false;
+        } else if (Number(value) > 999) {
+          this.setState({ [`${name}`]: 999 });
         } else {
-          this.setState({ [`${name}Empty`]: false, [`${name}Error`]: false });
+          this.setState({ [`${name}Empty`]: false });
           inputContainer.classList.remove('error');
           return true;
         }
@@ -280,7 +274,9 @@ export default class PlateModal extends React.Component {
         let account;
         let productSize = '';
         if (product) {
-          productSize = `${product.thick} x ${product.length} x ${product.width}`;
+          productSize = `${product.thick} x ${product.length} x ${
+            product.width
+          }`;
           account = AccountsData.findOne({ _id: product.accountID });
         } else {
           productSize = '[삭제된 품목]';
@@ -336,15 +332,13 @@ export default class PlateModal extends React.Component {
             <div className="form-elements">
               <TextInput
                 className="form-element plate-modal__size-input"
-                inputType="text"
+                inputType="number"
                 id="round"
                 value={this.state.round}
                 onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.roundEmpty
-                    ? '둘레를 입력하세요.'
-                    : this.state.roundError && '숫자만 입력 가능합니다.'
-                }
+                errorMessage={this.state.roundEmpty && '둘레를 입력하세요.'}
+                min={0}
+                max={999}
               />
               <i
                 className="fa fa-times"
@@ -352,15 +346,13 @@ export default class PlateModal extends React.Component {
               />
               <TextInput
                 className="form-element plate-modal__size-input"
-                inputType="text"
+                inputType="number"
                 id="length"
                 value={this.state.length}
                 onInputChange={this.onInputChange}
-                errorMessage={
-                  this.state.lengthEmpty
-                    ? '기장을 입력하세요.'
-                    : this.state.lengthError && '숫자만 입력 가능합니다.'
-                }
+                errorMessage={ this.state.lengthEmpty && '기장을 입력하세요.' }
+                min={0}
+                max={999}
               />
             </div>
           </div>

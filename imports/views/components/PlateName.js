@@ -39,8 +39,8 @@ export default class PlateName extends React.Component {
     let plateLength = this.props.plateLength;
     let plateSize = '';
 
-    if (queryRound && plateRound.toLowerCase().indexOf(queryRound) > -1) {
-      const index = plateRound.toLowerCase().indexOf(queryRound);
+    if (queryRound && plateRound.indexOf(queryRound) > -1) {
+      const index = plateRound.indexOf(queryRound);
       const matchingText = plateRound.substring(
         index,
         index + queryRound.length
