@@ -96,7 +96,7 @@
 .product-modal__punch-count {
   flex-grow: 1;
   margin-bottom: $space-xs;
-  width: 18%;
+  width: 17%;
 
   input {
     text-align: right;
@@ -111,7 +111,7 @@
 .product-modal__punch-size {
   flex-grow: 1;
   margin-bottom: $space-xs;
-  width: 60%;
+  width: 58%;
 
   & + label {
     margin-left: 0.5rem;
@@ -184,10 +184,6 @@
   .product-modal__punch-size {
     margin-bottom: 0;
     width: 20%;
-  }
-
-  .product-modal__print-position {
-    width: 40%;
   }
 
   .product-modal__cutExtra-container {
@@ -267,20 +263,6 @@
     }
   }
 
-  .product-modal__color-count {
-    flex-grow: 1;
-    margin-bottom: $space-xs;
-    width: 21%;
-
-    input {
-      text-align: right;
-    }
-
-    & + label {
-      width: auto;
-    }
-  }
-
   .product-modal__cutExtra-container {
     margin-left: 0;
     order: 1;
@@ -305,6 +287,7 @@
     width: 60%;
   }
 
+  .product-modal__print-detail-container,
   .product-modal__punch-detail {
     label {
       margin-bottom: $space-xs;
@@ -312,16 +295,18 @@
     }
   }
 
+  .product-modal__color-count,
   .product-modal__punch-count {
     flex-grow: 1;
     margin-bottom: $space-xs;
-    width: 18%;
+    width: 17%;
   }
 
+  .product-modal__color,
   .product-modal__punch-size {
     flex-grow: 1;
     margin-bottom: $space-xs;
-    width: 61.2%;
+    width: 62%;
   }
 
   .product-modal__packMaterial-container {

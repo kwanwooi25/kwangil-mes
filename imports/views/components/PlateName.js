@@ -33,10 +33,10 @@ export default class PlateName extends React.Component {
   }
 
   render() {
-    const queryRound = this.props.queryRound;
-    const queryLength = this.props.queryLength;
-    let plateRound = this.props.plateRound;
-    let plateLength = this.props.plateLength;
+    const queryRound = String(this.props.queryRound);
+    const queryLength = String(this.props.queryLength);
+    let plateRound = String(this.props.plateRound);
+    let plateLength = String(this.props.plateLength);
     let plateSize = '';
 
     if (queryRound && plateRound.indexOf(queryRound) > -1) {
@@ -51,8 +51,8 @@ export default class PlateName extends React.Component {
       );
     }
 
-    if (queryLength && plateLength.toLowerCase().indexOf(queryLength) > -1) {
-      const index = plateLength.toLowerCase().indexOf(queryLength);
+    if (queryLength && plateLength.indexOf(queryLength) > -1) {
+      const index = plateLength.indexOf(queryLength);
       const matchingText = plateLength.substring(
         index,
         index + queryLength.length

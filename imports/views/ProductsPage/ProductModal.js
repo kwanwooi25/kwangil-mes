@@ -844,7 +844,7 @@ export default class ProductModal extends React.Component {
                     value={this.state.cutPunchSize}
                     onInputChange={this.onInputChange}
                   />
-                  <label htmlFor="cutPunchPosition">위치:</label>
+                  <label htmlFor="cutPunchPosition">펀치위치:</label>
                   <TextInput
                     className="form-element product-modal__punch-position"
                     inputType="text"
