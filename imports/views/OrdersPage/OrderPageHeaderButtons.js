@@ -98,6 +98,7 @@ export default class OrderPageHeaderButtons extends React.Component {
         <button
           className="button button-with-icon-span page-header__button"
           onClick={this.onClickExportExcel}
+          disabled={this.state.filteredOrdersData.length === 0}
         >
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>

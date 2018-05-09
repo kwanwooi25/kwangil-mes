@@ -120,6 +120,7 @@ export default class PlatePageHeaderButtons extends React.Component {
         <button
           className="button button-with-icon-span page-header__button"
           onClick={this.onClickExportExcel}
+          disabled={this.state.filteredPlatesData.length === 0}
         >
           <i className="fa fa-table fa-lg" />
           <span>엑셀</span>
