@@ -7,7 +7,7 @@ import { ProductsData } from '../../api/products';
 import { OrdersData } from '../../api/orders';
 import { AccountsData } from '../../api/accounts';
 import { comma, uncomma } from '../../api/comma';
-import { avoidWeekend } from '../../api/avoidWeekend'
+import { avoidWeekend } from '../../api/avoidWeekend';
 
 import DatePickerWithMessage from '../../custom/DatePicker/DatePickerWithMessage';
 import TextInput from '../../custom/TextInput';
@@ -305,9 +305,22 @@ export default class ProductOrderModal extends React.Component {
         deliveredAt: ''
       };
 
+      let product = this.state.product;
+      if (!product.history) product.history = [];
+      product.history.push({
+        _id: this.state.orderedAt.format('YYYY-MM-DD'),
+        orderQuantity: Number(uncomma(this.state.orderQuantity))
+      });
+
       Meteor.call('orders.insert', orderData, (err, res) => {
         if (!err) {
-          this.props.onModalClose();
+          Meteor.call('products.update', product._id, product, (err, res) => {
+            if (!err) {
+              this.props.onModalClose();
+            } else {
+              this.setState({ error: err.error });
+            }
+          });
         } else {
           this.setState({ error: err.error });
         }
@@ -331,13 +344,33 @@ export default class ProductOrderModal extends React.Component {
         deliveredAt: ''
       };
 
+      let product = this.state.product;
+      let historyArrayModified = [];
+      product.history.map(({ _id, orderQuantity }) => {
+        if (_id === orderData.orderedAt) {
+          historyArrayModified.push({
+            _id: this.state.orderedAt.format('YYYY-MM-DD'),
+            orderQuantity: Number(uncomma(this.state.orderQuantity))
+          });
+        } else {
+          historyArrayModified.push({ _id, orderQuantity });
+        }
+      });
+      product.history = historyArrayModified;
+
       Meteor.call(
         'orders.update',
         this.state.orderID,
         orderData,
         (err, res) => {
           if (!err) {
-            this.props.onModalClose();
+            Meteor.call('products.update', product._id, product, (err, res) => {
+              if (!err) {
+                this.props.onModalClose();
+              } else {
+                this.setState({ error: err.error });
+              }
+            });
           } else {
             this.setState({ error: err.error });
           }

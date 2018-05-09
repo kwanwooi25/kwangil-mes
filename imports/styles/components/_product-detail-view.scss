@@ -114,3 +114,18 @@
     text-decoration: underline;
   }
 }
+
+.product-detail__history-container {
+  border: 0.5px solid $color-primary--100;
+  border-top: none;
+  list-style: none;
+  margin: 0;
+  padding: $space-xs;
+  max-height: 30vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  li {
+    padding: $space-xs;
+  }
+}

@@ -131,7 +131,9 @@ export default class OrderList extends React.Component {
     ];
 
     selectedOrders.map(orderID => {
-      const order = this.state.ordersData.find(order => order._id === orderID);
+      const order = this.state.filteredOrdersData.find(
+        order => order._id === orderID
+      );
       const product = this.props.productsData.find(
         product => product._id === order.data.productID
       );
@@ -159,7 +161,25 @@ export default class OrderList extends React.Component {
 
     if (answer) {
       this.state.selectedOrders.map(orderID => {
-        Meteor.call('orders.remove', orderID);
+        const order = this.state.filteredOrdersData.find(
+          order => order._id === orderID
+        );
+        let product = this.props.productsData.find(
+          product => product._id === order.data.productID
+        );
+        let historyArrayModified = [];
+        product.history.map(({ _id, orderQuantity }) => {
+          if ( _id !== order.data.orderedAt) {
+            historyArrayModified.push({ _id, orderQuantity });
+          }
+        })
+        product.history = historyArrayModified;
+
+        Meteor.call('orders.remove', orderID, (err, res) => {
+          if (!err) {
+            Meteor.call('products.update', product._id, product);
+          }
+        });
       });
 
       // reset selectAll checkbox

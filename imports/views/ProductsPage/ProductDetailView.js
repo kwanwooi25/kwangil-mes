@@ -164,6 +164,33 @@ export default class ProductDetailView extends React.Component {
       });
     };
 
+    // display history
+    const getHistory = () => {
+      let historyArrayToDisplay = [];
+      if (product.olderHistory) {
+        const olderHistoryString = product.olderHistory;
+        historyArrayToDisplay = olderHistoryString.split('\r\r\n');
+      }
+      if (product.history) {
+        const historyArray = product.history;
+        historyArray
+          .sort((a, b) => {
+            if (a._id > b._id) return 1;
+            if (a._id < b._id) return -1;
+            return 0;
+          })
+          .map(history => {
+            historyArrayToDisplay.push(
+              `${history._id} 수량: ${comma(history.orderQuantity)}매`
+            );
+          });
+      }
+
+      return historyArrayToDisplay.map((history, index) => (
+        <li key={index}>{history}</li>
+      ));
+    };
+
     return (
       <div className="product-detail__container">
         <div className="product-detail__subsection">
@@ -241,7 +268,9 @@ export default class ProductDetailView extends React.Component {
         {product.olderHistory && (
           <div className="product-detail__subsection">
             <h3 className="product-detail__subtitle">작업이력</h3>
-            <p className="product-detail__description">{product.olderHistory}</p>
+            <ul className="product-detail__history-container">
+              {getHistory()}
+            </ul>
           </div>
         )}
       </div>
