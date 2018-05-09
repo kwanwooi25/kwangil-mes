@@ -30,6 +30,8 @@ import DeliveryPage from '../views/DeliveryPage';
 import UsersPage from '../views/UsersPage';
 import NotFoundPage from '../views/NotFoundPage';
 
+import Spinner from '../custom/Spinner-2';
+
 const unauthenticatedPages = ['/'];
 const authenticatedPages = [
   '/dashboard',
@@ -86,7 +88,6 @@ export default class Routes extends React.Component {
 
     // tracks data change
     Tracker.autorun(() => {
-
       // logout user when user has been idle for 1 hour
       if (UserStatus.status.get() === 'idle') {
         idleTimer = setTimeout(() => {
@@ -139,120 +140,248 @@ export default class Routes extends React.Component {
   }
 
   render() {
-    return (
-      <BrowserRouter>
-        <div>
-          {!!Meteor.userId() ? <Header /> : undefined}
-          <Switch>
-            <Route exact path="/" component={LoginPage} />
-            <Route
-              path="/dashboard"
-              render={() => (
-                <DashboardPage
-                  isDataReady={
-                    this.state.isProductsDataReady &&
-                    this.state.isOrdersDataReady
-                  }
-                  productsData={this.state.productsData}
-                  ordersData={this.state.ordersData}
-                  deliveryData={this.state.deliveryData}
-                />
-              )}
-            />
-            <Route
-              path="/accounts"
-              render={() => (
-                <AccountsPage
-                  isDataReady={this.state.isAccountsDataReady}
-                  accountsData={this.state.accountsData}
-                  accountsDataChange={this.state.accountsDataChange}
-                />
-              )}
-            />
-            <Route
-              path="/products"
-              render={() => (
-                <ProductsPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isPlatesDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  platesData={this.state.platesData}
-                />
-              )}
-            />
-            <Route
-              path="/plates"
-              render={() => (
-                <PlatesPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isPlatesDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  platesData={this.state.platesData}
-                />
-              )}
-            />
-            <Route
-              path="/orders"
-              render={() => (
-                <OrdersPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isOrdersDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  ordersData={this.state.ordersData}
-                />
-              )}
-            />
-            <Route
-              path="/orders-completed"
-              render={() => (
-                <CompletedOrdersPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isOrdersDataReady &&
-                    this.state.isDeliveryDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  ordersData={this.state.ordersData}
-                  deliveryData={this.state.deliveryData}
-                />
-              )}
-            />
-            <Route
-              path="/delivery"
-              render={() => (
-                <DeliveryPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isOrdersDataReady &&
-                    this.state.isDeliveryDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  ordersData={this.state.ordersData}
-                  deliveryData={this.state.deliveryData}
-                />
-              )}
-            />
-            <Route path="/users" component={UsersPage} />
-            <Route path="*" component={NotFoundPage} />
-          </Switch>
-        </div>
-      </BrowserRouter>
-    );
+    if (
+      this.state.isAccountsDataReady &&
+      this.state.isProductsDataReady &&
+      this.state.isPlatesDataReady &&
+      this.state.isOrdersDataReady &&
+      this.state.isDeliveryDataReady
+    ) {
+      return (
+        <BrowserRouter>
+          <div>
+            {!!Meteor.userId() ? <Header /> : undefined}
+            <Switch>
+              <Route exact path="/" component={LoginPage} />
+              <Route
+                path="/dashboard"
+                render={() => (
+                  <DashboardPage
+                    isDataReady={
+                      this.state.isProductsDataReady &&
+                      this.state.isOrdersDataReady
+                    }
+                    productsData={this.state.productsData}
+                    ordersData={this.state.ordersData}
+                    deliveryData={this.state.deliveryData}
+                  />
+                )}
+              />
+              <Route
+                path="/accounts"
+                render={() => (
+                  <AccountsPage
+                    isDataReady={this.state.isAccountsDataReady}
+                    accountsData={this.state.accountsData}
+                    accountsDataChange={this.state.accountsDataChange}
+                  />
+                )}
+              />
+              <Route
+                path="/products"
+                render={() => (
+                  <ProductsPage
+                    isDataReady={
+                      this.state.isAccountsDataReady &&
+                      this.state.isProductsDataReady &&
+                      this.state.isPlatesDataReady
+                    }
+                    accountsData={this.state.accountsData}
+                    productsData={this.state.productsData}
+                    platesData={this.state.platesData}
+                  />
+                )}
+              />
+              <Route
+                path="/plates"
+                render={() => (
+                  <PlatesPage
+                    isDataReady={
+                      this.state.isAccountsDataReady &&
+                      this.state.isProductsDataReady &&
+                      this.state.isPlatesDataReady
+                    }
+                    accountsData={this.state.accountsData}
+                    productsData={this.state.productsData}
+                    platesData={this.state.platesData}
+                  />
+                )}
+              />
+              <Route
+                path="/orders"
+                render={() => (
+                  <OrdersPage
+                    isDataReady={
+                      this.state.isAccountsDataReady &&
+                      this.state.isProductsDataReady &&
+                      this.state.isOrdersDataReady
+                    }
+                    accountsData={this.state.accountsData}
+                    productsData={this.state.productsData}
+                    ordersData={this.state.ordersData}
+                  />
+                )}
+              />
+              <Route
+                path="/orders-completed"
+                render={() => (
+                  <CompletedOrdersPage
+                    isDataReady={
+                      this.state.isAccountsDataReady &&
+                      this.state.isProductsDataReady &&
+                      this.state.isOrdersDataReady &&
+                      this.state.isDeliveryDataReady
+                    }
+                    accountsData={this.state.accountsData}
+                    productsData={this.state.productsData}
+                    ordersData={this.state.ordersData}
+                    deliveryData={this.state.deliveryData}
+                  />
+                )}
+              />
+              <Route
+                path="/delivery"
+                render={() => (
+                  <DeliveryPage
+                    isDataReady={
+                      this.state.isAccountsDataReady &&
+                      this.state.isProductsDataReady &&
+                      this.state.isOrdersDataReady &&
+                      this.state.isDeliveryDataReady
+                    }
+                    accountsData={this.state.accountsData}
+                    productsData={this.state.productsData}
+                    ordersData={this.state.ordersData}
+                    deliveryData={this.state.deliveryData}
+                  />
+                )}
+              />
+              <Route path="/users" component={UsersPage} />
+              <Route path="*" component={NotFoundPage} />
+            </Switch>
+          </div>
+        </BrowserRouter>
+      );
+    } else {
+      return <Spinner />;
+    }
   }
+
+  // render() {
+  //   return (
+  //     <BrowserRouter>
+  //       <div>
+  //         {!!Meteor.userId() ? <Header /> : undefined}
+  //         <Switch>
+  //           <Route exact path="/" component={LoginPage} />
+  //           <Route
+  //             path="/dashboard"
+  //             render={() => (
+  //               <DashboardPage
+  //                 isDataReady={
+  //                   this.state.isProductsDataReady &&
+  //                   this.state.isOrdersDataReady
+  //                 }
+  //                 productsData={this.state.productsData}
+  //                 ordersData={this.state.ordersData}
+  //                 deliveryData={this.state.deliveryData}
+  //               />
+  //             )}
+  //           />
+  //           <Route
+  //             path="/accounts"
+  //             render={() => (
+  //               <AccountsPage
+  //                 isDataReady={this.state.isAccountsDataReady}
+  //                 accountsData={this.state.accountsData}
+  //                 accountsDataChange={this.state.accountsDataChange}
+  //               />
+  //             )}
+  //           />
+  //           <Route
+  //             path="/products"
+  //             render={() => (
+  //               <ProductsPage
+  //                 isDataReady={
+  //                   this.state.isAccountsDataReady &&
+  //                   this.state.isProductsDataReady &&
+  //                   this.state.isPlatesDataReady
+  //                 }
+  //                 accountsData={this.state.accountsData}
+  //                 productsData={this.state.productsData}
+  //                 platesData={this.state.platesData}
+  //               />
+  //             )}
+  //           />
+  //           <Route
+  //             path="/plates"
+  //             render={() => (
+  //               <PlatesPage
+  //                 isDataReady={
+  //                   this.state.isAccountsDataReady &&
+  //                   this.state.isProductsDataReady &&
+  //                   this.state.isPlatesDataReady
+  //                 }
+  //                 accountsData={this.state.accountsData}
+  //                 productsData={this.state.productsData}
+  //                 platesData={this.state.platesData}
+  //               />
+  //             )}
+  //           />
+  //           <Route
+  //             path="/orders"
+  //             render={() => (
+  //               <OrdersPage
+  //                 isDataReady={
+  //                   this.state.isAccountsDataReady &&
+  //                   this.state.isProductsDataReady &&
+  //                   this.state.isOrdersDataReady
+  //                 }
+  //                 accountsData={this.state.accountsData}
+  //                 productsData={this.state.productsData}
+  //                 ordersData={this.state.ordersData}
+  //               />
+  //             )}
+  //           />
+  //           <Route
+  //             path="/orders-completed"
+  //             render={() => (
+  //               <CompletedOrdersPage
+  //                 isDataReady={
+  //                   this.state.isAccountsDataReady &&
+  //                   this.state.isProductsDataReady &&
+  //                   this.state.isOrdersDataReady &&
+  //                   this.state.isDeliveryDataReady
+  //                 }
+  //                 accountsData={this.state.accountsData}
+  //                 productsData={this.state.productsData}
+  //                 ordersData={this.state.ordersData}
+  //                 deliveryData={this.state.deliveryData}
+  //               />
+  //             )}
+  //           />
+  //           <Route
+  //             path="/delivery"
+  //             render={() => (
+  //               <DeliveryPage
+  //                 isDataReady={
+  //                   this.state.isAccountsDataReady &&
+  //                   this.state.isProductsDataReady &&
+  //                   this.state.isOrdersDataReady &&
+  //                   this.state.isDeliveryDataReady
+  //                 }
+  //                 accountsData={this.state.accountsData}
+  //                 productsData={this.state.productsData}
+  //                 ordersData={this.state.ordersData}
+  //                 deliveryData={this.state.deliveryData}
+  //               />
+  //             )}
+  //           />
+  //           <Route path="/users" component={UsersPage} />
+  //           <Route path="*" component={NotFoundPage} />
+  //         </Switch>
+  //       </div>
+  //     </BrowserRouter>
+  //   );
+  // }
 }
