@@ -50,7 +50,6 @@ export default class CompletedOrdersPage extends React.Component {
 
   componentWillUnmount() {
     this.authTracker.stop();
-    console.log('CompletedOrdersPage unmounted');
   }
 
   onInputSearchChange(query) {

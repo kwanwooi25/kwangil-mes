@@ -47,7 +47,7 @@ export default class ProductModal extends React.Component {
         extPretreat: product.extPretreat,
         extMemo: product.extMemo,
         printImageFile: '',
-        printImagaFileName: product.printImageFileName,
+        printImageFileName: product.printImageFileName,
         printImageURL: product.printImageURL,
         printFrontColorCount: product.printFrontColorCount,
         printFrontColor: product.printFrontColor,
@@ -253,14 +253,11 @@ export default class ProductModal extends React.Component {
 
     // check validation
     if (e.target.type !== 'checkbox' && e.target.type !== 'radio') {
-      this.validate(e.target);
+      this.validate(e.target.name, e.target.value, e.target.max);
     }
   }
 
-  validate(target) {
-    const name = target.name;
-    const value = target.value;
-    const max = target.max;
+  validate(name, value, max) {
     const inputContainer = document.getElementById(name).parentNode;
 
     // validate accountName
@@ -454,6 +451,7 @@ export default class ProductModal extends React.Component {
         initialState.printImageFileName !== this.state.printImageFileName &&
         this.refs.printImageFile.files[0]
       ) {
+        // upload new image
         this.uploadImage(this.refs.printImageFile.files[0]).then(
           convertedURL => {
             this.setState({ printImageURL: convertedURL }, () => {
@@ -473,6 +471,10 @@ export default class ProductModal extends React.Component {
             });
           }
         );
+
+        // remove previous image
+        Meteor.call('deleteFromS3', initialState.printImageFileName);
+
       } else {
         const data = this.getDataToSave();
         Meteor.call(

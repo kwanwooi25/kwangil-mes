@@ -54,7 +54,6 @@ export default class PlatesPage extends React.Component {
 
   componentWillUnmount() {
     this.authTracker.stop();
-    console.log('PlatesPage unmounted');
   }
 
   onPlateSearchChange(queryObj) {

@@ -57,7 +57,6 @@ export default class ProductsPage extends React.Component {
 
   componentWillUnmount() {
     this.authTracker.stop();
-    console.log('ProductsPage unmounted');
   }
 
   onProductSearchChange(queryObj) {

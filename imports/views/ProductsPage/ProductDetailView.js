@@ -145,7 +145,6 @@ export default class ProductDetailView extends React.Component {
     // display plate list
     const getPlateList = plateList => {
       return plateList.map((plate, index) => {
-        const plateSize = `${plate.round} x ${plate.length}`;
         const printContent = plate.forProductList.find(
           forProduct => forProduct.productID === product._id
         ).printContent;
@@ -156,7 +155,8 @@ export default class ProductDetailView extends React.Component {
             <PlateName
               className="product-detail__plateSize"
               plateID={plate._id}
-              plateName={plateSize}
+              plateRound={plate.round}
+              plateLength={plate.length}
             />
             <span>{printContent}</span>
           </li>

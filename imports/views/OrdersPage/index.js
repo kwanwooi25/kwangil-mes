@@ -59,7 +59,6 @@ export default class OrdersPage extends React.Component {
 
   componentWillUnmount() {
     this.authTracker.stop();
-    console.log('OrdersPage unmounted');
   }
 
   onOrderSearchChange(queryObj) {

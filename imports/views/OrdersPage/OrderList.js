@@ -86,7 +86,7 @@ export default class OrderList extends React.Component {
   }
 
   updateOrderStatus(orderID, statusValue) {
-    const order = this.state.ordersData.find(order => order._id === orderID);
+    const order = this.state.filteredOrdersData.find(order => order._id === orderID);
     let data = order.data;
     data.status = statusValue;
 

@@ -49,7 +49,6 @@ export default class AccountsPage extends React.Component {
 
   componentWillUnmount() {
     this.authTracker.stop();
-    console.log('AccountsPage unmounted');
   }
 
   onInputSearchChange(query) {

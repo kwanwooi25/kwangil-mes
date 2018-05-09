@@ -107,12 +107,6 @@
   font-size: $font-size--md;
   margin-right: $space-xs;
   width: auto;
-
-  &:hover {
-    color: $color-primary--500;
-    cursor: pointer;
-    text-decoration: underline;
-  }
 }
 
 .product-detail__history-container {

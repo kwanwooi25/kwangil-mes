@@ -9,6 +9,7 @@ import '../imports/api/plates';
 import '../imports/api/delivery';
 import '../imports/api/slingshot';
 import '../imports/api/images';
+import '../imports/api/s3';
 
 Meteor.startup(() => {
 
