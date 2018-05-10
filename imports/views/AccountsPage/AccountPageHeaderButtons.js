@@ -46,21 +46,35 @@ export default class AccountPageHeaderButtons extends React.Component {
   onClickExportExcel() {
     const filename = '광일_거래처목록.csv';
     const accounts = this.state.filteredAccountsData;
-    const keys = [
-      '_id',
-      'name',
-      'phone_1',
-      'phone_2',
-      'fax',
-      'email_1',
-      'email_2',
-      'address',
-      'memo'
-    ];
+    let keys = [];
+    let headerCSV = '';
+    if (this.props.isAdmin) {
+      keys = [
+        '_id',
+        'name',
+        'phone_1',
+        'phone_2',
+        'fax',
+        'email_1',
+        'email_2',
+        'address',
+        'memo'
+      ];
+      headerCSV = '거래처ID,거래처명,전화번호,전화번호,팩스,이메일,이메일,주소,메모';
+    } else {
+      keys = [
+        'name',
+        'phone_1',
+        'phone_2',
+        'fax',
+        'email_1',
+        'email_2',
+        'address',
+        'memo'
+      ];
+      headerCSV = '거래처명,전화번호,전화번호,팩스,이메일,이메일,주소,메모';
+    }
 
-    // generate header csv
-    const headerCSV =
-      '거래처ID,거래처명,전화번호,전화번호,팩스,이메일,이메일,주소,메모';
     // generate body csv from account list
     const bodyCSV = accounts
       .map(account => {

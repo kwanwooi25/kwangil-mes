@@ -14,9 +14,9 @@ Slingshot.fileRestrictions('upload-product-image', {
 });
 
 Slingshot.createDirective('upload-product-image', Slingshot.S3Storage, {
-  bucket: 'kwangil-products',
+  bucket: Meteor.settings.AWSBucket,
   acl: 'public-read',
-  region: 'ap-northeast-2',
+  region: Meteor.settings.AWSRegion,
   authorize() {
     if (!this.userId)
       throw new Meteor.Error(

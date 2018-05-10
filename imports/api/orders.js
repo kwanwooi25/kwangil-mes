@@ -6,7 +6,7 @@ import { ProductsData } from './products';
 import { AccountsData } from './accounts';
 
 export const OrdersData = new Mongo.Collection('orders');
-export const OrderCounter = new Mongo.Collection('orderCounter');
+const OrderCounter = new Mongo.Collection('orderCounter');
 
 if (Meteor.isServer) {
   Meteor.publish('orders', function() {

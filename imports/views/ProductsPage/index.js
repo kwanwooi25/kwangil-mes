@@ -1,6 +1,8 @@
 import React from 'react';
 
 import { setLayout } from '../../api/setLayout';
+import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
 
 import ProductPageHeaderButtons from './ProductPageHeaderButtons';
 import ProductSearchExpand from './ProductSearchExpand';
@@ -13,7 +15,9 @@ export default class ProductsPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      productsData: props.productsData,
+      isDataReady: false,
+      accountsData: [],
+      productsData: [],
       filteredProductsData: [],
       queryObj: {
         accountName: '',
@@ -36,27 +40,42 @@ export default class ProductsPage extends React.Component {
       setLayout(75);
     });
 
-    //tracks if the user logged in is admin or manager
-    this.authTracker = Tracker.autorun(() => {
+    // subscribe to data
+    subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+
+    this.tracker = Tracker.autorun(() => {
       if (Meteor.user()) {
-        this.setState({
-          isAdmin: Meteor.user().profile.isAdmin,
-          isManager: Meteor.user().profile.isManager
-        });
+        const isDataReady = subsCache.ready();
+        const accountsData = AccountsData.find(
+          {},
+          { sort: { name: 1 } }
+        ).fetch();
+        const productsData = ProductsData.find(
+          {},
+          {
+            sort: { name: 1, thick: 1, length: 1, width: 1 }
+          }
+        ).fetch();
+        this.setState(
+          {
+            isAdmin: Meteor.user().profile.isAdmin,
+            isManager: Meteor.user().profile.isManager,
+            isDataReady,
+            accountsData,
+            productsData
+          },
+          () => {
+            this.filterData();
+          }
+        );
       }
-    });
-
-    this.filterData();
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({ productsData: props.productsData }, () => {
-      this.filterData();
     });
   }
 
   componentWillUnmount() {
-    this.authTracker.stop();
+    this.tracker.stop();
   }
 
   onProductSearchChange(queryObj) {
@@ -70,74 +89,76 @@ export default class ProductsPage extends React.Component {
     let filteredProductsData = [];
 
     // filter data
-    this.state.productsData.map(product => {
-      const account = this.props.accountsData.find(
-        account => account._id === product.accountID
-      );
+    if (this.state.isDataReady) {
+      this.state.productsData.map(product => {
+        const account = this.state.accountsData.find(
+          account => account._id === product.accountID
+        );
 
-      let accountNameMatch = false;
-      let productNameMatch = false;
-      let productSizeMatch = false;
-      let extColorMatch = false;
-      let printColorMatch = false;
+        let accountNameMatch = false;
+        let productNameMatch = false;
+        let productSizeMatch = false;
+        let extColorMatch = false;
+        let printColorMatch = false;
 
-      if (
-        account &&
-        account.name.toLowerCase().indexOf(queryObj.accountName) > -1
-      ) {
-        accountNameMatch = true;
-      }
-
-      if (
-        product.name &&
-        product.name.toLowerCase().indexOf(queryObj.name) > -1
-      ) {
-        productNameMatch = true;
-      }
-
-      if (
-        product.thick &&
-        String(product.thick).indexOf(queryObj.thick) > -1 &&
-        product.length &&
-        String(product.length).indexOf(queryObj.length) > -1 &&
-        product.width &&
-        String(product.width).indexOf(queryObj.width) > -1
-      ) {
-        productSizeMatch = true;
-      }
-
-      if (
-        product.extColor &&
-        product.extColor.toLowerCase().indexOf(queryObj.extColor) > -1
-      ) {
-        extColorMatch = true;
-      }
-
-      if (queryObj.printColor && product.isPrint) {
         if (
-          (product.printFrontColor &&
-            product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
-          (product.printBackColor &&
-            product.printBackColor.indexOf(queryObj.printColor) > -1)
+          account &&
+          account.name.toLowerCase().indexOf(queryObj.accountName) > -1
         ) {
+          accountNameMatch = true;
+        }
+
+        if (
+          product.name &&
+          product.name.toLowerCase().indexOf(queryObj.name) > -1
+        ) {
+          productNameMatch = true;
+        }
+
+        if (
+          product.thick &&
+          String(product.thick).indexOf(queryObj.thick) > -1 &&
+          product.length &&
+          String(product.length).indexOf(queryObj.length) > -1 &&
+          product.width &&
+          String(product.width).indexOf(queryObj.width) > -1
+        ) {
+          productSizeMatch = true;
+        }
+
+        if (
+          product.extColor &&
+          product.extColor.toLowerCase().indexOf(queryObj.extColor) > -1
+        ) {
+          extColorMatch = true;
+        }
+
+        if (queryObj.printColor && product.isPrint) {
+          if (
+            (product.printFrontColor &&
+              product.printFrontColor.indexOf(queryObj.printColor) > -1) ||
+            (product.printBackColor &&
+              product.printBackColor.indexOf(queryObj.printColor) > -1)
+          ) {
+            printColorMatch = true;
+          }
+        } else {
           printColorMatch = true;
         }
-      } else {
-        printColorMatch = true;
-      }
 
-      if (
-        accountNameMatch &&
-        productNameMatch &&
-        productSizeMatch &&
-        extColorMatch &&
-        printColorMatch
-      ) {
-        filteredProductsData.push(product);
-      }
-    });
+        if (
+          accountNameMatch &&
+          productNameMatch &&
+          productSizeMatch &&
+          extColorMatch &&
+          printColorMatch
+        ) {
+          filteredProductsData.push(product);
+        }
+      });
 
-    this.setState({ filteredProductsData });
+      this.setState({ filteredProductsData });
+    }
   }
 
   render() {
@@ -149,7 +170,7 @@ export default class ProductsPage extends React.Component {
             <ProductPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
-              accountsData={this.props.accountsData}
+              accountsData={this.state.accountsData}
               filteredProductsData={this.state.filteredProductsData}
             />
           </div>
@@ -163,10 +184,10 @@ export default class ProductsPage extends React.Component {
           <ProductList
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
-            accountsData={this.props.accountsData}
-            productsData={this.props.productsData}
+            accountsData={this.state.accountsData}
+            productsData={this.state.productsData}
             filteredProductsData={this.state.filteredProductsData}
-            isDataReady={this.props.isDataReady}
+            isDataReady={this.state.isDataReady}
             queryObj={this.state.queryObj}
           />
         </div>

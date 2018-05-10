@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { setLayout } from '../../api/setLayout';
+import { AccountsData } from '../../api/accounts';
 
 import PageHeaderSearch from '../components/PageHeaderSearch';
 import AccountPageHeaderButtons from './AccountPageHeaderButtons';
@@ -13,7 +14,8 @@ export default class AccountsPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      accountsData: props.accountsData,
+      isDataReady: false,
+      accountsData: [],
       filteredAccountsData: [],
       query: ''
     };
@@ -28,27 +30,34 @@ export default class AccountsPage extends React.Component {
       setLayout(30);
     });
 
-    // tracks if the user logged in is admin or manager
-    this.authTracker = Tracker.autorun(() => {
+    // subscribe to data
+    subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+
+    this.tracker = Tracker.autorun(() => {
       if (Meteor.user()) {
-        this.setState({
-          isAdmin: Meteor.user().profile.isAdmin,
-          isManager: Meteor.user().profile.isManager
-        });
+        const isDataReady = subsCache.ready();
+        const accountsData = AccountsData.find(
+          {},
+          { sort: { name: 1 } }
+        ).fetch();
+        this.setState(
+          {
+            isAdmin: Meteor.user().profile.isAdmin,
+            isManager: Meteor.user().profile.isManager,
+            isDataReady,
+            accountsData
+          },
+          () => {
+            this.filterData();
+          }
+        );
       }
-    });
-
-    this.filterData();
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({ accountsData: props.accountsData }, () => {
-      this.filterData();
     });
   }
 
   componentWillUnmount() {
-    this.authTracker.stop();
+    this.tracker.stop();
   }
 
   onInputSearchChange(query) {
@@ -99,7 +108,7 @@ export default class AccountsPage extends React.Component {
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
             filteredAccountsData={this.state.filteredAccountsData}
-            isDataReady={this.props.isDataReady}
+            isDataReady={this.state.isDataReady}
           />
         </div>
       </div>

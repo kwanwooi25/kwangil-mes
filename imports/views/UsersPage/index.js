@@ -27,13 +27,18 @@ export default class UsersPage extends React.Component {
     });
 
     // data tracker
-    Tracker.autorun(() => {
-      const usersSubscription = Meteor.subscribe('users');
-      const isDataReady = usersSubscription.ready();
+    subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('users');
+    this.tracker = Tracker.autorun(() => {
+      const isDataReady = subsCache.ready();
       const usersData = Meteor.users.find().fetch();
 
       this.setState({ isDataReady, usersData });
     })
+  }
+
+  componentWillUnmount() {
+    this.tracker.stop();
   }
 
   onInputSearchChange(query) {

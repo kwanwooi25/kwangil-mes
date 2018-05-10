@@ -378,7 +378,6 @@ export default class ProductModal extends React.Component {
   getDataToSave() {
     return {
       accountID: this.state.accountID,
-      accountName: this.state.accountName,
       name: this.state.name,
       thick: Number(this.state.thick),
       length: Number(this.state.length),

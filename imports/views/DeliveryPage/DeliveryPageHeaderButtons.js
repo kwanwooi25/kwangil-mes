@@ -13,6 +13,7 @@ export default class DeliveryPageHeaderButtons extends React.Component {
   accountsData
   productsData
   ordersData
+  deliveryData
   selectedDelivery
   onDeliveryDateChange
   ==========================================================================*/
@@ -27,6 +28,7 @@ export default class DeliveryPageHeaderButtons extends React.Component {
     }
 
     this.state = {
+      delivery,
       hasOrdersList,
       deliveryDate: avoidWeekend(moment())
     };
@@ -45,7 +47,7 @@ export default class DeliveryPageHeaderButtons extends React.Component {
       hasOrdersList = true;
     }
 
-    this.setState({ hasOrdersList });
+    this.setState({ delivery, hasOrdersList });
   }
 
   onPrevClick() {
@@ -80,9 +82,7 @@ export default class DeliveryPageHeaderButtons extends React.Component {
     const filename = `광일_출고목록_${this.state.deliveryDate.format(
       'YYMMDD'
     )}.csv`;
-    const delivery = this.props.deliveryData.find(
-      delivery => delivery._id === this.state.deliveryDate.format('YYYY-MM-DD')
-    );
+    const delivery = this.state.delivery;
     const orders = [];
     const keys = [
       '_id',
@@ -104,7 +104,7 @@ export default class DeliveryPageHeaderButtons extends React.Component {
       'deliveredAt'
     ];
 
-    delivery.ordersList.map(({ orderID }) => {
+    delivery.orderList.map(({ orderID }) => {
       orders.push(this.props.ordersData.find(order => order._id === orderID));
     });
 

@@ -107,7 +107,7 @@ export default class PlateModal extends React.Component {
   onInputChange(e) {
     if (
       this.state.mode === 'EDIT' &&
-      initialState[e.target.name] !== e.target.value
+      initialState[e.target.name] != e.target.value
     ) {
       e.target.parentNode.classList.add('changed');
     } else {
@@ -151,10 +151,10 @@ export default class PlateModal extends React.Component {
       ];
     } else if (this.state.mode === 'EDIT') {
       let changedText = '변경내용:';
-      if (initialState.round !== this.state.round) {
+      if (initialState.round != this.state.round) {
         changedText += ` (둘레: ${initialState.round} > ${this.state.round})`;
       }
-      if (initialState.length !== this.state.length) {
+      if (initialState.length != this.state.length) {
         changedText += ` (기장: ${initialState.length} > ${this.state.length})`;
       }
       if (initialState.material !== this.state.material) {
@@ -186,7 +186,7 @@ export default class PlateModal extends React.Component {
       location: this.state.location,
       forProductList: this.state.forProductList, // [ productID, content ],
       history, // [ date, memo ]
-      memo: ''
+      memo: this.state.memo
     };
   }
 

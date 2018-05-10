@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 
+import { AccountsData } from '../../api/accounts';
 import { ProductsData } from '../../api/products';
 
 import Spinner from '../../custom/Spinner';
@@ -32,10 +33,17 @@ export default class AddProductModal extends React.Component {
 
   componentDidMount() {
     // tracks data change
-    this.databaseTracker = Tracker.autorun(() => {
-      const productsSubscription = Meteor.subscribe('products');
-      const productsData = ProductsData.find({ isPrint: true }).fetch();
-      const isDataReady = productsSubscription.ready();
+    subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+    this.tracker = Tracker.autorun(() => {
+      const isDataReady = subsCache.ready();
+      const productsData = ProductsData.find(
+        { isPrint: true },
+        {
+          sort: { name: 1, thick: 1, length: 1, width: 1 }
+        }
+      ).fetch();
 
       this.setState({
         productsData,
@@ -46,7 +54,7 @@ export default class AddProductModal extends React.Component {
   }
 
   componentWillUnmount() {
-    this.databaseTracker.stop();
+    this.tracker.stop();
   }
 
   onInputChange(e) {
@@ -120,7 +128,8 @@ export default class AddProductModal extends React.Component {
       const productSize = `
           ${product.thick} x ${product.length} x ${product.width}
         `;
-
+      const account = AccountsData.findOne({ _id: product.accountID });
+      
       return (
         <li
           id={product._id}
@@ -128,7 +137,7 @@ export default class AddProductModal extends React.Component {
           className="plate-addProduct-modal__productList__item"
           onClick={this.onListItemClick}
         >
-          <span>{product.accountName}</span>
+          <span>{account ? account.name : '[삭제된 업체]'}</span>
           <span>{product.name}</span>
           <span>{productSize}</span>
         </li>

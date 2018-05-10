@@ -21,18 +21,21 @@ export const uploadToS3 = (file, uploader) => {
 
 Meteor.methods({
   'deleteFromS3'(filename) {
-    const s3 = new AWS.S3({
+    AWS.config.update({
       accessKeyId: Meteor.settings.AWSAccessKeyId,
       secretAccessKey: Meteor.settings.AWSSecretAccessKey,
-      bucket: 'kwangil-products',
-      region: 'ap-northeast-2'
+      bucket: Meteor.settings.AWSBucket,
+      region: Meteor.settings.AWSRegion
     });
+
+    const s3 = new AWS.S3();
 
     s3.deleteObject({
       Bucket: 'kwangil-products',
       Key: filename
     }, (err, res) => {
-      console.log(err, res);
+      if (err) console.log(err, err.stack);
+      if (res) console.log(res);
     });
   }
 });

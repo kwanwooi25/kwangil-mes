@@ -45,6 +45,10 @@
   align-self: center;
   color: white;
   vertical-align: middle;
+
+  @media (max-width: $break--sm) {
+    display: none;
+  }
 }
 
 .header--logout {
