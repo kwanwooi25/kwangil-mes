@@ -52,7 +52,7 @@ export default class AccountList extends React.Component {
       let itemsToShow = this.state.itemsToShow;
       itemsToShow += 20;
       this.setState({ itemsToShow }, () => {
-        this.getAccountList(this.state.query);
+        this.getAccountList();
       });
     }
   }

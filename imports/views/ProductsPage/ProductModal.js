@@ -170,7 +170,7 @@ export default class ProductModal extends React.Component {
     // add and remove class 'changed' on EDIT mode
     if (
       this.state.mode === 'EDIT' &&
-      initialState[e.target.name] !== e.target.value
+      initialState[e.target.name] != e.target.value
     ) {
       e.target.parentNode.classList.add('changed');
     } else {
