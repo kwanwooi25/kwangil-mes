@@ -29,7 +29,7 @@ export default class UsersPage extends React.Component {
     // data tracker
     subsCache = new SubsCache(-1, -1);
     subsCache.subscribe('users');
-    this.trakcer = Tracker.autorun(() => {
+    this.tracker = Tracker.autorun(() => {
       const isDataReady = subsCache.ready();
       const usersData = Meteor.users.find().fetch();
 

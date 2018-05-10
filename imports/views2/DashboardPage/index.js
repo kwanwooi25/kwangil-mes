@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import { setLayout } from '../../api/setLayout';
+import { ProductsData } from '../../api/products';
+import { OrdersData } from '../../api/orders';
+import { DeliveryData } from '../../api/delivery';
 
 import Spinner from '../../custom/Spinner';
 import ProductName from '../components/ProductName';
@@ -10,6 +13,13 @@ import ProductName from '../components/ProductName';
 export default class DashboardPage extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      isDataReady: false,
+      productsData: [],
+      ordersData: [],
+      deliveryData: []
+    }
   }
 
   componentDidMount() {
@@ -18,6 +28,25 @@ export default class DashboardPage extends React.Component {
     window.addEventListener('resize', () => {
       setLayout(30);
     });
+
+    // subscribe to data
+    subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('products');
+    subsCache.subscribe('orders');
+    subsCache.subscribe('delivery');
+
+    this.tracker = Tracker.autorun(() => {
+      const isDataReady = subsCache.ready();
+      const productsData = ProductsData.find().fetch();
+      const ordersData = OrdersData.find().fetch();
+      const deliveryData = DeliveryData.find().fetch();
+
+      this.setState({ isDataReady, productsData, ordersData, deliveryData });
+    })
+  }
+
+  componentWillUnmount() {
+    this.tracker.stop();
   }
 
   getOrdersSummary() {
@@ -26,7 +55,7 @@ export default class DashboardPage extends React.Component {
     let printingCount = 0;
     let cuttingCount = 0;
 
-    this.props.ordersData.map(order => {
+    this.state.ordersData.map(order => {
       const { status } = order.data;
 
       if (status === 'extruding') {
@@ -87,7 +116,7 @@ export default class DashboardPage extends React.Component {
     let needPlateCount = 0;
     let needPlateProducts = [];
 
-    this.props.ordersData.map(order => {
+    this.state.ordersData.map(order => {
       const { plateStatus, productID, isCompleted } = order.data;
 
       if (!isCompleted && (plateStatus === 'new' || plateStatus === 'edit')) {
@@ -111,7 +140,7 @@ export default class DashboardPage extends React.Component {
           <div className="dashboard-list-item__content-100">
             <ul className="needPlateProducts">
               {needPlateProducts.map(productID => {
-                const product = this.props.productsData.find(
+                const product = this.state.productsData.find(
                   product => product._id === productID
                 );
                 const productSize = ` ${product.thick}x${product.length}x${
@@ -137,7 +166,7 @@ export default class DashboardPage extends React.Component {
   getCompletedOrdersSummary() {
     let completedCount = 0;
 
-    this.props.ordersData.map(order => {
+    this.state.ordersData.map(order => {
       const { isCompleted, isDelivered, deliveredAt } = order.data;
 
       if (isCompleted && !deliveredAt && !isDelivered) completedCount++;
@@ -170,7 +199,7 @@ export default class DashboardPage extends React.Component {
     let postCount = 0;
     let etcCount = 0;
 
-    delivery = this.props.deliveryData.find(delivery => delivery._id === today);
+    delivery = this.state.deliveryData.find(delivery => delivery._id === today);
 
     if (delivery) {
       delivery.orderList.map(({ deliverBy }) => {
@@ -227,21 +256,21 @@ export default class DashboardPage extends React.Component {
         <div className="page-content">
           <div className="list-container">
             <ul id="dashboard-list" className="list">
-              {this.props.isDataReady ? this.getOrdersSummary() : <Spinner />}
+              {this.state.isDataReady ? this.getOrdersSummary() : <Spinner />}
 
-              {this.props.isDataReady ? (
+              {this.state.isDataReady ? (
                 this.getCompletedOrdersSummary()
               ) : (
                 <Spinner />
               )}
 
-              {this.props.isDataReady ? (
+              {this.state.isDataReady ? (
                 this.getDeliveryOrderSummary()
               ) : (
                 <Spinner />
               )}
 
-              {this.props.isDataReady ? (
+              {this.state.isDataReady ? (
                 this.getNeedPlateSummary()
               ) : (
                 <Spinner />
