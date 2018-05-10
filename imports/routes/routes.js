@@ -18,17 +18,29 @@ import { DeliveryData } from '../api/delivery';
 /*=============================================
  IMPORTS COMPONENTS
 =============================================*/
-import LoginPage from '../views/LoginPage';
-import Header from '../views/components/Header';
-import DashboardPage from '../views/DashboardPage';
-import AccountsPage from '../views/AccountsPage';
-import ProductsPage from '../views/ProductsPage';
-import PlatesPage from '../views/PlatesPage';
-import OrdersPage from '../views/OrdersPage';
-import CompletedOrdersPage from '../views/CompletedOrdersPage';
-import DeliveryPage from '../views/DeliveryPage';
-import UsersPage from '../views/UsersPage';
-import NotFoundPage from '../views/NotFoundPage';
+// import LoginPage from '../views/LoginPage';
+// import Header from '../views/components/Header';
+// import DashboardPage from '../views/DashboardPage';
+// import AccountsPage from '../views/AccountsPage';
+// import ProductsPage from '../views/ProductsPage';
+// import PlatesPage from '../views/PlatesPage';
+// import OrdersPage from '../views/OrdersPage';
+// import CompletedOrdersPage from '../views/CompletedOrdersPage';
+// import DeliveryPage from '../views/DeliveryPage';
+// import UsersPage from '../views/UsersPage';
+// import NotFoundPage from '../views/NotFoundPage';
+
+import LoginPage from '../views2/LoginPage';
+import Header from '../views2/components/Header';
+import DashboardPage from '../views2/DashboardPage';
+import AccountsPage from '../views2/AccountsPage';
+import ProductsPage from '../views2/ProductsPage';
+import PlatesPage from '../views2/PlatesPage';
+import OrdersPage from '../views2/OrdersPage';
+import CompletedOrdersPage from '../views2/CompletedOrdersPage';
+import DeliveryPage from '../views2/DeliveryPage';
+import UsersPage from '../views2/UsersPage';
+import NotFoundPage from '../views2/NotFoundPage';
 
 import Spinner from '../custom/Spinner-2';
 
@@ -76,13 +88,13 @@ export default class Routes extends React.Component {
   }
 
   componentDidMount() {
-    // data subscription
-    const accountsSubscription = Meteor.subscribe('accounts');
-    const productsSubscription = Meteor.subscribe('products');
-    const platesSubscription = Meteor.subscribe('plates');
-    const ordersSubscription = Meteor.subscribe('orders');
-    const deliverySubscription = Meteor.subscribe('delivery');
-    const usersSubscription = Meteor.subscribe('users');
+    // // data subscription
+    // const accountsSubscription = Meteor.subscribe('accounts');
+    // const productsSubscription = Meteor.subscribe('products');
+    // const platesSubscription = Meteor.subscribe('plates');
+    // const ordersSubscription = Meteor.subscribe('orders');
+    // const deliverySubscription = Meteor.subscribe('delivery');
+    // const usersSubscription = Meteor.subscribe('users');
 
     let idleTimer = null;
 
@@ -97,304 +109,62 @@ export default class Routes extends React.Component {
         clearTimeout(idleTimer);
       }
 
-      // tracks data change when user is logged in
-      if (Meteor.user()) {
-        const isAccountsDataReady = accountsSubscription.ready();
-        const isProductsDataReady = productsSubscription.ready();
-        const isPlatesDataReady = platesSubscription.ready();
-        const isOrdersDataReady = ordersSubscription.ready();
-        const isDeliveryDataReady = deliverySubscription.ready();
-        const isUsersDataReady = usersSubscription.ready();
-
-        const accountsCursor = AccountsData.find({}, { sort: { name: 1 } });
-        const productsCursor = ProductsData.find(
-          {},
-          {
-            sort: { name: 1, thick: 1, length: 1, width: 1 }
-          }
-        );
-        const platesCursor = PlatesData.find({}, { sort: { round: 1 } });
-        const ordersCursor = OrdersData.find({}, { sort: { _id: 1 } });
-        const deliveryCursor = DeliveryData.find({}, { sort: { _id: 1 } });
-
-        const accountsData = accountsCursor.fetch();
-        const productsData = productsCursor.fetch();
-        const platesData = platesCursor.fetch();
-        const ordersData = ordersCursor.fetch();
-        const deliveryData = deliveryCursor.fetch();
-
-        this.setState({
-          isAccountsDataReady,
-          isProductsDataReady,
-          isPlatesDataReady,
-          isOrdersDataReady,
-          isDeliveryDataReady,
-          accountsData,
-          productsData,
-          platesData,
-          ordersData,
-          deliveryData
-        });
-      }
+      // // tracks data change when user is logged in
+      // if (Meteor.user()) {
+      //   const isAccountsDataReady = accountsSubscription.ready();
+      //   const isProductsDataReady = productsSubscription.ready();
+      //   const isPlatesDataReady = platesSubscription.ready();
+      //   const isOrdersDataReady = ordersSubscription.ready();
+      //   const isDeliveryDataReady = deliverySubscription.ready();
+      //   const isUsersDataReady = usersSubscription.ready();
+      //
+      //   const accountsCursor = AccountsData.find({}, { sort: { name: 1 } });
+      //   const productsCursor = ProductsData.find(
+      //     {},
+      //     {
+      //       sort: { name: 1, thick: 1, length: 1, width: 1 }
+      //     }
+      //   );
+      //   const platesCursor = PlatesData.find({}, { sort: { round: 1 } });
+      //   const ordersCursor = OrdersData.find({}, { sort: { _id: 1 } });
+      //   const deliveryCursor = DeliveryData.find({}, { sort: { _id: 1 } });
+      //
+      //   const accountsData = accountsCursor.fetch();
+      //   const productsData = productsCursor.fetch();
+      //   const platesData = platesCursor.fetch();
+      //   const ordersData = ordersCursor.fetch();
+      //   const deliveryData = deliveryCursor.fetch();
+      //
+      //   this.setState({
+      //     isAccountsDataReady,
+      //     isProductsDataReady,
+      //     isPlatesDataReady,
+      //     isOrdersDataReady,
+      //     isDeliveryDataReady,
+      //     accountsData,
+      //     productsData,
+      //     platesData,
+      //     ordersData,
+      //     deliveryData
+      //   });
+      // }
     });
   }
-
-  // render() {
-  //   if (
-  //     this.state.isAccountsDataReady &&
-  //     this.state.isProductsDataReady &&
-  //     this.state.isPlatesDataReady &&
-  //     this.state.isOrdersDataReady &&
-  //     this.state.isDeliveryDataReady
-  //   ) {
-  //     return (
-  //       <BrowserRouter>
-  //         <div>
-  //           {!!Meteor.userId() ? <Header /> : undefined}
-  //           <Switch>
-  //             <Route exact path="/" component={LoginPage} />
-  //             <Route
-  //               path="/dashboard"
-  //               render={() => (
-  //                 <DashboardPage
-  //                   isDataReady={
-  //                     this.state.isProductsDataReady &&
-  //                     this.state.isOrdersDataReady
-  //                   }
-  //                   productsData={this.state.productsData}
-  //                   ordersData={this.state.ordersData}
-  //                   deliveryData={this.state.deliveryData}
-  //                 />
-  //               )}
-  //             />
-  //             <Route
-  //               path="/accounts"
-  //               render={() => (
-  //                 <AccountsPage
-  //                   isDataReady={this.state.isAccountsDataReady}
-  //                   accountsData={this.state.accountsData}
-  //                   accountsDataChange={this.state.accountsDataChange}
-  //                 />
-  //               )}
-  //             />
-  //             <Route
-  //               path="/products"
-  //               render={() => (
-  //                 <ProductsPage
-  //                   isDataReady={
-  //                     this.state.isAccountsDataReady &&
-  //                     this.state.isProductsDataReady &&
-  //                     this.state.isPlatesDataReady
-  //                   }
-  //                   accountsData={this.state.accountsData}
-  //                   productsData={this.state.productsData}
-  //                   platesData={this.state.platesData}
-  //                 />
-  //               )}
-  //             />
-  //             <Route
-  //               path="/plates"
-  //               render={() => (
-  //                 <PlatesPage
-  //                   isDataReady={
-  //                     this.state.isAccountsDataReady &&
-  //                     this.state.isProductsDataReady &&
-  //                     this.state.isPlatesDataReady
-  //                   }
-  //                   accountsData={this.state.accountsData}
-  //                   productsData={this.state.productsData}
-  //                   platesData={this.state.platesData}
-  //                 />
-  //               )}
-  //             />
-  //             <Route
-  //               path="/orders"
-  //               render={() => (
-  //                 <OrdersPage
-  //                   isDataReady={
-  //                     this.state.isAccountsDataReady &&
-  //                     this.state.isProductsDataReady &&
-  //                     this.state.isOrdersDataReady
-  //                   }
-  //                   accountsData={this.state.accountsData}
-  //                   productsData={this.state.productsData}
-  //                   ordersData={this.state.ordersData}
-  //                 />
-  //               )}
-  //             />
-  //             <Route
-  //               path="/orders-completed"
-  //               render={() => (
-  //                 <CompletedOrdersPage
-  //                   isDataReady={
-  //                     this.state.isAccountsDataReady &&
-  //                     this.state.isProductsDataReady &&
-  //                     this.state.isOrdersDataReady &&
-  //                     this.state.isDeliveryDataReady
-  //                   }
-  //                   accountsData={this.state.accountsData}
-  //                   productsData={this.state.productsData}
-  //                   ordersData={this.state.ordersData}
-  //                   deliveryData={this.state.deliveryData}
-  //                 />
-  //               )}
-  //             />
-  //             <Route
-  //               path="/delivery"
-  //               render={() => (
-  //                 <DeliveryPage
-  //                   isDataReady={
-  //                     this.state.isAccountsDataReady &&
-  //                     this.state.isProductsDataReady &&
-  //                     this.state.isOrdersDataReady &&
-  //                     this.state.isDeliveryDataReady
-  //                   }
-  //                   accountsData={this.state.accountsData}
-  //                   productsData={this.state.productsData}
-  //                   ordersData={this.state.ordersData}
-  //                   deliveryData={this.state.deliveryData}
-  //                 />
-  //               )}
-  //             />
-  //             <Route path="/users" component={UsersPage} />
-  //             <Route path="*" component={NotFoundPage} />
-  //           </Switch>
-  //         </div>
-  //       </BrowserRouter>
-  //     );
-  //   } else {
-  //     return <Spinner />;
-  //   }
-  // }
 
   render() {
     return (
       <BrowserRouter>
         <div>
-          {!!Meteor.userId() &&
-          this.state.isAccountsDataReady &&
-          this.state.isProductsDataReady &&
-          this.state.isPlatesDataReady &&
-          this.state.isOrdersDataReady &&
-          this.state.isDeliveryDataReady ? (
-            <Header />
-          ) : (
-            undefined
-          )}
+          {!!Meteor.userId() ? <Header /> : undefined}
           <Switch>
             <Route exact path="/" component={LoginPage} />
-            <Route
-              path="/dashboard"
-              render={() => {
-                if (
-                  this.state.isProductsDataReady &&
-                  this.state.isOrdersDataReady
-                ) {
-                  return (
-                    <DashboardPage
-                      isDataReady={
-                        this.state.isProductsDataReady &&
-                        this.state.isOrdersDataReady
-                      }
-                      productsData={this.state.productsData}
-                      ordersData={this.state.ordersData}
-                      deliveryData={this.state.deliveryData}
-                    />
-                  );
-                } else {
-                  return <Spinner />;
-                }
-              }}
-            />
-            <Route
-              path="/accounts"
-              render={() => (
-                <AccountsPage
-                  isDataReady={this.state.isAccountsDataReady}
-                  accountsData={this.state.accountsData}
-                  accountsDataChange={this.state.accountsDataChange}
-                />
-              )}
-            />
-            <Route
-              path="/products"
-              render={() => (
-                <ProductsPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isPlatesDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  platesData={this.state.platesData}
-                />
-              )}
-            />
-            <Route
-              path="/plates"
-              render={() => (
-                <PlatesPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isPlatesDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  platesData={this.state.platesData}
-                />
-              )}
-            />
-            <Route
-              path="/orders"
-              render={() => (
-                <OrdersPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isOrdersDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  ordersData={this.state.ordersData}
-                />
-              )}
-            />
-            <Route
-              path="/orders-completed"
-              render={() => (
-                <CompletedOrdersPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isOrdersDataReady &&
-                    this.state.isDeliveryDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  ordersData={this.state.ordersData}
-                  deliveryData={this.state.deliveryData}
-                />
-              )}
-            />
-            <Route
-              path="/delivery"
-              render={() => (
-                <DeliveryPage
-                  isDataReady={
-                    this.state.isAccountsDataReady &&
-                    this.state.isProductsDataReady &&
-                    this.state.isOrdersDataReady &&
-                    this.state.isDeliveryDataReady
-                  }
-                  accountsData={this.state.accountsData}
-                  productsData={this.state.productsData}
-                  ordersData={this.state.ordersData}
-                  deliveryData={this.state.deliveryData}
-                />
-              )}
-            />
+            <Route path="/dashboard" component={DashboardPage} />
+            <Route path="/accounts" component={AccountsPage} />
+            <Route path="/products" component={ProductsPage} />
+            <Route path="/plates" component={PlatesPage} />
+            <Route path="/orders" component={OrdersPage} />
+            <Route path="/orders-completed" component={CompletedOrdersPage} />
+            <Route path="/delivery" component={DeliveryPage} />
             <Route path="/users" component={UsersPage} />
             <Route path="*" component={NotFoundPage} />
           </Switch>
@@ -407,22 +177,40 @@ export default class Routes extends React.Component {
   //   return (
   //     <BrowserRouter>
   //       <div>
-  //         {!!Meteor.userId() ? <Header /> : undefined}
+  //         {!!Meteor.userId() &&
+  //         this.state.isAccountsDataReady &&
+  //         this.state.isProductsDataReady &&
+  //         this.state.isPlatesDataReady &&
+  //         this.state.isOrdersDataReady &&
+  //         this.state.isDeliveryDataReady ? (
+  //           <Header />
+  //         ) : (
+  //           undefined
+  //         )}
   //         <Switch>
   //           <Route exact path="/" component={LoginPage} />
   //           <Route
   //             path="/dashboard"
-  //             render={() => (
-  //               <DashboardPage
-  //                 isDataReady={
-  //                   this.state.isProductsDataReady &&
-  //                   this.state.isOrdersDataReady
-  //                 }
-  //                 productsData={this.state.productsData}
-  //                 ordersData={this.state.ordersData}
-  //                 deliveryData={this.state.deliveryData}
-  //               />
-  //             )}
+  //             render={() => {
+  //               if (
+  //                 this.state.isProductsDataReady &&
+  //                 this.state.isOrdersDataReady
+  //               ) {
+  //                 return (
+  //                   <DashboardPage
+  //                     isDataReady={
+  //                       this.state.isProductsDataReady &&
+  //                       this.state.isOrdersDataReady
+  //                     }
+  //                     productsData={this.state.productsData}
+  //                     ordersData={this.state.ordersData}
+  //                     deliveryData={this.state.deliveryData}
+  //                   />
+  //                 );
+  //               } else {
+  //                 return <Spinner />;
+  //               }
+  //             }}
   //           />
   //           <Route
   //             path="/accounts"
