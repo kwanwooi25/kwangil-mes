@@ -2,6 +2,9 @@ import React from 'react';
 import moment from 'moment';
 
 import { setLayout } from '../../api/setLayout';
+import { AccountsData } from '../../api/accounts';
+import { ProductsData } from '../../api/products';
+import { OrdersData } from '../../api/orders';
 
 import PageHeaderSearch from '../components/PageHeaderSearch';
 import CompletedOrdersPageHeaderButtons from './CompletedOrdersPageHeaderButtons';
@@ -14,7 +17,10 @@ export default class CompletedOrdersPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      ordersData: props.ordersData,
+      isDataReady: false,
+      accountsData: [],
+      productsData: [],
+      ordersData: [],
       filteredOrdersData: [],
       query: ''
     };
@@ -29,27 +35,32 @@ export default class CompletedOrdersPage extends React.Component {
       setLayout(75);
     });
 
-    // tracks if the user logged in is admin or manager
-    this.authTracker = Tracker.autorun(() => {
+    // subscribe to data
+    subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+    subsCache.subscribe('orders');
+
+    this.tracker = Tracker.autorun(() => {
       if (Meteor.user()) {
+        const isDataReady = subsCache.ready();
+        const accountsData = AccountsData.find().fetch();
+        const productsData = ProductsData.find().fetch();
+        const ordersData = OrdersData.find().fetch();
         this.setState({
           isAdmin: Meteor.user().profile.isAdmin,
-          isManager: Meteor.user().profile.isManager
-        });
+          isManager: Meteor.user().profile.isManager,
+          isDataReady,
+          accountsData,
+          productsData,
+          ordersData
+        }, () => { this.filterData() });
       }
-    });
-
-    this.filterData();
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({ ordersData: props.ordersData }, () => {
-      this.filterData();
     });
   }
 
   componentWillUnmount() {
-    this.authTracker.stop();
+    this.tracker.stop();
   }
 
   onInputSearchChange(query) {
@@ -63,12 +74,12 @@ export default class CompletedOrdersPage extends React.Component {
     let filteredOrdersData = [];
 
     this.state.ordersData.map(order => {
-      const product = this.props.productsData.find(
+      const product = this.state.productsData.find(
         product => product._id === order.data.productID
       );
       let account;
       if (product) {
-        account = this.props.accountsData.find(
+        account = this.state.accountsData.find(
           account => account._id === product.accountID
         );
       }
@@ -96,8 +107,8 @@ export default class CompletedOrdersPage extends React.Component {
             <CompletedOrdersPageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
-              accountsData={this.props.accountsData}
-              productsData={this.props.productsData}
+              accountsData={this.state.accountsData}
+              productsData={this.state.productsData}
               filteredOrdersData={this.state.filteredOrdersData}
             />
           </div>
@@ -107,11 +118,11 @@ export default class CompletedOrdersPage extends React.Component {
           <CompletedOrderList
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
-            accountsData={this.props.accountsData}
-            productsData={this.props.productsData}
-            ordersData={this.props.ordersData}
+            accountsData={this.state.accountsData}
+            productsData={this.state.productsData}
+            ordersData={this.state.ordersData}
             filteredOrdersData={this.state.filteredOrdersData}
-            isDataReady={this.props.isDataReady}
+            isDataReady={this.state.isDataReady}
             query={this.state.query}
           />
         </div>

@@ -1,6 +1,8 @@
 import React from 'react';
 
 import { setLayout } from '../../api/setLayout';
+import { ProductsData } from '../../api/products';
+import { PlatesData } from '../../api/plates';
 
 import PlatePageHeaderButtons from './PlatePageHeaderButtons';
 import PlateSearchExpand from './PlateSearchExpand';
@@ -13,7 +15,9 @@ export default class PlatesPage extends React.Component {
     this.state = {
       isAdmin: false,
       isManager: false,
-      platesData: props.platesData,
+      isDataReady: false,
+      productsData: [],
+      platesData: [],
       filteredPlatesData: [],
       queryObj: {
         productName: '',
@@ -33,27 +37,30 @@ export default class PlatesPage extends React.Component {
       setLayout(75);
     });
 
-    // tracks if the user logged in is admin or manager
-    this.authTracker = Tracker.autorun(() => {
+    // subscribe to data
+    subsCache = new SubsCache(-1, -1);
+    subsCache.subscribe('accounts');
+    subsCache.subscribe('products');
+    subsCache.subscribe('plates');
+
+    this.tracker = Tracker.autorun(() => {
       if (Meteor.user()) {
+        const isDataReady = subsCache.ready();
+        const productsData = ProductsData.find().fetch();
+        const platesData = PlatesData.find().fetch();
         this.setState({
           isAdmin: Meteor.user().profile.isAdmin,
-          isManager: Meteor.user().profile.isManager
-        });
+          isManager: Meteor.user().profile.isManager,
+          isDataReady,
+          productsData,
+          platesData
+        }, () => { this.filterData() });
       }
-    });
-
-    this.filterData();
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({ platesData: props.platesData }, () => {
-      this.filterData();
     });
   }
 
   componentWillUnmount() {
-    this.authTracker.stop();
+    this.tracker.stop();
   }
 
   onPlateSearchChange(queryObj) {
@@ -69,7 +76,7 @@ export default class PlatesPage extends React.Component {
       // store product names in an array
       const productNames = [];
       plate.forProductList.map(({ productID }) => {
-        const product = this.props.productsData.find(
+        const product = this.state.productsData.find(
           product => product._id === productID
         );
         if (product) {
@@ -125,7 +132,7 @@ export default class PlatesPage extends React.Component {
             <PlatePageHeaderButtons
               isAdmin={this.state.isAdmin}
               isManager={this.state.isManager}
-              productsData={this.props.productsData}
+              productsData={this.state.productsData}
               filteredPlatesData={this.state.filteredPlatesData}
             />
           </div>
@@ -137,10 +144,10 @@ export default class PlatesPage extends React.Component {
           <PlateList
             isAdmin={this.state.isAdmin}
             isManager={this.state.isManager}
-            productsData={this.props.productsData}
-            platesData={this.props.platesData}
+            productsData={this.state.productsData}
+            platesData={this.state.platesData}
             filteredPlatesData={this.state.filteredPlatesData}
-            isDataReady={this.props.isDataReady}
+            isDataReady={this.state.isDataReady}
             queryObj={this.state.queryObj}
           />
         </div>
