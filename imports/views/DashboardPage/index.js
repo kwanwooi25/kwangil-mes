@@ -115,7 +115,7 @@ export default class DashboardPage extends React.Component {
   getNeedPlateSummary() {
     let needPlateCount = 0;
     let needPlateProducts = [];
-    let needPlateStatus = '';
+    let needPlateStatusArray = [];
 
     this.state.ordersData.map(order => {
       const { plateStatus, productID, isCompleted } = order.data;
@@ -123,10 +123,11 @@ export default class DashboardPage extends React.Component {
       if (!isCompleted && (plateStatus === 'new' || plateStatus === 'edit')) {
         needPlateCount++;
         needPlateProducts.push(productID);
-        needPlateStatus =
+        const needPlateStatus =
           plateStatus === 'new'
             ? '(신규)'
             : plateStatus === 'edit' ? '(수정)' : '';
+        needPlateStatus.push(needPlateStatus);
       }
     });
 
@@ -144,7 +145,7 @@ export default class DashboardPage extends React.Component {
           </div>
           <div className="dashboard-list-item__content-100">
             <ul className="needPlateProducts">
-              {needPlateProducts.map(productID => {
+              {needPlateProducts.map((productID, index) => {
                 const product = this.state.productsData.find(
                   product => product._id === productID
                 );
@@ -158,7 +159,7 @@ export default class DashboardPage extends React.Component {
                       productID={productID}
                       productName={product.name + productSize}
                     />
-                    <span>{needPlateStatus}</span>
+                    <span>{needPlateStatusArray[index]}</span>
                   </li>
                 );
               })}

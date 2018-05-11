@@ -46,7 +46,17 @@ Meteor.methods({
     if (!this.userId) {
       throw new Meteor.Error('User not logged in!');
     }
+
     const user = Meteor.users.findOne(this.userId);
+
+    const getNextSequence = () => {
+      if (PlateCounter.findOne({ _id: 'plateCounter' })) {
+        PlateCounter.update({ _id: 'plateCounter' }, { $inc: { seq: 1}});
+      } else {
+        PlateCounter.insert({ _id: 'plateCounter', seq: 1 });
+      }
+      return PlateCounter.findOne({ _id: 'plateCounter' }).seq;
+    }
 
     if (user.profile.isAdmin || user.profile.isManager) {
       json.map(data => {
@@ -62,10 +72,13 @@ Meteor.methods({
         plate.memo = data.memo;
 
         // for product list
-        plate.forProductList = {
+        plate.forProductList = [{
           productID: data.productID,
           content: data.content
-        }
+        }];
+
+        const seq = getNextSequence();
+        plate._id = ('00000' + seq).slice(-6);
 
         PlatesData.insert(plate);
       });
