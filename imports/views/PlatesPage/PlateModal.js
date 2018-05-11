@@ -192,11 +192,6 @@ export default class PlateModal extends React.Component {
 
   onConfirmationModalClose(answer) {
     if (this.state.mode === 'ADDNEW' && answer) {
-      this.setState({
-        isConfirmationModalOpen: false,
-        confirmationTitle: '',
-        confirmationDescription: []
-      });
 
       const data = this.getDataToSave();
 
@@ -207,12 +202,9 @@ export default class PlateModal extends React.Component {
           this.setState({ error: err.message });
         }
       });
+
+
     } else if (this.state.mode === 'EDIT' && answer) {
-      this.setState({
-        isConfirmationModalOpen: false,
-        confirmationTitle: '',
-        confirmationDescription: []
-      });
 
       const data = this.getDataToSave();
 
@@ -224,6 +216,12 @@ export default class PlateModal extends React.Component {
         }
       });
     }
+
+    this.setState({
+      isConfirmationModalOpen: false,
+      confirmationTitle: '',
+      confirmationDescription: []
+    });
   }
 
   onClickCancel(e) {

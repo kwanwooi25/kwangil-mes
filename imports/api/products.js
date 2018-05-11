@@ -75,15 +75,9 @@ Meteor.methods({
         product.packDeliverAll =
           product.packDeliverAll === 'TRUE' ? true : false;
 
-        // for print image file name
-        if (product.printImageFileName) {
-          product.printImageURL = `https://s3.${
-            Meteor.settings.AWSRegion
-          }.amazonaws.com/${Meteor.settings.AWSBucket}/${s3PublicURL(
-            product.printImageFileName
-          )}`;
-        }
-        
+        product.printImageFileName = '';
+        product.printImageURL = '';
+
         ProductsData.insert(product);
       });
     }

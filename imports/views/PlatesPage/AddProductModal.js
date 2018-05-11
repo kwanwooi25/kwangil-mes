@@ -59,11 +59,11 @@ export default class AddProductModal extends React.Component {
 
   onInputChange(e) {
     if (e.target.name === 'searchByProductName') {
-      const query = e.target.value;
+      const query = e.target.value.trim().toLowerCase();
       let filteredProducts = [];
 
       this.state.productsData.map(product => {
-        if (product.name.indexOf(query) > -1) {
+        if (product.name.toLowerCase().indexOf(query) > -1) {
           filteredProducts.push(product);
         }
       });
@@ -129,7 +129,7 @@ export default class AddProductModal extends React.Component {
           ${product.thick} x ${product.length} x ${product.width}
         `;
       const account = AccountsData.findOne({ _id: product.accountID });
-      
+
       return (
         <li
           id={product._id}

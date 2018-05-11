@@ -49,8 +49,25 @@ Meteor.methods({
     const user = Meteor.users.findOne(this.userId);
 
     if (user.profile.isAdmin || user.profile.isManager) {
-      json.map(plate => {
-        PlatesData.insert(product);
+      json.map(data => {
+        let plate = {};
+
+        // for numbers
+        plate.round = Number(data.round);
+        plate.length = Number(data.length);
+
+        // for string
+        plate.material = data.material;
+        plate.location = data.location;
+        plate.memo = data.memo;
+
+        // for product list
+        plate.forProductList = {
+          productID: data.productID,
+          content: data.content
+        }
+
+        PlatesData.insert(plate);
       });
     }
   },

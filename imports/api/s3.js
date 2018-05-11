@@ -31,7 +31,7 @@ Meteor.methods({
     const s3 = new AWS.S3();
 
     s3.deleteObject({
-      Bucket: 'kwangil-products',
+      Bucket: Meteor.settings.AWSBucket,
       Key: filename
     }, (err, res) => {
       if (err) console.log(err, err.stack);
