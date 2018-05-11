@@ -127,7 +127,7 @@ export default class DashboardPage extends React.Component {
           plateStatus === 'new'
             ? '(신규)'
             : plateStatus === 'edit' ? '(수정)' : '';
-        needPlateStatus.push(needPlateStatus);
+        needPlateStatusArray.push(needPlateStatus);
       }
     });
 

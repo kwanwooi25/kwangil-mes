@@ -100,46 +100,38 @@ export default class CompletedOrderList extends React.Component {
 
   getCompletedOrderList() {
     if (this.state.filteredOrdersData.length > 0) {
-      return this.state.filteredOrdersData
-        .sort((a, b) => {
-          const a_deliverBefore = a.data.deliverBefore;
-          const b_deliverBefore = b.data.deliverBefore;
-          if (a_deliverBefore > b_deliverBefore) return 1;
-          if (a_deliverBefore < b_deliverBefore) return -1;
-          return 0;
-        })
-        .map(order => {
-          const product = this.props.productsData.find(
-            product => product._id === order.data.productID
-          );
-          const account = this.props.accountsData.find(
-            account => account._id === product.accountID
-          );
-          const selectedCompletedOrders = this.state.selectedCompletedOrders;
-          let isSelected = false;
-          if (selectedCompletedOrders) {
-            selectedCompletedOrders.map(orderID => {
-              if (order._id === orderID) {
-                isSelected = true;
-              }
-            });
-          }
+      return this.state.filteredOrdersData.map(order => {
+        const product = this.props.productsData.find(
+          product => product._id === order.data.productID
+        );
+        const account = this.props.accountsData.find(
+          account => account._id === product.accountID
+        );
+        const selectedCompletedOrders = this.state.selectedCompletedOrders;
+        let isSelected = false;
+        if (selectedCompletedOrders) {
+          selectedCompletedOrders.map(orderID => {
+            if (order._id === orderID) {
+              isSelected = true;
+            }
+          });
+        }
 
-          return (
-            <CompletedOrderListItem
-              key={order._id}
-              isSelected={isSelected}
-              isAdmin={this.props.isAdmin}
-              isManager={this.props.isManager}
-              account={account}
-              product={product}
-              order={order}
-              onCheckboxChange={this.onCheckboxChange}
-              showDeliveryOrderModal={this.showDeliveryOrderModal}
-              query={this.state.query}
-            />
-          );
-        });
+        return (
+          <CompletedOrderListItem
+            key={order._id}
+            isSelected={isSelected}
+            isAdmin={this.props.isAdmin}
+            isManager={this.props.isManager}
+            account={account}
+            product={product}
+            order={order}
+            onCheckboxChange={this.onCheckboxChange}
+            showDeliveryOrderModal={this.showDeliveryOrderModal}
+            query={this.state.query}
+          />
+        );
+      });
     } else {
       return <NoResult />;
     }

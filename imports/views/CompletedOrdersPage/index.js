@@ -46,15 +46,20 @@ export default class CompletedOrdersPage extends React.Component {
         const isDataReady = subsCache.ready();
         const accountsData = AccountsData.find().fetch();
         const productsData = ProductsData.find().fetch();
-        const ordersData = OrdersData.find().fetch();
-        this.setState({
-          isAdmin: Meteor.user().profile.isAdmin,
-          isManager: Meteor.user().profile.isManager,
-          isDataReady,
-          accountsData,
-          productsData,
-          ordersData
-        }, () => { this.filterData() });
+        const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
+        this.setState(
+          {
+            isAdmin: Meteor.user().profile.isAdmin,
+            isManager: Meteor.user().profile.isManager,
+            isDataReady,
+            accountsData,
+            productsData,
+            ordersData
+          },
+          () => {
+            this.filterData();
+          }
+        );
       }
     });
   }

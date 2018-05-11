@@ -173,7 +173,7 @@ export default class PlateModal extends React.Component {
       if (initialState.memo !== this.state.memo) {
         changedText += ` (메모: ${initialState.memo} > ${this.state.memo})`;
       }
-      history = this.state.history;
+      history = this.state.history || [];
       history.push({
         date: moment().format('YYYY-MM-DD'),
         memo: changedText

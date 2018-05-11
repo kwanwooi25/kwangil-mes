@@ -246,6 +246,9 @@ export default class DeliveryOrderModal extends React.Component {
                 if (deliverAt === null) deliverAt = moment();
                 this.setState({ deliverAt });
               }}
+              isOutsideRange={() => {
+                return false;
+              }}
               withPortal={true}
             />
           </div>
