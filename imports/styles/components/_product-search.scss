@@ -39,6 +39,14 @@
   width: 100%;
 }
 
+.search-by-account-name.hasValue,
+.search-by-product-name.hasValue,
+.search-by-size.hasValue,
+.search-by-color.hasValue {
+  background: $color-secondary--100;
+  font-weight: $font-weight--bold;
+}
+
 .product-search__input-container .search-by-account-name {
   flex-grow: 1;
   width: 39%;

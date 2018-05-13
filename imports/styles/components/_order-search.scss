@@ -57,6 +57,12 @@
   }
 }
 
+.search-by-account-name.hasValue,
+.search-by-product-name.hasValue {
+  background: $color-secondary--100;
+  font-weight: $font-weight--bold;
+}
+
 .order-search__input-container .search-by-account-name {
   flex-grow: 1;
   width: 37%;

@@ -25,6 +25,12 @@
   width: 100%;
 }
 
+.search-by-product-name.hasValue,
+.search-by-size.hasValue {
+  background: $color-secondary--100;
+  font-weight: $font-weight--bold;
+}
+
 .plate-search__input-container .search-by-product-name {
   flex-grow: 1;
   width: 100%;

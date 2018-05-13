@@ -1,6 +1,7 @@
 .page-header__search {
   font-family: 'FontAwesome';
   font-size: $font-size--md;
+  font-weight: $font-weight--bold;
   border: none;
   outline: none;
   margin: 0 $space-xs;
@@ -47,6 +48,7 @@
   }
 
   &.hasValue {
+    background: $color-secondary--100;
     border: 1px solid $color-primary--500;
     border-radius: $border-radius;
     color: $color-primary--500;

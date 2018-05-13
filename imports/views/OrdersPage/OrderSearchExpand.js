@@ -49,6 +49,14 @@ export default class OrderSearchExpand extends React.Component {
           this.props.onOrderSearchChange(this.getQueryObj());
         });
       }
+
+      if (e.target.tagName === 'INPUT') {
+        if (e.target.value !== "") {
+          e.target.classList.add("hasValue");
+        } else {
+          e.target.classList.remove("hasValue");
+        }
+      }
     }
 
     if (e.target.tagName === "BUTTON") {

@@ -14,6 +14,12 @@ export default class PlateSearchExpand extends React.Component {
   }
 
   onChange(e) {
+    if (e.target.value !== "") {
+      e.target.classList.add("hasValue");
+    } else {
+      e.target.classList.remove("hasValue");
+    }
+    
     const queryObj = {
       productName: this.refs.searchByProductName.value.trim().toLowerCase(),
       round: this.refs.searchByRound.value.trim().toLowerCase(),

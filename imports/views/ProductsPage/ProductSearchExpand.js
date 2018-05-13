@@ -13,7 +13,13 @@ export default class ProductSearchExpand extends React.Component {
     this.onReset = this.onReset.bind(this);
   }
 
-  onChange() {
+  onChange(e) {
+    if (e.target.value !== "") {
+      e.target.classList.add("hasValue");
+    } else {
+      e.target.classList.remove("hasValue");
+    }
+    
     const queryObj = {
       accountName: this.refs.searchByAccountName.value.trim().toLowerCase(),
       name: this.refs.searchByProductName.value.trim().toLowerCase(),
