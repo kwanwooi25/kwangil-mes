@@ -38,7 +38,21 @@ export default class OrderSearchExpand extends React.Component {
     }
   }
 
+  toggleClass(node) {
+    if (node.value !== '') {
+      node.classList.add("hasValue");
+    } else {
+      node.classList.remove("hasValue");
+    }
+  }
+
   onChange(e) {
+    for (let ref in this.refs) {
+      if (this.refs[ref].tagName === 'INPUT') {
+        this.toggleClass(this.refs[ref]);
+      }
+    }
+
     if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") {
       if (e.target.type === "checkbox") {
         this.setState({ [e.target.name]: e.target.checked }, () => {
@@ -48,14 +62,6 @@ export default class OrderSearchExpand extends React.Component {
         this.setState({ [e.target.name]: e.target.value }, () => {
           this.props.onOrderSearchChange(this.getQueryObj());
         });
-      }
-
-      if (e.target.tagName === 'INPUT') {
-        if (e.target.value !== "") {
-          e.target.classList.add("hasValue");
-        } else {
-          e.target.classList.remove("hasValue");
-        }
       }
     }
 
@@ -101,6 +107,13 @@ export default class OrderSearchExpand extends React.Component {
     this.refs.searchByAccountName.value = '';
     this.refs.searchByProductName.value = '';
     this.refs.isPrintQuery = 'both';
+
+    for (let ref in this.refs) {
+      if (this.refs[ref].tagName === 'INPUT') {
+        this.toggleClass(this.refs[ref]);
+      }
+    }
+
     this.setState({
       searchFrom: moment().subtract(2, "weeks"),
       searchTo: moment(),
