@@ -18,6 +18,7 @@ export default class DatePicker extends React.Component {
   anchorDirection
   openDirection
   withPortal
+  displayFormat
   ==========================================================================*/
   constructor(props) {
     super(props);
@@ -40,12 +41,12 @@ export default class DatePicker extends React.Component {
         anchorDirection={this.props.anchorDirection}
         openDirection={this.props.openDirection}
         withPortal={this.props.withPortal}
+        displayFormat={this.props.displayFormat || "YYYY-MM-DD"}
         noBorder
         numberOfMonths={1}
         verticalSpacing={0}
         daySize={30}
         hideKeyboardShortcutsPanel
-        displayFormat="YYYY-MM-DD"
         small
         monthFormat="YYYY[년] MM[월]"
         isDayBlocked={date => {

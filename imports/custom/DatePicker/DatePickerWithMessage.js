@@ -29,6 +29,7 @@ export default class DatePickerWithMessage extends React.Component {
           onDateChange={this.props.onDateChange}
           disabled={this.props.disabled}
           isOutsideRange={this.props.isOutsideRange}
+          displayFormat="YYYY-MM-DD (ddd)"
         />
         <span>{this.props.errorMessage}</span>
       </div>
