@@ -62,7 +62,7 @@ export default class DeliveryListItem extends React.Component {
     const account = this.props.account;
     const product = this.props.product;
     const order = this.props.order;
-    const deliverBefore = moment(order.data.deliverBefore);
+    const deliverBefore = moment(order.deliverBefore);
     const daysCount = countWeekdays(moment(), deliverBefore);
 
     let listClassName = '';
@@ -71,7 +71,7 @@ export default class DeliveryListItem extends React.Component {
     let deliverByText = '';
 
     listClassName = 'delivery';
-    if (order.data.isDelivered) {
+    if (order.isDelivered) {
       listClassName += ' delivered';
     }
 
@@ -83,10 +83,10 @@ export default class DeliveryListItem extends React.Component {
       Number(product.width) /
       100 *
       0.0184 *
-      Number(order.data.completedQuantity);
+      Number(order.completedQuantity);
 
     completedQuantityText = `완성수량: ${comma(
-      order.data.completedQuantity
+      order.completedQuantity
     )}매 (${comma(weight.toFixed(0))}kg)`;
 
     if (order.deliverBy === 'direct') {
@@ -104,7 +104,7 @@ export default class DeliveryListItem extends React.Component {
             <Checkbox
               name={order._id}
               onInputChange={this.props.onCheckboxChange}
-              disabled={order.data.isDelivered}
+              disabled={order.isDelivered}
             />
           </div>
         )}
@@ -147,7 +147,7 @@ export default class DeliveryListItem extends React.Component {
             <button
               className="button button-with-icon-span delivery-list-item__button"
               onClick={this.onCompleteDeliveryClick}
-              disabled={order.data.isDelivered}
+              disabled={order.isDelivered}
             >
               <i className="fa fa-check fa-lg" />
               <span>완료</span>
@@ -155,7 +155,7 @@ export default class DeliveryListItem extends React.Component {
             <button
               className="button button-with-icon-span delivery-list-item__button"
               onClick={this.onDeleteClick}
-              disabled={order.data.isDelivered}
+              disabled={order.isDelivered}
             >
               <i className="fa fa-trash fa-lg" />
               <span>삭제</span>

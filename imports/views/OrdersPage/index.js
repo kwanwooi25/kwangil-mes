@@ -85,7 +85,7 @@ export default class OrdersPage extends React.Component {
     // filter data
     this.state.ordersData.map(order => {
       const product = this.state.productsData.find(
-        product => product._id === order.data.productID
+        product => product._id === order.productID
       );
       let account;
       if (product) {
@@ -100,7 +100,7 @@ export default class OrdersPage extends React.Component {
       let isPrintMatch = false;
       let showCompletedMatch = false;
 
-      const orderedAt = moment(order.data.orderedAt);
+      const orderedAt = moment(order.orderedAt);
       const searchFrom = moment(queryObj.searchFrom);
       const searchTo = moment(queryObj.searchTo);
 
@@ -125,8 +125,8 @@ export default class OrdersPage extends React.Component {
       }
 
       if (
-        !order.data.isCompleted ||
-        (order.data.isCompleted && queryObj.showCompletedOrder)
+        !order.isCompleted ||
+        (order.isCompleted && queryObj.showCompletedOrder)
       ) {
         showCompletedMatch = true;
       }

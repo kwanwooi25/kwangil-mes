@@ -87,7 +87,7 @@ export default class OrderListItem extends React.Component {
     const account = this.props.account;
     const product = this.props.product;
     const order = this.props.order;
-    const deliverBefore = moment(order.data.deliverBefore);
+    const deliverBefore = moment(order.deliverBefore);
     const daysCount = countWeekdays(moment(), deliverBefore);
 
     let listClassName = '';
@@ -97,7 +97,7 @@ export default class OrderListItem extends React.Component {
     let completedQuantityText = '';
 
     listClassName = 'order';
-    if (order.data.isCompleted) {
+    if (order.isCompleted) {
       listClassName += ' completed';
     } else if (daysCount <= 1) {
       listClassName += ' d-1';
@@ -110,7 +110,7 @@ export default class OrderListItem extends React.Component {
     isPrintText = '무지';
     if (product && product.isPrint) {
       isPrintText = '인쇄';
-      switch (order.data.plateStatus) {
+      switch (order.plateStatus) {
         case 'confirm':
           isPrintText += ' (동판확인)';
           break;
@@ -123,10 +123,10 @@ export default class OrderListItem extends React.Component {
       }
     }
 
-    orderQuantityText = `${comma(order.data.orderQuantity)}매`;
+    orderQuantityText = `${comma(order.orderQuantity)}매`;
     completedQuantityText = `
       ${comma(
-        order.data.completedQuantity ? order.data.completedQuantity : 0
+        order.completedQuantity ? order.completedQuantity : 0
       )}매
       `;
 
@@ -136,7 +136,7 @@ export default class OrderListItem extends React.Component {
     //   Number(product.width) /
     //   100 *
     //   0.0184 *
-    //   Number(order.data.orderQuantity);
+    //   Number(order.orderQuantity);
 
     return (
       <li className={listClassName} key={order._id} id={order._id}>
@@ -146,26 +146,26 @@ export default class OrderListItem extends React.Component {
               name={order._id}
               checked={this.props.isSelected}
               onInputChange={this.props.onCheckboxChange}
-              disabled={order.data.isCompleted}
+              disabled={order.isCompleted}
             />
           </div>
         )}
 
         <div className="order-container">
           <div className="order-id-container">
-            {order.data.deliverFast && (
+            {order.deliverFast && (
               <span className="order-list__text">
                 <i className="fa fa-star" /> 지급
               </span>
             )}
-            {order.data.deliverDateStrict && (
+            {order.deliverDateStrict && (
               <span className="order-list__text">
                 <i className="fa fa-star" /> 납기엄수
               </span>
             )}
-            {order.data.isDelivered && (
+            {order.isDelivered && (
               <span className="order-list__text">
-                [납품완료] {order.data.deliveredAt}
+                [납품완료] {order.deliveredAt}
               </span>
             )}
 
@@ -173,9 +173,9 @@ export default class OrderListItem extends React.Component {
           </div>
 
           <div className="order-dates-container">
-            <p className="order-list__text">발주일: {order.data.orderedAt}</p>
+            <p className="order-list__text">발주일: {order.orderedAt}</p>
             <p className="order-list__text">
-              납기일: {order.data.deliverBefore}
+              납기일: {order.deliverBefore}
             </p>
           </div>
 
@@ -207,16 +207,16 @@ export default class OrderListItem extends React.Component {
           <div className="order-status-select-container">
             <select
               className="select order-list__select"
-              value={order.data.isCompleted ? 'completed' : order.data.status}
+              value={order.isCompleted ? 'completed' : order.status}
               onChange={this.onStatusChange}
-              disabled={order.data.isCompleted || !product || !account}
+              disabled={order.isCompleted || !product || !account}
             >
               <option value="extruding">압출중</option>
               <option value="printing" disabled={product && !product.isPrint}>
                 인쇄중
               </option>
               <option value="cutting">가공중</option>
-              <option value="completed" disabled={!order.data.isCompleted}>
+              <option value="completed" disabled={!order.isCompleted}>
                 완료
               </option>
             </select>
@@ -227,7 +227,7 @@ export default class OrderListItem extends React.Component {
               <button
                 className="button button-with-icon-span order-button"
                 onClick={this.onPrintOrderClick}
-                disabled={order.data.isCompleted || !product || !account}
+                disabled={order.isCompleted || !product || !account}
               >
                 <i className="fa fa-print fa-lg" />
                 <span>출력</span>
@@ -235,7 +235,7 @@ export default class OrderListItem extends React.Component {
               <button
                 className="button button-with-icon-span order-button"
                 onClick={this.onCompleteOrderClick}
-                disabled={order.data.isCompleted || !product || !account}
+                disabled={order.isCompleted || !product || !account}
               >
                 <i className="fa fa-check fa-lg" />
                 <span>완료</span>
@@ -243,7 +243,7 @@ export default class OrderListItem extends React.Component {
               <button
                 className="button button-with-icon-span order-button"
                 onClick={this.onEditClick}
-                disabled={order.data.isCompleted || !product || !account}
+                disabled={order.isCompleted || !product || !account}
               >
                 <i className="fa fa-edit fa-lg" />
                 <span>수정</span>
@@ -251,7 +251,7 @@ export default class OrderListItem extends React.Component {
               <button
                 className="button button-with-icon-span order-button"
                 onClick={this.onDeleteClick}
-                disabled={order.data.isCompleted}
+                disabled={order.isCompleted}
               >
                 <i className="fa fa-trash fa-lg" />
                 <span>삭제</span>

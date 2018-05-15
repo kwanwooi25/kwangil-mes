@@ -33,9 +33,6 @@ Meteor.methods({
     s3.deleteObject({
       Bucket: Meteor.settings.AWSBucket,
       Key: filename
-    }, (err, res) => {
-      if (err) console.log(err, err.stack);
-      if (res) console.log(res);
     });
   }
 });

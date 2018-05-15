@@ -47,18 +47,23 @@ export default class DeliveryPage extends React.Component {
       const isDataReady = subsCache.ready();
       const accountsData = AccountsData.find().fetch();
       const productsData = ProductsData.find().fetch();
-      const ordersData = OrdersData.find().fetch();
+      const ordersData = OrdersData.find({}, { sort: { _id: 1 } }).fetch();
       const deliveryData = DeliveryData.find().fetch();
       if (Meteor.user()) {
-        this.setState({
-          isAdmin: Meteor.user().profile.isAdmin,
-          isManager: Meteor.user().profile.isManager,
-          isDataReady,
-          accountsData,
-          productsData,
-          ordersData,
-          deliveryData
-        }, () => { this.filterData() });
+        this.setState(
+          {
+            isAdmin: Meteor.user().profile.isAdmin,
+            isManager: Meteor.user().profile.isManager,
+            isDataReady,
+            accountsData,
+            productsData,
+            ordersData,
+            deliveryData
+          },
+          () => {
+            this.filterData();
+          }
+        );
       }
     });
   }

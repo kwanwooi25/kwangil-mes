@@ -16,7 +16,7 @@ export const printOrders = selectedOrders => {
     filename += `_${orderID}`;
 
     const order = OrdersData.findOne({ _id: orderID });
-    const product = ProductsData.findOne({ _id: order.data.productID });
+    const product = ProductsData.findOne({ _id: order.productID });
 
     getTextForDocContent(order, product).then(res => {
       docContent.push(getDocContent(res, product.isPrint));
@@ -35,7 +35,6 @@ export const printOrders = selectedOrders => {
 
         // add pagebreak between each order except the last one
         for (let i = 0; i < selectedOrders.length - 1; i++) {
-          console.log(docContent[i]);
           docContent[i+1][0].pageBreak = 'before';
         }
 
@@ -72,31 +71,31 @@ const openPDF = docDefinition => {
 const getTextForDocContent = (order, product) => {
   const account = AccountsData.findOne({ _id: product.accountID });
   const orderIDText = order._id.split('-').pop();
-  const orderedAtText = `발주일: ${order.data.orderedAt}`;
+  const orderedAtText = `발주일: ${order.orderedAt}`;
   const sizeText = `${product.thick} x ${product.length} x ${product.width}`;
-  const orderQuantityText = `${comma(order.data.orderQuantity)} 매`;
+  const orderQuantityText = `${comma(order.orderQuantity)} 매`;
   const orderQuantityInKG =
     Number(product.thick) *
     (Number(product.length) + 5) *
     Number(product.width) /
     100 *
     0.0184 *
-    Number(order.data.orderQuantity);
+    Number(order.orderQuantity);
   const orderQuantityWeightText = `(${comma(orderQuantityInKG.toFixed(0))}kg)`;
   const productName = product.name;
   const accountName = account.name;
-  let deliverBeforeArray = order.data.deliverBefore.split('-');
+  let deliverBeforeArray = order.deliverBefore.split('-');
   deliverBeforeArray.shift();
   const deliverBeforeText = deliverBeforeArray.join('/');
 
   let deliverRemarkText = '';
-  if (order.data.deliverDateStrict) {
-    if (order.data.deliverFast) {
+  if (order.deliverDateStrict) {
+    if (order.deliverFast) {
       deliverRemarkText = '납기엄수/지급';
     } else {
       deliverRemarkText = '납기엄수';
     }
-  } else if (order.data.deliverFast) {
+  } else if (order.deliverFast) {
     deliverRemarkText = '지급';
   }
 
@@ -174,7 +173,7 @@ const getTextForDocContent = (order, product) => {
   }
 
   let plateStatusText = '';
-  switch (order.data.plateStatus) {
+  switch (order.plateStatus) {
     case 'confirm':
       plateStatusText += '동판확인';
       break;
@@ -186,8 +185,8 @@ const getTextForDocContent = (order, product) => {
       break;
   }
 
-  const workMemo = order.data.workMemo;
-  const deliverMemo = order.data.deliverMemo;
+  const workMemo = order.workMemo;
+  const deliverMemo = order.deliverMemo;
 
   let urlToEncode = '';
   let productImage = '';

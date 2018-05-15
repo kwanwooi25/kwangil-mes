@@ -102,7 +102,7 @@ export default class CompletedOrderList extends React.Component {
     if (this.state.filteredOrdersData.length > 0) {
       return this.state.filteredOrdersData.map(order => {
         const product = this.props.productsData.find(
-          product => product._id === order.data.productID
+          product => product._id === order.productID
         );
         const account = this.props.accountsData.find(
           account => account._id === product.accountID

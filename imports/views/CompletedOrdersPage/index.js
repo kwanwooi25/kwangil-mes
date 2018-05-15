@@ -80,7 +80,7 @@ export default class CompletedOrdersPage extends React.Component {
 
     this.state.ordersData.map(order => {
       const product = this.state.productsData.find(
-        product => product._id === order.data.productID
+        product => product._id === order.productID
       );
       let account;
       if (product) {
@@ -92,8 +92,8 @@ export default class CompletedOrdersPage extends React.Component {
       if (
         ((account && account.name.toLowerCase().indexOf(query) > -1) ||
           (product && product.name.toLowerCase().indexOf(query) > -1)) &&
-        order.data.isCompleted &&
-        !order.data.isDelivered
+        order.isCompleted &&
+        !order.isDelivered
       ) {
         filteredOrdersData.push(order);
       }

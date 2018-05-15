@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import moment from 'moment';
 
 import { ProductsData } from '../../api/products';
-import { OrdersData } from '../../api/orders';
+import { OrdersData, OrderCounter } from '../../api/orders';
 import { AccountsData } from '../../api/accounts';
 import { comma, uncomma } from '../../api/comma';
 import { avoidWeekend } from '../../api/avoidWeekend';
@@ -35,22 +35,22 @@ export default class ProductOrderModal extends React.Component {
     if (props.orderID) {
       // EDIT mode
       const order = OrdersData.findOne({ _id: props.orderID });
-      const product = ProductsData.findOne({ _id: order.data.productID });
+      const product = ProductsData.findOne({ _id: order.productID });
       const account = AccountsData.findOne({ _id: product.accountID });
 
       initialState = {
         mode: 'EDIT',
         orderID: props.orderID,
         product,
-        orderedAt: moment(order.data.orderedAt),
-        deliverBefore: moment(order.data.deliverBefore),
-        orderQuantity: comma(order.data.orderQuantity),
-        deliverDateStrict: order.data.deliverDateStrict,
-        deliverFast: order.data.deliverFast,
-        plateStatus: order.data.plateStatus, // "confirm" : 확인, "new" : 신규, "edit" : 수정
-        workMemo: order.data.workMemo,
-        deliverMemo: order.data.deliverMemo,
-        status: order.data.status, // 작업지시 직후: 압출중, --> 'printing' --> 'cutting'
+        orderedAt: moment(order.orderedAt),
+        deliverBefore: moment(order.deliverBefore),
+        orderQuantity: comma(order.orderQuantity),
+        deliverDateStrict: order.deliverDateStrict,
+        deliverFast: order.deliverFast,
+        plateStatus: order.plateStatus, // "confirm" : 확인, "new" : 신규, "edit" : 수정
+        workMemo: order.workMemo,
+        deliverMemo: order.deliverMemo,
+        status: order.status, // 작업지시 직후: 압출중, --> 'printing' --> 'cutting'
         isCompleted: false,
         isDelivered: false,
         completedQuantity: '',
@@ -345,6 +345,7 @@ export default class ProductOrderModal extends React.Component {
       };
 
       let product = this.state.product;
+      if (!product.history) product.history = [];
       let historyArrayModified = [];
       product.history.map(({ _id, orderQuantity }) => {
         if (_id === orderData.orderedAt) {

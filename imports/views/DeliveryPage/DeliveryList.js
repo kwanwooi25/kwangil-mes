@@ -86,11 +86,11 @@ export default class DeliveryList extends React.Component {
     selectedOrders.map(orderID => {
       const order = this.props.ordersData.find(order => order._id === orderID);
       const product = this.props.productsData.find(
-        product => product._id === order.data.productID
+        product => product._id === order.productID
       );
       const deliveryInfoText = `${product.name} (${product.thick}x${
         product.length
-      }x${product.width}) = ${comma(order.data.completedQuantity)}매`;
+      }x${product.width}) = ${comma(order.completedQuantity)}매`;
 
       confirmationDescription.push(deliveryInfoText);
     });
@@ -114,8 +114,8 @@ export default class DeliveryList extends React.Component {
         );
 
         if (this.state.confirmFor === 'complete') {
-          order.data.isDelivered = true;
-          Meteor.call('orders.update', order._id, order.data, (err, res) => {});
+          order.isDelivered = true;
+          Meteor.call('orders.update', order._id, order, (err, res) => {});
         } else if (this.state.confirmFor === 'cancel') {
           let removeFromDeliveryID = '';
           let orderIDToRemove = '';
@@ -133,9 +133,9 @@ export default class DeliveryList extends React.Component {
           );
 
           delivery.orderList.splice(orderIDToRemove, 1);
-          order.data.deliveredAt = '';
+          order.deliveredAt = '';
 
-          Meteor.call('orders.update', order._id, order.data, (err, res) => {});
+          Meteor.call('orders.update', order._id, order, (err, res) => {});
           Meteor.call(
             'delivery.update',
             delivery._id,
@@ -172,15 +172,13 @@ export default class DeliveryList extends React.Component {
 
         return ordersToDeliver
           .sort((a, b) => {
-            const a_deliverBefore = a.data.deliverBefore;
-            const b_deliverBefore = b.data.deliverBefore;
-            if (a_deliverBefore > b_deliverBefore) return 1;
-            if (a_deliverBefore < b_deliverBefore) return -1;
+            if (a.deliverBefore > b.deliverBefore) return 1;
+            if (a.deliverBefore < b.deliverBefore) return -1;
             return 0;
           })
           .map(order => {
             const product = this.props.productsData.find(
-              product => product._id === order.data.productID
+              product => product._id === order.productID
             );
             let account;
             if (product) {

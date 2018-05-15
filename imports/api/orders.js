@@ -6,13 +6,22 @@ import { ProductsData } from './products';
 import { AccountsData } from './accounts';
 
 export const OrdersData = new Mongo.Collection('orders');
-const OrderCounter = new Mongo.Collection('orderCounter');
+export const OrderCounter = new Mongo.Collection('orderCounter');
 
 if (Meteor.isServer) {
   Meteor.publish('orders', function() {
     const ordersData = OrdersData.find().fetch();
     ordersData.map(order => {
-      const product = ProductsData.findOne({ _id: order.data.productID });
+      console.log(order);
+      // change data structure
+      if (order.data) {
+        let tempData = order.data;
+        tempData._id = order._id;
+        OrdersData.update({ _id: tempData._id }, { $set: tempData });
+        OrdersData.update({ _id: tempData._id }, { $unset: { data: 1} });
+      }
+
+      const product = ProductsData.findOne({ _id: order.productID });
       if (!product) {
         Meteor.call('orders.remove', order._id);
       } else {
@@ -54,8 +63,8 @@ Meteor.methods({
     if (user.profile.isAdmin || user.profile.isManager) {
       const counterID = data.orderedAt.substring(0, 7);
       const seq = getNextSequence(counterID);
-      const orderID = `${counterID}-${('00' + seq).slice(-3)}`;
-      OrdersData.insert({ _id: orderID, data });
+      data._id = `${counterID}-${('00' + seq).slice(-3)}`;
+      OrdersData.insert(data);
     }
   },
 
@@ -64,7 +73,7 @@ Meteor.methods({
       throw new Meteor.Error('User not logged in!');
     }
 
-    OrdersData.update({ _id: orderID }, { data });
+    OrdersData.update({ _id: orderID }, { $set: data });
   },
 
   'orders.remove'(orderID) {

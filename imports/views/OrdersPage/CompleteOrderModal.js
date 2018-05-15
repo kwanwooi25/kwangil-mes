@@ -38,7 +38,7 @@ export default class CompleteOrderModal extends React.Component {
     let error = '';
     for (let i = 0; i < ordersCount; i++) {
       const order = OrdersData.findOne({ _id: props.selectedOrders[i] });
-      const product = ProductsData.findOne({ _id: order.data.productID });
+      const product = ProductsData.findOne({ _id: order.productID });
       if (!product) {
         error = '존재하지 않는 품목이 있습니다. 완료할 수 없습니다.';
         break;
@@ -113,7 +113,7 @@ export default class CompleteOrderModal extends React.Component {
       const order = OrdersData.findOne({
         _id: this.props.selectedOrders[index]
       });
-      const orderQuantity = Number(order.data.orderQuantity);
+      const orderQuantity = Number(order.orderQuantity);
 
       if (Number(uncomma(e.target.value)) >= orderQuantity) {
         let isCompletedArray = this.state.isCompletedArray;
@@ -137,7 +137,7 @@ export default class CompleteOrderModal extends React.Component {
       const targetName = `completedQuantityArray[${i}]`;
       const value = this.state.completedQuantityArray[i];
       const order = OrdersData.findOne({ _id: this.props.selectedOrders[i] });
-      const product = ProductsData.findOne({ _id: order.data.productID });
+      const product = ProductsData.findOne({ _id: order.productID });
       const orderInfoText = `
           ${product.name} (${product.thick}x${product.length}x${product.width})
           = ${comma(uncomma(this.state.completedQuantityArray[i]))}매 ${
@@ -175,16 +175,16 @@ export default class CompleteOrderModal extends React.Component {
       );
       for (let i = 0; i < lis.length; i++) {
         const order = OrdersData.findOne({ _id: lis[i].id });
-        order.data.completedAt = this.state.completedAt.format('YYYY-MM-DD');
-        order.data.completedQuantity = Number(
+        order.completedAt = this.state.completedAt.format('YYYY-MM-DD');
+        order.completedQuantity = Number(
           uncomma(this.state.completedQuantityArray[i])
         );
-        order.data.isCompleted = this.state.isCompletedArray[i];
+        order.isCompleted = this.state.isCompletedArray[i];
         if (this.state.isCompletedArray[i]) {
-          order.data.status = 'completed';
+          order.status = 'completed';
         }
 
-        Meteor.call('orders.update', order._id, order.data, (err, res) => {
+        Meteor.call('orders.update', order._id, order, (err, res) => {
           if (!err) {
             this.props.onModalClose(true);
           }
@@ -196,7 +196,7 @@ export default class CompleteOrderModal extends React.Component {
   getOrderList(selectedOrders) {
     return selectedOrders.map((orderID, index) => {
       const order = OrdersData.findOne({ _id: orderID });
-      const product = ProductsData.findOne({ _id: order.data.productID });
+      const product = ProductsData.findOne({ _id: order.productID });
       let account;
       let productSizeText = '';
       if (product) {
@@ -228,7 +228,7 @@ export default class CompleteOrderModal extends React.Component {
                 {productSizeText}
               </p>
               <p className="complete-order-modal__orderQuantity">
-                주문수량: {comma(order.data.orderQuantity)}매
+                주문수량: {comma(order.orderQuantity)}매
               </p>
             </div>
           </div>

@@ -23,7 +23,7 @@ export const printDeliveryOrder = deliveryID => {
   if (delivery && delivery.orderList.length !== 0) {
     delivery.orderList.map(({ orderID, deliverBy }) => {
       const order = OrdersData.findOne({ _id: orderID });
-      const product = ProductsData.findOne({ _id: order.data.productID });
+      const product = ProductsData.findOne({ _id: order.productID });
       let account;
       if (product) account = AccountsData.findOne({ _id: product.accountID });
 
@@ -99,24 +99,24 @@ const openPDF = docDefinition => {
 const getTextForDocContent = (order, deliverBy, product, account) => {
   let productSize = `${product.thick}x${product.length}x${product.width}`;
   let plateStatus =
-    order.data.plateStatus === 'confirm' ? '확인' :
-      order.data.plateStatus === 'edit' ? '수정' :
-        order.data.plateStatus === 'new' ? '신규' : '';
+    order.plateStatus === 'confirm' ? '확인' :
+      order.plateStatus === 'edit' ? '수정' :
+        order.plateStatus === 'new' ? '신규' : '';
   let weight =
     Number(product.thick) *
     (Number(product.length) + 5) *
     (Number(product.width) / 100) *
     0.0184 *
-    Number(order.data.completedQuantity);
+    Number(order.completedQuantity);
   deliverBy =
     deliverBy === 'direct' ? '직납' : deliverBy === 'post' ? '택배' : deliverBy;
   let textObj = {
     accountName: account.name,
     productName: product.name,
     productSize,
-    orderQuantity: `${comma(order.data.orderQuantity)}매`,
+    orderQuantity: `${comma(order.orderQuantity)}매`,
     plateStatus,
-    completedQuantity: `${comma(order.data.completedQuantity)}매`,
+    completedQuantity: `${comma(order.completedQuantity)}매`,
     weight: `${comma(weight.toFixed(0))}kg`,
     deliverBy
   };

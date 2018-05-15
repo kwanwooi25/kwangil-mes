@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import moment from 'moment';
 
 import { ProductsData } from '../../api/products';
-import { PlatesData } from '../../api/plates';
+import { PlatesData, PlateCounter } from '../../api/plates';
 import { AccountsData } from '../../api/accounts';
 
 import TextInput from '../../custom/TextInput';

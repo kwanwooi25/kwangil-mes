@@ -81,9 +81,9 @@ export default class DeliveryOrderModal extends React.Component {
       const targetName = `deliverByArray[${i}]`;
       const value = this.state.deliverByArray[i];
       const order = OrdersData.findOne({ _id: this.props.selectedCompletedOrders[i] });
-      const product = ProductsData.findOne({ _id: order.data.productID });
+      const product = ProductsData.findOne({ _id: order.productID });
       const orderInfoText = `
-        ${product.name} (${product.thick}x${product.length}x${product.width}) = ${comma(uncomma(order.data.completedQuantity))}매`;
+        ${product.name} (${product.thick}x${product.length}x${product.width}) = ${comma(uncomma(order.completedQuantity))}매`;
       confirmationDescription.push(orderInfoText);
     }
 
@@ -112,7 +112,7 @@ export default class DeliveryOrderModal extends React.Component {
 
       for (let i = 0; i < lis.length; i++) {
         const order = OrdersData.findOne({ _id: lis[i].id });
-        order.data.deliveredAt = deliveryDate;
+        order.deliveredAt = deliveryDate;
 
         let deliverBy = '';
         if (this.state.deliverBySelectArray[i] === 'etc') {
@@ -124,7 +124,7 @@ export default class DeliveryOrderModal extends React.Component {
         const orderToDeliver = { orderID: order._id, deliverBy };
         orderListToAdd.push(orderToDeliver);
 
-        Meteor.call('orders.update', order._id, order.data, (err, res) => {});
+        Meteor.call('orders.update', order._id, order, (err, res) => {});
       }
 
       if (!isDeliveryDateExist) {
@@ -143,7 +143,7 @@ export default class DeliveryOrderModal extends React.Component {
   getDeliveryList(selectedCompletedOrders) {
     return selectedCompletedOrders.map((orderID, index) => {
       const order = OrdersData.findOne({ _id: orderID });
-      const product = ProductsData.findOne({ _id: order.data.productID });
+      const product = ProductsData.findOne({ _id: order.productID });
       const account = AccountsData.findOne({ _id: product.accountID });
 
       const productSizeText = `${product.thick} x ${product.length} x ${
@@ -170,7 +170,7 @@ export default class DeliveryOrderModal extends React.Component {
                 {productSizeText}
               </p>
               <p className="delivery-order-modal__orderQuantity">
-                완료수량: {comma(order.data.completedQuantity)}매
+                완료수량: {comma(order.completedQuantity)}매
               </p>
             </div>
           </div>

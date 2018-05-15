@@ -60,7 +60,7 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
     const bodyCSV = orders
       .map(order => {
         const product = this.props.productsData.find(
-          product => product._id === order.data.productID
+          product => product._id === order.productID
         );
         const account = this.props.accountsData.find(
           account => account._id === product.accountID
@@ -80,10 +80,10 @@ export default class CompletedOrdersPageHeaderButtons extends React.Component {
                 return '"t"'.replace('t', product.length);
               case 'productWidth':
                 return '"t"'.replace('t', product.width);
-              case order.data[key] === undefined:
+              case order[key] === undefined:
                 return '""';
               default:
-                return '"t"'.replace('t', order.data[key]);
+                return '"t"'.replace('t', order[key]);
             }
           })
           .join(',');

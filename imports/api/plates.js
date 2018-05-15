@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
 export const PlatesData = new Mongo.Collection('plates');
-const PlateCounter = new Mongo.Collection('plateCounter');
+export const PlateCounter = new Mongo.Collection('plateCounter');
 
 if (Meteor.isServer) {
   Meteor.publish('plates', function() {

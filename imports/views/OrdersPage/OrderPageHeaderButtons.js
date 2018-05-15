@@ -56,12 +56,12 @@ export default class OrderPageHeaderButtons extends React.Component {
     const bodyCSV = orders
       .map(order => {
         const product = this.props.productsData.find(
-          product => product._id === order.data.productID
+          product => product._id === order.productID
         );
         const account = this.props.accountsData.find(
           account => account._id === product.accountID
         );
-        const orderQuantityInWeight = Number(product.thick) * (Number(product.length) + 5) * (Number(product.width)/100) * 0.0184 * Number(order.data.orderQuantity);
+        const orderQuantityInWeight = Number(product.thick) * (Number(product.length) + 5) * (Number(product.width)/100) * 0.0184 * Number(order.orderQuantity);
         return keys
           .map(key => {
             switch (key) {
@@ -79,10 +79,10 @@ export default class OrderPageHeaderButtons extends React.Component {
                 return '"t"'.replace('t', product.width);
               case 'orderQuantityInWeight':
                 return '"t"'.replace('t', orderQuantityInWeight);
-              case order.data[key] === undefined:
+              case order[key] === undefined:
                 return '""';
               default:
-                return '"t"'.replace('t', order.data[key]);
+                return '"t"'.replace('t', order[key]);
             }
           })
           .join(',');

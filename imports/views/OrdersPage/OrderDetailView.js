@@ -29,7 +29,7 @@ export default class OrderDetailView extends React.Component {
 
   getOrderDetails() {
     const order = OrdersData.findOne({ _id: this.props.orderID });
-    const product = ProductsData.findOne({ _id: order.data.productID });
+    const product = ProductsData.findOne({ _id: order.productID });
     let account;
     if (product) {
       account = AccountsData.findOne({ _id: product.accountID });
@@ -48,21 +48,21 @@ export default class OrderDetailView extends React.Component {
     let productCutPunchesText = '';
     let productPackDetailText = '';
 
-    orderedAtText = `발주일: ${order.data.orderedAt}`;
-    deliverBeforeText = `납기일: ${order.data.deliverBefore}`;
+    orderedAtText = `발주일: ${order.orderedAt}`;
+    deliverBeforeText = `납기일: ${order.deliverBefore}`;
 
     // product info & order quantity
     if (product) {
       let productSize = `${product.thick} x ${product.length} x ${
         product.width
       }`;
-      let orderQuantity = `${comma(uncomma(order.data.orderQuantity))}매`;
+      let orderQuantity = `${comma(uncomma(order.orderQuantity))}매`;
       let orderQuantityInWeight =
         Number(product.thick) *
         (Number(product.length) + 5) *
         (Number(product.width) / 100) *
         0.0184 *
-        Number(uncomma(order.data.orderQuantity));
+        Number(uncomma(order.orderQuantity));
       orderInfoText = `${productSize} = ${orderQuantity} (${comma(
         orderQuantityInWeight.toFixed(0)
       )}kg)`;
@@ -148,12 +148,12 @@ export default class OrderDetailView extends React.Component {
       <div className="order-detail__container">
         <div className="order-detail__subsection">
           <h2 className="order-detail__orderID">{order._id}</h2>
-          {order.data.deliverFast && (
+          {order.deliverFast && (
             <span className="order-detail__deliverRemark">
               <i className="fa fa-star" /> 지급
             </span>
           )}
-          {order.data.deliverDateStrict && (
+          {order.deliverDateStrict && (
             <span className="order-detail__deliverRemark">
               <i className="fa fa-star" /> 납기엄수
             </span>
@@ -225,12 +225,12 @@ export default class OrderDetailView extends React.Component {
 
         <div className="order-detail__subsection">
           <h3 className="order-detail__subtitle">작업시 참고사항</h3>
-          <p className="order-detail__description">{order.data.workMemo}</p>
+          <p className="order-detail__description">{order.workMemo}</p>
         </div>
 
         <div className="order-detail__subsection">
           <h3 className="order-detail__subtitle">납품시 참고사항</h3>
-          <p className="order-detail__description">{order.data.deliverMemo}</p>
+          <p className="order-detail__description">{order.deliverMemo}</p>
         </div>
 
         {/* <div className="order-detail__subsection">

@@ -87,7 +87,7 @@ export default class OrderList extends React.Component {
 
   updateOrderStatus(orderID, statusValue) {
     const order = this.state.filteredOrdersData.find(order => order._id === orderID);
-    let data = order.data;
+    let data = order;
     data.status = statusValue;
 
     Meteor.call('orders.update', orderID, data, (err, res) => {
@@ -135,11 +135,11 @@ export default class OrderList extends React.Component {
         order => order._id === orderID
       );
       const product = this.props.productsData.find(
-        product => product._id === order.data.productID
+        product => product._id === order.productID
       );
       const orderInfoText = `${product.name} (${product.thick}x${
         product.length
-      }x${product.width}) = ${comma(order.data.orderQuantity)}매`;
+      }x${product.width}) = ${comma(order.orderQuantity)}매`;
 
       confirmationDescription.push(orderInfoText);
     });
@@ -165,11 +165,11 @@ export default class OrderList extends React.Component {
           order => order._id === orderID
         );
         let product = this.props.productsData.find(
-          product => product._id === order.data.productID
+          product => product._id === order.productID
         );
         let historyArrayModified = [];
         product.history.map(({ _id, orderQuantity }) => {
-          if ( _id !== order.data.orderedAt) {
+          if ( _id !== order.orderedAt) {
             historyArrayModified.push({ _id, orderQuantity });
           }
         })
@@ -196,7 +196,7 @@ export default class OrderList extends React.Component {
     if (this.state.filteredOrdersData.length > 0) {
       return this.state.filteredOrdersData.map(order => {
         const product = this.props.productsData.find(
-          product => product._id === order.data.productID
+          product => product._id === order.productID
         );
         const account = this.props.accountsData.find(
           account => account._id === product.accountID

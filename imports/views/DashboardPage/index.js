@@ -56,7 +56,7 @@ export default class DashboardPage extends React.Component {
     let cuttingCount = 0;
 
     this.state.ordersData.map(order => {
-      const { status } = order.data;
+      const { status } = order;
 
       if (status === 'extruding') {
         extrudingCount++;
@@ -118,7 +118,7 @@ export default class DashboardPage extends React.Component {
     let needPlateStatusArray = [];
 
     this.state.ordersData.map(order => {
-      const { plateStatus, productID, isCompleted } = order.data;
+      const { plateStatus, productID, isCompleted } = order;
 
       if (!isCompleted && (plateStatus === 'new' || plateStatus === 'edit')) {
         needPlateCount++;
@@ -174,7 +174,7 @@ export default class DashboardPage extends React.Component {
     let completedCount = 0;
 
     this.state.ordersData.map(order => {
-      const { isCompleted, isDelivered, deliveredAt } = order.data;
+      const { isCompleted, isDelivered, deliveredAt } = order;
 
       if (isCompleted && !deliveredAt && !isDelivered) completedCount++;
     });
