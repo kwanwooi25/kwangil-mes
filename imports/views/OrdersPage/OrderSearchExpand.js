@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import moment from 'moment';
 
 import Checkbox from '../../custom/Checkbox';
@@ -18,7 +18,10 @@ export default class OrderSearchExpand extends React.Component {
       isPrintQuery: 'both',
       searchByAccountName: '',
       searchByProductName: '',
-      showCompletedOrder: false,
+      searchByThick: '',
+      searchByLength: '',
+      searchByWidth: '',
+      showCompletedOrder: false
     };
 
     this.onChange = this.onChange.bind(this);
@@ -31,18 +34,21 @@ export default class OrderSearchExpand extends React.Component {
         searchFrom: this.state.searchFrom.format('YYYY-MM-DD'),
         searchTo: this.state.searchTo.format('YYYY-MM-DD'),
         isPrintQuery: this.state.isPrintQuery,
-        accountName: this.state.searchByAccountName,
-        productName: this.state.searchByProductName,
+        accountName: this.state.searchByAccountName.trim().toLowerCase(),
+        productName: this.state.searchByProductName.trim().toLowerCase(),
+        thick: this.state.searchByThick,
+        length: this.state.searchByLength,
+        width: this.state.searchByWidth,
         showCompletedOrder: this.state.showCompletedOrder
-      }
+      };
     }
   }
 
   toggleClass(node) {
     if (node.value !== '') {
-      node.classList.add("hasValue");
+      node.classList.add('hasValue');
     } else {
-      node.classList.remove("hasValue");
+      node.classList.remove('hasValue');
     }
   }
 
@@ -53,8 +59,8 @@ export default class OrderSearchExpand extends React.Component {
       }
     }
 
-    if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") {
-      if (e.target.type === "checkbox") {
+    if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') {
+      if (e.target.type === 'checkbox') {
         this.setState({ [e.target.name]: e.target.checked }, () => {
           this.props.onOrderSearchChange(this.getQueryObj());
         });
@@ -65,35 +71,35 @@ export default class OrderSearchExpand extends React.Component {
       }
     }
 
-    if (e.target.tagName === "BUTTON") {
+    if (e.target.tagName === 'BUTTON') {
       switch (e.target.name) {
-        case "order-range__2weeks":
+        case 'order-range__2weeks':
           this.setState(
-            { searchFrom: moment().subtract(2, "weeks"), searchTo: moment() },
+            { searchFrom: moment().subtract(2, 'weeks'), searchTo: moment() },
             () => {
               this.props.onOrderSearchChange(this.getQueryObj());
             }
           );
           break;
-        case "order-range__1month":
+        case 'order-range__1month':
           this.setState(
-            { searchFrom: moment().subtract(1, "months"), searchTo: moment() },
+            { searchFrom: moment().subtract(1, 'months'), searchTo: moment() },
             () => {
               this.props.onOrderSearchChange(this.getQueryObj());
             }
           );
           break;
-        case "order-range__3months":
+        case 'order-range__3months':
           this.setState(
-            { searchFrom: moment().subtract(3, "months"), searchTo: moment() },
+            { searchFrom: moment().subtract(3, 'months'), searchTo: moment() },
             () => {
               this.props.onOrderSearchChange(this.getQueryObj());
             }
           );
           break;
-        case "order-range__6months":
+        case 'order-range__6months':
           this.setState(
-            { searchFrom: moment().subtract(6, "months"), searchTo: moment() },
+            { searchFrom: moment().subtract(6, 'months'), searchTo: moment() },
             () => {
               this.props.onOrderSearchChange(this.getQueryObj());
             }
@@ -106,6 +112,9 @@ export default class OrderSearchExpand extends React.Component {
   onReset() {
     this.refs.searchByAccountName.value = '';
     this.refs.searchByProductName.value = '';
+    this.refs.searchByThick.value = '';
+    this.refs.searchByLength.value = '';
+    this.refs.searchByWidth.value = '';
     this.refs.isPrintQuery = 'both';
 
     for (let ref in this.refs) {
@@ -114,16 +123,22 @@ export default class OrderSearchExpand extends React.Component {
       }
     }
 
-    this.setState({
-      searchFrom: moment().subtract(2, "weeks"),
-      searchTo: moment(),
-      isPrintQuery: "both",
-      searchByAccountName: "",
-      searchByProductName: "",
-      showCompletedOrder: false
-    }, () => {
-      this.props.onOrderSearchChange(this.getQueryObj());
-    });
+    this.setState(
+      {
+        searchFrom: moment().subtract(2, 'weeks'),
+        searchTo: moment(),
+        isPrintQuery: 'both',
+        searchByAccountName: '',
+        searchByProductName: '',
+        searchByThick: '',
+        searchByLength: '',
+        searchByWidth: '',
+        showCompletedOrder: false
+      },
+      () => {
+        this.props.onOrderSearchChange(this.getQueryObj());
+      }
+    );
   }
 
   render() {
@@ -196,6 +211,39 @@ export default class OrderSearchExpand extends React.Component {
             placeholder="품명"
             ref="searchByProductName"
             name="searchByProductName"
+            onChange={this.onChange}
+            onFocus={e => {
+              e.target.select();
+            }}
+          />
+          <input
+            className="input search-by-size"
+            type="number"
+            placeholder="두께"
+            ref="searchByThick"
+            name="searchByThick"
+            onChange={this.onChange}
+            onFocus={e => {
+              e.target.select();
+            }}
+          />
+          <input
+            className="input search-by-size"
+            type="number"
+            placeholder="길이"
+            ref="searchByLength"
+            name="searchByLength"
+            onChange={this.onChange}
+            onFocus={e => {
+              e.target.select();
+            }}
+          />
+          <input
+            className="input search-by-size"
+            type="number"
+            placeholder="너비"
+            ref="searchByWidth"
+            name="searchByWidth"
             onChange={this.onChange}
             onFocus={e => {
               e.target.select();

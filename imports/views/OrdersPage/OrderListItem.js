@@ -84,14 +84,17 @@ export default class OrderListItem extends React.Component {
   }
 
   render() {
+    const queryObj = this.props.queryObj;
     const account = this.props.account;
     const product = this.props.product;
     const order = this.props.order;
     const deliverBefore = moment(order.deliverBefore);
     const daysCount = countWeekdays(moment(), deliverBefore);
+    let productThick = String(product.thick);
+    let productLength = String(product.length);
+    let productWidth = String(product.width);
 
     let listClassName = '';
-    let productSizeText = '';
     let isPrintText = '';
     let orderQuantityText = '';
     let completedQuantityText = '';
@@ -105,7 +108,44 @@ export default class OrderListItem extends React.Component {
       listClassName += ' d-3';
     }
 
-    productSizeText = `${product.thick} x ${product.length} x ${product.width}`;
+    if (queryObj.thick && productThick.toLowerCase().indexOf(queryObj.thick) > -1) {
+      const index = productThick.toLowerCase().indexOf(queryObj.thick);
+      const matchingText = productThick.substring(
+        index,
+        index + queryObj.thick.length
+      );
+      productThick = productThick.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
+    }
+
+    if (
+      queryObj.length &&
+      productLength.toLowerCase().indexOf(queryObj.length) > -1
+    ) {
+      const index = productLength.toLowerCase().indexOf(queryObj.length);
+      const matchingText = productLength.substring(
+        index,
+        index + queryObj.length.length
+      );
+      productLength = productLength.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
+    }
+
+    if (queryObj.width && productWidth.toLowerCase().indexOf(queryObj.width) > -1) {
+      const index = productWidth.toLowerCase().indexOf(queryObj.width);
+      const matchingText = productWidth.substring(
+        index,
+        index + queryObj.width.length
+      );
+      productWidth = productWidth.replace(
+        matchingText,
+        `<span class="highlight">${matchingText}</span>`
+      );
+    }
 
     isPrintText = '무지';
     if (product && product.isPrint) {
@@ -195,7 +235,22 @@ export default class OrderListItem extends React.Component {
               />
             </div>
             <div className="order-product-size-container">
-              <p className="order-list__text">{productSizeText}</p>
+              <p className="order-list__text">
+                <span
+                  className="product-size__thick"
+                  dangerouslySetInnerHTML={{ __html: productThick }}
+                />
+                <i className="fa fa-times" />
+                <span
+                  className="product-size__length"
+                  dangerouslySetInnerHTML={{ __html: productLength }}
+                />
+                <i className="fa fa-times" />
+                <span
+                  className="product-size__width"
+                  dangerouslySetInnerHTML={{ __html: productWidth }}
+                />
+              </p>
               <p className="order-list__text">{isPrintText}</p>
             </div>
             <div className="order-orderQuantity-container">

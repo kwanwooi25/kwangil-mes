@@ -30,6 +30,9 @@ export default class OrdersPage extends React.Component {
         isPrintQuery: 'both',
         accountName: '',
         productName: '',
+        thick: '',
+        length: '',
+        width: '',
         showCompletedOrder: false
       }
     };
@@ -97,6 +100,7 @@ export default class OrdersPage extends React.Component {
       let dateRangeMatch = false;
       let accountNameMatch = false;
       let productNameMatch = false;
+      let productSizeMatch = false;
       let isPrintMatch = false;
       let showCompletedMatch = false;
 
@@ -114,6 +118,17 @@ export default class OrdersPage extends React.Component {
 
       if (product && product.name.toLowerCase().indexOf(queryObj.productName) > -1) {
         productNameMatch = true;
+      }
+
+      if (
+        product.thick &&
+        String(product.thick).indexOf(queryObj.thick) > -1 &&
+        product.length &&
+        String(product.length).indexOf(queryObj.length) > -1 &&
+        product.width &&
+        String(product.width).indexOf(queryObj.width) > -1
+      ) {
+        productSizeMatch = true;
       }
 
       if (
@@ -135,6 +150,7 @@ export default class OrdersPage extends React.Component {
         dateRangeMatch &&
         accountNameMatch &&
         productNameMatch &&
+        productSizeMatch &&
         isPrintMatch &&
         showCompletedMatch
       ) {

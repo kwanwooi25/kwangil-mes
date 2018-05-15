@@ -49,30 +49,20 @@
   }
 
   @media (min-width: $break--md) {
-    width: 15%;
+    width: 16%;
   }
 
   @media (min-width: $break--lg) {
-    width: auto;
+    width: 18%;
   }
-}
-
-.search-by-account-name.hasValue,
-.search-by-product-name.hasValue {
-  background: $color-secondary--100;
-  font-weight: $font-weight--bold;
 }
 
 .order-search__input-container .search-by-account-name {
   flex-grow: 1;
   width: 37%;
 
-  @media (min-width: $break--md) {
-    width: 25%;
-  }
-
   @media (min-width: $break--lg) {
-    width: 10%;
+    width: 18%;
   }
 }
 
@@ -80,12 +70,21 @@
   flex-grow: 1;
   width: 57%;
 
-  @media (min-width: $break--md) {
-    width: 40%;
+  @media (min-width: $break--lg) {
+    width: 30%;
+  }
+}
+
+.order-search__input-container .search-by-size {
+  flex-grow: 1;
+  width: 30%;
+
+  @media (min-width: $break--sm) {
+    width: 10%;
   }
 
   @media (min-width: $break--lg) {
-    width: 15%;
+    width: 8%;
   }
 }
 

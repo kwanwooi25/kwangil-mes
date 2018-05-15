@@ -13,6 +13,7 @@ export default class DashboardPage extends React.Component {
 
     this.state = {
       isOrdersCountReady: false,
+      completedOrdersCount: 0,
       isDeliveryOrderSummaryReady: false,
       isNeedPlateSummaryReady: false
     };
