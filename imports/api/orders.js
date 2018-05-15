@@ -12,15 +12,6 @@ if (Meteor.isServer) {
   Meteor.publish('orders', function() {
     const ordersData = OrdersData.find().fetch();
     ordersData.map(order => {
-      console.log(order);
-      // change data structure
-      if (order.data) {
-        let tempData = order.data;
-        tempData._id = order._id;
-        OrdersData.update({ _id: tempData._id }, { $set: tempData });
-        OrdersData.update({ _id: tempData._id }, { $unset: { data: 1} });
-      }
-
       const product = ProductsData.findOne({ _id: order.productID });
       if (!product) {
         Meteor.call('orders.remove', order._id);

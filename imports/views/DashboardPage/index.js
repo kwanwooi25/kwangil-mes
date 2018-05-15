@@ -3,9 +3,6 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import { setLayout } from '../../api/setLayout';
-import { ProductsData } from '../../api/products';
-import { OrdersData } from '../../api/orders';
-import { DeliveryData } from '../../api/delivery';
 
 import Spinner from '../../custom/Spinner';
 import ProductName from '../components/ProductName';
@@ -15,10 +12,9 @@ export default class DashboardPage extends React.Component {
     super(props);
 
     this.state = {
-      isDataReady: false,
-      productsData: [],
-      ordersData: [],
-      deliveryData: []
+      isOrdersCountReady: false,
+      isDeliveryOrderSummaryReady: false,
+      isNeedPlateSummaryReady: false
     };
   }
 
@@ -29,229 +25,50 @@ export default class DashboardPage extends React.Component {
       setLayout(30);
     });
 
-    // subscribe to data
-    subsCache = new SubsCache(-1, -1);
-    subsCache.subscribe('products');
-    subsCache.subscribe('orders');
-    subsCache.subscribe('delivery');
-
-    this.tracker = Tracker.autorun(() => {
-      const isDataReady = subsCache.ready();
-      const productsData = ProductsData.find().fetch();
-      const ordersData = OrdersData.find().fetch();
-      const deliveryData = DeliveryData.find().fetch();
-
-      this.setState({ isDataReady, productsData, ordersData, deliveryData });
-    });
-  }
-
-  componentWillUnmount() {
-    this.tracker.stop();
-  }
-
-  getOrdersSummary() {
-    let incompleteCount = 0;
-    let extrudingCount = 0;
-    let printingCount = 0;
-    let cuttingCount = 0;
-
-    this.state.ordersData.map(order => {
-      const { status } = order;
-
-      if (status === 'extruding') {
-        extrudingCount++;
-      } else if (status === 'printing') {
-        printingCount++;
-      } else if (status === 'cutting') {
-        cuttingCount++;
+    // get orders count
+    Meteor.call('dashboard.getOrdersCount', (err, res) => {
+      if (res) {
+        this.setState({
+          isOrdersCountReady: true,
+          ordersCount: res
+        });
       }
     });
 
-    incompleteCount = extrudingCount + printingCount + cuttingCount;
-
-    return (
-      <li className="dashboard-list-item incompleteOrders-container">
-        <h3 className="dashboard-list-item__title">작업중 목록</h3>
-        <div className="dashboard-list-item__content">
-          <div className="dashboard-list-item__content-50">
-            <p>
-              <Link
-                className="dashboard-list-item__large-number link"
-                to="/orders"
-              >
-                {incompleteCount}
-              </Link>
-              <span>건</span>
-            </p>
-          </div>
-          <div className="dashboard-list-item__content-50">
-            <p>
-              <span>압출중 </span>
-              <a className="dashboard-list-item__small-number">
-                {extrudingCount}
-              </a>
-              <span> 건</span>
-            </p>
-            <p>
-              <span>인쇄중 </span>
-              <a className="dashboard-list-item__small-number">
-                {printingCount}
-              </a>
-              <span> 건</span>
-            </p>
-            <p>
-              <span>가공중 </span>
-              <a className="dashboard-list-item__small-number">
-                {cuttingCount}
-              </a>
-              <span> 건</span>
-            </p>
-          </div>
-        </div>
-      </li>
-    );
-  }
-
-  getNeedPlateSummary() {
-    let needPlateCount = 0;
-    let needPlateProducts = [];
-    let needPlateStatusArray = [];
-
-    this.state.ordersData.map(order => {
-      const { plateStatus, productID, isCompleted } = order;
-
-      if (!isCompleted && (plateStatus === 'new' || plateStatus === 'edit')) {
-        needPlateCount++;
-        needPlateProducts.push(productID);
-        const needPlateStatus =
-          plateStatus === 'new'
-            ? '(신규)'
-            : plateStatus === 'edit' ? '(수정)' : '';
-        needPlateStatusArray.push(needPlateStatus);
-      }
+    // get completed orders count
+    Meteor.call('dashboard.getCompletedOrdersCount', (err, res) => {
+      if (res) this.setState({ completedOrdersCount: res });
     });
 
-    return (
-      <li className="dashboard-list-item needPlateProducts-container">
-        <h3 className="dashboard-list-item__title">동판 제작 필요 품목</h3>
-        <div className="dashboard-list-item__content">
-          <div className="dashboard-list-item__content-100">
-            <p>
-              <a className="dashboard-list-item__large-number">
-                {needPlateCount}
-              </a>
-              <span>개 품목</span>
-            </p>
-          </div>
-          <div className="dashboard-list-item__content-100">
-            <ul className="needPlateProducts">
-              {needPlateProducts.map((productID, index) => {
-                const product = this.state.productsData.find(
-                  product => product._id === productID
-                );
-                const productSize = ` ${product.thick}x${product.length}x${
-                  product.width
-                }`;
-                return (
-                  <li key={productID} className="needPlateProducts-list-item">
-                    <ProductName
-                      className="dashboard-list-item__productName"
-                      productID={productID}
-                      productName={product.name + productSize}
-                    />
-                    <span>{needPlateStatusArray[index]}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
-      </li>
-    );
-  }
-
-  getCompletedOrdersSummary() {
-    let completedCount = 0;
-
-    this.state.ordersData.map(order => {
-      const { isCompleted, isDelivered, deliveredAt } = order;
-
-      if (isCompleted && !deliveredAt && !isDelivered) completedCount++;
-    });
-
-    return (
-      <li className="dashboard-list-item completedOrders-container">
-        <h3 className="dashboard-list-item__title">납품대기 목록</h3>
-        <div className="dashboard-list-item__content">
-          <div className="dashboard-list-item__content-100">
-            <p>
-              <Link
-                className="dashboard-list-item__large-number link"
-                to="/orders-completed"
-              >
-                {completedCount}
-              </Link>
-              건
-            </p>
-          </div>
-        </div>
-      </li>
-    );
-  }
-
-  getDeliveryOrderSummary() {
-    const today = moment().format('YYYY-MM-DD');
-    let delivery;
-    let directCount = 0;
-    let postCount = 0;
-    let etcCount = 0;
-
-    delivery = this.state.deliveryData.find(delivery => delivery._id === today);
-
-    if (delivery) {
-      delivery.orderList.map(({ deliverBy }) => {
-        if (deliverBy === 'direct') {
-          directCount++;
-        } else if (deliverBy === 'post') {
-          postCount++;
-        } else {
-          etcCount++;
+    // get delivery order summary
+    Meteor.call(
+      'dashboard.getDeliveryOrderCounts',
+      moment().format('YYYY-MM-DD'),
+      (err, res) => {
+        if (res) {
+          this.setState({
+            deliveryOrderCounts: res,
+            isDeliveryOrderSummaryReady: true
+          });
         }
-      });
-    }
-
-    return (
-      <li className="dashboard-list-item deliveryOrders-container">
-        <h3 className="dashboard-list-item__title">금일 출고건</h3>
-        <div className="dashboard-list-item__content">
-          <p className="dashboard-list-item__subtitle">
-            <Link className="link" to="/delivery">
-              {moment().format('YYYY년 MM월 DD일')}
-            </Link>
-          </p>
-          <div className="dashboard-list-item__content-100">
-            <p>
-              <span>직납 </span>
-              <a className="dashboard-list-item__small-number">{directCount}</a>
-              <span> 건</span>
-            </p>
-            <p>
-              <span>택배 </span>
-              <a className="dashboard-list-item__small-number">{postCount}</a>
-              <span> 건</span>
-            </p>
-            <p>
-              <span>기타 </span>
-              <a className="dashboard-list-item__small-number">{etcCount}</a>
-              <span> 건</span>
-            </p>
-          </div>
-        </div>
-      </li>
+      }
     );
+
+    // get need plate summary
+    Meteor.call('dashboard.getNeedPlateCounts', (err, res) => {
+      if (res) {
+        this.setState({
+          needPlates: res,
+          isNeedPlateSummaryReady: true
+        });
+      }
+    });
   }
 
   render() {
+    const ordersCount = this.state.ordersCount;
+    const deliveryOrderCounts = this.state.deliveryOrderCounts;
+    const needPlates = this.state.needPlates;
     return (
       <div className="main">
         <div className="page-header">
@@ -263,11 +80,149 @@ export default class DashboardPage extends React.Component {
         <div className="page-content">
           <div className="list-container">
             <ul id="dashboard-list" className="list">
-              {!this.state.isDataReady && <Spinner />}
-              {this.state.isDataReady && this.getOrdersSummary()}
-              {this.state.isDataReady && this.getCompletedOrdersSummary()}
-              {this.state.isDataReady && this.getDeliveryOrderSummary()}
-              {this.state.isDataReady && this.getNeedPlateSummary()}
+              <li className="dashboard-list-item incompleteOrders-container">
+                <h3 className="dashboard-list-item__title">작업중 목록</h3>
+                {this.state.isOrdersCountReady ? (
+                  <div className="dashboard-list-item__content">
+                    <div className="dashboard-list-item__content-50">
+                      <p>
+                        <Link
+                          className="dashboard-list-item__large-number link"
+                          to="/orders"
+                        >
+                          {ordersCount.incompleteCount}
+                        </Link>
+                        <span>건</span>
+                      </p>
+                    </div>
+                    <div className="dashboard-list-item__content-50">
+                      <p>
+                        <span>압출중 </span>
+                        <a className="dashboard-list-item__small-number">
+                          {ordersCount.extrudingCount}
+                        </a>
+                        <span> 건</span>
+                      </p>
+                      <p>
+                        <span>인쇄중 </span>
+                        <a className="dashboard-list-item__small-number">
+                          {ordersCount.printingCount}
+                        </a>
+                        <span> 건</span>
+                      </p>
+                      <p>
+                        <span>가공중 </span>
+                        <a className="dashboard-list-item__small-number">
+                          {ordersCount.cuttingCount}
+                        </a>
+                        <span> 건</span>
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <Spinner />
+                )}
+              </li>
+
+              <li className="dashboard-list-item completedOrders-container">
+                <h3 className="dashboard-list-item__title">납품대기 목록</h3>
+                <div className="dashboard-list-item__content">
+                  <div className="dashboard-list-item__content-100">
+                    {this.state.completedOrdersCount ? (
+                      <p>
+                        <Link
+                          className="dashboard-list-item__large-number link"
+                          to="/orders-completed"
+                        >
+                          {this.state.completedOrdersCount}
+                        </Link>
+                        건
+                      </p>
+                    ) : (
+                      <Spinner />
+                    )}
+                  </div>
+                </div>
+              </li>
+
+              <li className="dashboard-list-item deliveryOrders-container">
+                <h3 className="dashboard-list-item__title">금일 출고건</h3>
+                <div className="dashboard-list-item__content">
+                  <p className="dashboard-list-item__subtitle">
+                    <Link className="link" to="/delivery">
+                      {moment().format('YYYY. MM. DD (ddd)')}
+                    </Link>
+                  </p>
+                  {this.state.isDeliveryOrderSummaryReady ? (
+                    <div className="dashboard-list-item__content-100">
+                      <p>
+                        <span>직납 </span>
+                        <a className="dashboard-list-item__small-number">
+                          {deliveryOrderCounts.directCount}
+                        </a>
+                        <span> 건</span>
+                      </p>
+                      <p>
+                        <span>택배 </span>
+                        <a className="dashboard-list-item__small-number">
+                          {deliveryOrderCounts.postCount}
+                        </a>
+                        <span> 건</span>
+                      </p>
+                      <p>
+                        <span>기타 </span>
+                        <a className="dashboard-list-item__small-number">
+                          {deliveryOrderCounts.etcCount}
+                        </a>
+                        <span> 건</span>
+                      </p>
+                    </div>
+                  ) : (
+                    <Spinner />
+                  )}
+                </div>
+              </li>
+
+              <li className="dashboard-list-item needPlateProducts-container">
+                <h3 className="dashboard-list-item__title">
+                  동판 제작 필요 품목
+                </h3>
+                <div className="dashboard-list-item__content">
+                  {this.state.isNeedPlateSummaryReady ? (
+                    <div className="dashboard-list-item__content-100">
+                      <p>
+                        <a className="dashboard-list-item__large-number">
+                          {needPlates.needPlateCount}
+                        </a>
+                        <span>개 품목</span>
+                      </p>
+                      <ul className="needPlateProducts">
+                        {needPlates.productNameList.map(
+                          ({ productID, productName }, index) => {
+                            return (
+                              <li
+                                key={productID}
+                                className="needPlateProducts-list-item"
+                              >
+                                <ProductName
+                                  className="dashboard-list-item__productName"
+                                  productID={productID}
+                                  productName={productName}
+                                />
+                                <span>
+                                  {needPlates.plateStatusArray[index]}
+                                </span>
+                              </li>
+                            );
+                          }
+                        )}
+                      </ul>
+                    </div>
+                  ) : (
+                    <Spinner />
+                  )}
+                </div>
+              </li>
             </ul>
           </div>
         </div>

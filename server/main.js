@@ -7,6 +7,7 @@ import '../imports/api/products';
 import '../imports/api/orders';
 import '../imports/api/plates';
 import '../imports/api/delivery';
+import '../imports/api/dashboard';
 import '../imports/api/slingshot';
 import '../imports/api/images';
 import '../imports/api/s3';
