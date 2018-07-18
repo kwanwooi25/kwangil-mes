@@ -337,7 +337,7 @@ export default class ProductModal extends React.Component {
     }
   }
 
-  uploadImage(file) {
+  uploadImage = file => {
     const uploader = new Slingshot.Upload('upload-product-image');
     return uploadToS3(file, uploader);
   }

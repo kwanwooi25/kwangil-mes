@@ -18,21 +18,21 @@ export const uploadToS3 = (file, uploader) => {
     });
   });
 };
-
-Meteor.methods({
-  'deleteFromS3'(filename) {
-    AWS.config.update({
-      accessKeyId: Meteor.settings.AWSAccessKeyId,
-      secretAccessKey: Meteor.settings.AWSSecretAccessKey,
-      bucket: Meteor.settings.AWSBucket,
-      region: Meteor.settings.AWSRegion
-    });
-
-    const s3 = new AWS.S3();
-
-    s3.deleteObject({
-      Bucket: Meteor.settings.AWSBucket,
-      Key: filename
-    });
-  }
-});
+//
+// Meteor.methods({
+//   'deleteFromS3'(filename) {
+//     AWS.config.update({
+//       accessKeyId: Meteor.settings.AWSAccessKeyId,
+//       secretAccessKey: Meteor.settings.AWSSecretAccessKey,
+//       bucket: Meteor.settings.AWSBucket,
+//       region: Meteor.settings.AWSRegion
+//     });
+//
+//     const s3 = new AWS.S3();
+//
+//     s3.deleteObject({
+//       Bucket: Meteor.settings.AWSBucket,
+//       Key: filename
+//     });
+//   }
+// });

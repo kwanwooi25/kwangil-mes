@@ -2,14 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Slingshot } from 'meteor/edgee:slingshot';
 
 Slingshot.fileRestrictions('upload-product-image', {
-  allowedFileTypes: [
-    'image/png',
-    'image/jpeg',
-    'image/jpg',
-    'image/svg',
-    'image/gif',
-    'image/svg+xml'
-  ],
+  allowedFileTypes: [ 'image/png', 'image/jpeg', 'image/jpg' ],
   maxSize: 1 * 1024 * 1024 // 1MB limit (use null for unlimited)
 });
 

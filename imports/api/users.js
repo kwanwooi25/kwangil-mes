@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { Roles } from 'meteor/alanning:roles';
+import { Accounts } from 'meteor/accounts-base';
 
 if (Meteor.isServer) {
   Meteor.publish('users', function() {
